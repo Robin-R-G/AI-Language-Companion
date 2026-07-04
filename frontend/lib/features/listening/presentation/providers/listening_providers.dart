@@ -5,5 +5,6 @@ import '../../domain/entities/listening_exercise.dart';
 final listeningExercisesProvider = FutureProvider.autoDispose<List<ListeningExercise>>((ref) async {
   final repo = ref.watch(listeningRepositoryProvider);
   final result = await repo.getExercises();
-  return result.fold((f) => throw f, (v) => v);
+  if (result.isSuccess) return result.value;
+  throw result.failure;
 });

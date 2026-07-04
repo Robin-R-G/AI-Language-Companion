@@ -84,9 +84,8 @@ jobs:
         run: flutter pub get
 
       - name: Decode keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks || true
 
       - name: Build Android APK
         run: flutter build apk --release --split-per-abi

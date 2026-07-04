@@ -5,8 +5,6 @@ import '../../domain/entities/reading_passage.dart';
 final readingPassagesProvider = FutureProvider.autoDispose<List<ReadingPassage>>((ref) async {
   final repo = ref.watch(readingRepositoryProvider);
   final result = await repo.getPassages();
-  return result.fold(
-    (failure) => throw failure,
-    (passages) => passages,
-  );
+  if (result.isSuccess) return result.value;
+  throw result.failure;
 });

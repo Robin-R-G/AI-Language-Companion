@@ -5,5 +5,6 @@ import '../../domain/entities/writing_prompt.dart';
 final writingPromptsProvider = FutureProvider.autoDispose<List<WritingPrompt>>((ref) async {
   final repo = ref.watch(writingRepositoryProvider);
   final result = await repo.getPrompts();
-  return result.fold((f) => throw f, (v) => v);
+  if (result.isSuccess) return result.value;
+  throw result.failure;
 });

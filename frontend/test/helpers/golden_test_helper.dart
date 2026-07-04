@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 Widget createGoldenWrapper(Widget child, {bool isDark = false}) {
   return MaterialApp(

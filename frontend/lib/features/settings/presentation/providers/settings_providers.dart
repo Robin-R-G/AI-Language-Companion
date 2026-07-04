@@ -5,5 +5,6 @@ import '../../domain/entities/app_settings.dart';
 final appSettingsProvider = FutureProvider.autoDispose<AppSettings>((ref) async {
   final repo = ref.watch(settingsRepositoryProvider);
   final result = await repo.getSettings();
-  return result.fold((f) => throw f, (v) => v);
+  if (result.isSuccess) return result.value;
+  throw result.failure;
 });

@@ -32,15 +32,11 @@ class Result<T> {
   }
 
   /// Folds the Result by calling onError for failure or onSuccess for success.
-  void fold(
-    void Function(Failure failure) onError,
-    void Function(T value) onSuccess,
-  ) {
+  R fold<R>(R Function(Failure failure) onError, R Function(T value) onSuccess) {
     if (isFailure) {
-      onError(_failure!);
-    } else {
-      onSuccess(_value as T);
+      return onError(_failure!);
     }
+    return onSuccess(_value as T);
   }
 
   /// Maps the success value to a new value using the provided function.
