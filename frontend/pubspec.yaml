@@ -38,7 +38,7 @@ dependencies:
   flutter_svg: ^2.0.17
   shimmer: ^3.0.0
   confetti: ^0.7.0
-  fl_chart: ^0.70.2
+  fl_chart: ^1.2.0
 
   # Utils
   intl: ^0.20.2
