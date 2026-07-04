@@ -55,7 +55,7 @@ dependencies:
   livekit_client: ^2.3.1
 
   # Payments
-  purchases_flutter: ^8.1.4
+  purchases_flutter: ^10.4.0
 
   # Animations
   lottie: ^3.2.0
