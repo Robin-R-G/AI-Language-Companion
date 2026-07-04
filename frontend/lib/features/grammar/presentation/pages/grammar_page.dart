@@ -28,7 +28,8 @@ class _GrammarPageState extends State<GrammarPage>
       'rule': 'Past Simple Tense',
       'explanation':
           'Use "went" (past tense of "go") for actions completed in the past.',
-      'malayalam': 'കഴിഞ്ഞുപോയ കാര്യങ്ങൾ പറയാൻ "went" എന്ന ഭൂതകാല രൂപമാണ് ഉപയോഗിക്കേണ്ടത്.',
+      'malayalam':
+          'കഴിഞ്ഞുപോയ കാര്യങ്ങൾ പറയാൻ "went" എന്ന ഭൂതകാല രൂപമാണ് ഉപയോഗിക്കേണ്ടത്.',
       'date': 'Today',
       'count': 5,
     },
@@ -111,10 +112,7 @@ class _GrammarPageState extends State<GrammarPage>
 
     return TabBarView(
       controller: _tabController,
-      children: [
-        _buildErrorLog(theme),
-        _buildPracticeTab(theme),
-      ],
+      children: [_buildErrorLog(theme), _buildPracticeTab(theme)],
     );
   }
 
@@ -380,10 +378,18 @@ class _RuleTile extends StatelessWidget {
           ),
           child: Icon(icon, color: theme.colorScheme.primary, size: 24),
         ),
-        title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         subtitle: Text(subtitle, style: theme.textTheme.bodySmall),
         trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: AppRadius.roundAll,

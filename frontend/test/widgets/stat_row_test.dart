@@ -11,7 +11,11 @@ void main() {
             body: StatRow(
               stats: [
                 StatItem(icon: Icons.star, value: '100', label: 'XP'),
-                StatItem(icon: Icons.local_fire_department, value: '5', label: 'Streak'),
+                StatItem(
+                  icon: Icons.local_fire_department,
+                  value: '5',
+                  label: 'Streak',
+                ),
                 StatItem(icon: Icons.book, value: '50', label: 'Words'),
               ],
             ),
@@ -32,9 +36,7 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: StatRow(
-              stats: [
-                StatItem(icon: Icons.star, value: '100', label: 'XP'),
-              ],
+              stats: [StatItem(icon: Icons.star, value: '100', label: 'XP')],
             ),
           ),
         ),
@@ -48,17 +50,13 @@ void main() {
         const MaterialApp(
           home: Scaffold(
             body: StatRow(
-              stats: [
-                StatItem(icon: Icons.star, value: '100', label: 'XP'),
-              ],
+              stats: [StatItem(icon: Icons.star, value: '100', label: 'XP')],
             ),
           ),
         ),
       );
 
-      final SemanticsNode semantics = tester.getSemantics(
-        find.byType(StatRow),
-      );
+      final semantics = tester.getSemantics(find.byType(StatRow));
       expect(semantics.label, contains('XP'));
       expect(semantics.label, contains('100'));
     });

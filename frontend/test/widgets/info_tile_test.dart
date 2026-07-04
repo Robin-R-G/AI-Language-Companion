@@ -8,10 +8,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: InfoTile(
-              icon: Icons.person,
-              title: 'Edit Profile',
-            ),
+            body: InfoTile(icon: Icons.person, title: 'Edit Profile'),
           ),
         ),
       );
@@ -75,15 +72,12 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: InfoTile(
-              icon: Icons.person,
-              title: 'Profile',
-            ),
+            body: InfoTile(icon: Icons.person, title: 'Profile'),
           ),
         ),
       );
 
-      final SemanticsNode semantics = tester.getSemantics(
+      final semantics = tester.getSemantics(
         find.byType(InfoTile),
       );
       expect(semantics.label, 'Profile');

@@ -8,10 +8,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: ProgressCard(
-              label: 'Study Time',
-              value: '12.5h',
-            ),
+            body: ProgressCard(label: 'Study Time', value: '12.5h'),
           ),
         ),
       );
@@ -56,11 +53,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: ProgressCard(
-              label: 'Score',
-              value: '7.0',
-              progress: 0.7,
-            ),
+            body: ProgressCard(label: 'Score', value: '7.0', progress: 0.7),
           ),
         ),
       );
@@ -72,11 +65,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: ProgressCard(
-              label: 'Grammar',
-              value: '6.5',
-              trend: '+0.5',
-            ),
+            body: ProgressCard(label: 'Grammar', value: '6.5', trend: '+0.5'),
           ),
         ),
       );
@@ -88,15 +77,12 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: ProgressCard(
-              label: 'Speaking',
-              value: '7.5',
-            ),
+            body: ProgressCard(label: 'Speaking', value: '7.5'),
           ),
         ),
       );
 
-      final SemanticsNode semantics = tester.getSemantics(
+      final semantics = tester.getSemantics(
         find.byType(ProgressCard),
       );
       expect(semantics.label, contains('Speaking'));

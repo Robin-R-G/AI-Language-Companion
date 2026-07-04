@@ -78,15 +78,20 @@ class _NavItem extends StatelessWidget {
     final currentPath = GoRouterState.of(context).matchedLocation;
     final isActive = currentPath == route;
 
-    return IconButton(
-      onPressed: () => context.go(route),
-      icon: Icon(
-        isActive ? activeIcon : icon,
-        color: isActive
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+    return Semantics(
+      label: label,
+      button: true,
+      selected: isActive,
+      child: IconButton(
+        onPressed: () => context.go(route),
+        icon: Icon(
+          isActive ? activeIcon : icon,
+          color: isActive
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
+        tooltip: label,
       ),
-      tooltip: label,
     );
   }
 }

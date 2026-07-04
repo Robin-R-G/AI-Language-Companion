@@ -29,7 +29,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       'question': 'Choose the correct form: "She ___ to school every day."',
       'options': ['go', 'goes', 'going', 'went'],
       'correctIndex': 1,
-      'explanation': 'Third person singular subjects use "goes" in present simple tense.',
+      'explanation':
+          'Third person singular subjects use "goes" in present simple tense.',
       'malayalam': 'She എന്ന ഏകവചന വിഷയത്തിന് "goes" ഉപയോഗിക്കണം.',
     },
     {
@@ -41,8 +42,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         'I am going to Paris last year.',
       ],
       'correctIndex': 1,
-      'explanation': 'Use past simple tense with specific past time expressions like "last year".',
-      'malayalam': '"last year" എന്ന പ്രത്യേക സമയ സൂചനയ്ക്ക് past simple ഉപയോഗിക്കണം.',
+      'explanation':
+          'Use past simple tense with specific past time expressions like "last year".',
+      'malayalam':
+          '"last year" എന്ന പ്രത്യേക സമയ സൂചനയ്ക്ക് past simple ഉപയോഗിക്കണം.',
     },
     {
       'question': 'Fill in the blank: "There ___ many students in the class."',
@@ -249,10 +252,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           child: AppButton(
                             label: 'Show Explanation',
                             isSecondary: true,
-                            onPressed: () => setState(() => _showExplanation = true),
+                            onPressed: () =>
+                                setState(() => _showExplanation = true),
                           ),
                         ),
-                      if (!_showExplanation) const SizedBox(width: AppSpacing.sm),
+                      if (!_showExplanation)
+                        const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: AppButton(
                           label: _currentQuestion < _questions.length - 1
@@ -265,7 +270,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   )
                 : AppButton(
                     label: 'Check Answer',
-                    onPressed: _selectedAnswer != null ? () => setState(() => _answered = true) : null,
+                    onPressed: _selectedAnswer != null
+                        ? () => setState(() => _answered = true)
+                        : null,
                   ),
           ),
         ),
@@ -336,16 +343,24 @@ class _AnswerOption extends StatelessWidget {
                   ),
                   child: Center(
                     child: answered && isCorrect
-                        ? const Icon(Icons.check, size: 18, color: AppColors.success)
+                        ? const Icon(
+                            Icons.check,
+                            size: 18,
+                            color: AppColors.success,
+                          )
                         : answered && isSelected && !isCorrect
-                            ? const Icon(Icons.close, size: 18, color: AppColors.error)
-                            : Text(
-                                String.fromCharCode(65 + index),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: borderColor,
-                                ),
-                              ),
+                        ? const Icon(
+                            Icons.close,
+                            size: 18,
+                            color: AppColors.error,
+                          )
+                        : Text(
+                            String.fromCharCode(65 + index),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: borderColor,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),

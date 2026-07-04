@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 import '../../../../core/network/dio_client.dart';
@@ -9,11 +8,11 @@ import '../../domain/repositories/chat_repository.dart';
 class ChatRepositoryImpl implements ChatRepository {
   final Dio _dio;
 
-  ChatRepositoryImpl({DioClient? dioClient})
-      : _dio = dioClient?.client ?? DioClient().client;
+  ChatRepositoryImpl({DioClient? dioClient, Dio? dio})
+    : _dio = dio ?? dioClient?.client ?? DioClient().client;
 
   @override
-  Future<List<ChatMessage>> getMessages(
+  Future<Result<List<ChatMessage>>> getMessages(
     String conversationId, {
     int limit = 50,
     int offset = 0,
@@ -29,23 +28,25 @@ class ChatRepositoryImpl implements ChatRepository {
       );
       final data = response.data;
       if (data is List) {
-        return data
-            .map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
-            .toList();
+        return Result.success(
+          data
+              .map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        );
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(ServerFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw ServerFailure(
-        e.message ?? 'Failed to fetch messages',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        ServerFailure(
+          e.message ?? 'Failed to fetch messages',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw ServerFailure(e.message);
     }
   }
 
   @override
-  Future<ChatMessage> sendMessage(
+  Future<Result<ChatMessage>> sendMessage(
     String conversationId,
     String message, {
     bool stream = false,
@@ -61,66 +62,62 @@ class ChatRepositoryImpl implements ChatRepository {
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        return ChatMessage.fromJson(data);
+        return Result.success(ChatMessage.fromJson(data));
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(AIServiceFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw AIServiceFailure(
-        e.message ?? 'Failed to send message',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        AIServiceFailure(
+          e.message ?? 'Failed to send message',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw AIServiceFailure(e.message);
     }
   }
 
   @override
-  Future<String> createConversation(String title) async {
+  Future<Result<String>> createConversation(String title) async {
     try {
       final response = await _dio.post(
         '/ai-chat',
-        data: {
-          'action': 'create_conversation',
-          'title': title,
-        },
+        data: {'action': 'create_conversation', 'title': title},
       );
       final data = response.data;
       if (data is Map<String, dynamic> && data['id'] is String) {
-        return data['id'] as String;
+        return Result.success(data['id'] as String);
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(ServerFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw ServerFailure(
-        e.message ?? 'Failed to create conversation',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        ServerFailure(
+          e.message ?? 'Failed to create conversation',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw ServerFailure(e.message);
     }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getConversations({int limit = 20}) async {
+  Future<Result<List<Map<String, dynamic>>>> getConversations({
+    int limit = 20,
+  }) async {
     try {
       final response = await _dio.get(
         '/ai-chat',
-        queryParameters: {
-          'action': 'list_conversations',
-          'limit': limit,
-        },
+        queryParameters: {'action': 'list_conversations', 'limit': limit},
       );
       final data = response.data;
       if (data is List) {
-        return data.cast<Map<String, dynamic>>();
+        return Result.success(data.cast<Map<String, dynamic>>());
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(ServerFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw ServerFailure(
-        e.message ?? 'Failed to fetch conversations',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        ServerFailure(
+          e.message ?? 'Failed to fetch conversations',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw ServerFailure(e.message);
     }
   }
 }

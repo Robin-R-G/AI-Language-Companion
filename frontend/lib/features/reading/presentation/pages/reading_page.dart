@@ -43,7 +43,8 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
       'correctIndex': 1,
     },
     {
-      'question': 'According to the passage, how does learning a language help culturally?',
+      'question':
+          'According to the passage, how does learning a language help culturally?',
       'options': [
         'It helps you travel cheaper',
         'It opens doors to different cultures and perspectives',
@@ -130,7 +131,11 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Icon(Icons.schedule, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.schedule,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     '5 min read',
@@ -150,9 +155,7 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
               const SizedBox(height: AppSpacing.base),
               Text(
                 _passage,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  height: 1.8,
-                ),
+                style: theme.textTheme.bodyLarge?.copyWith(height: 1.8),
               ),
             ],
           ),
@@ -189,13 +192,18 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
                 return Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
                     leading: Radio<int>(
                       value: (q['options'] as List).indexOf(option),
                       groupValue: null,
                       onChanged: (val) {},
                     ),
-                    title: Text(option as String, style: theme.textTheme.bodyMedium),
+                    title: Text(
+                      option as String,
+                      style: theme.textTheme.bodyMedium,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.smAll,
                       side: BorderSide(color: theme.colorScheme.outline),

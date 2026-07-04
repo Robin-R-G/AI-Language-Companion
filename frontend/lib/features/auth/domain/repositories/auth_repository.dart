@@ -1,10 +1,10 @@
-// lib/features/auth/domain/repositories/auth_repository.dart
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/errors/result.dart';
+import '../entities/user.dart';
 
 abstract class AuthRepository {
-  Future<User?> signUp(String email, String password);
-  Future<User?> signIn(String email, String password);
-  Future<void> signOut();
-  User? get currentUser;
-  Stream<AuthState> get authStateChanges;
+  Future<Result<AppUser>> signUp(String email, String password);
+  Future<Result<AppUser>> signIn(String email, String password);
+  Future<Result<void>> signOut();
+  AppUser? get currentUser;
+  Stream<bool> get authStateChanges;
 }

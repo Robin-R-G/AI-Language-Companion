@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../domain/entities/chat_message.dart';
+import '../providers/chat_providers.dart';
 
 /// AI Chat page for conversational tutoring.
 class ChatPage extends ConsumerStatefulWidget {
@@ -13,8 +15,8 @@ class ChatPage extends ConsumerStatefulWidget {
 class _ChatPageState extends ConsumerState<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final List<_ChatMessage> _messages = [];
   bool _isTyping = false;
+  bool _showTranslation = false;
 
   @override
   void dispose() {
@@ -23,41 +25,59 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     super.dispose();
   }
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
+    final conversationId = ref.read(activeConversationIdProvider);
+    if (conversationId.isEmpty) {
+      try {
+        final id = await ref
+            .read(chatMessagesProvider.notifier)
+            .createConversation('Chat Session');
+        if (id != null) {
+          ref.read(activeConversationIdProvider.notifier).set(id);
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to start conversation')),
+            );
+          }
+          return;
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to start conversation: $e')),
+          );
+        }
+        return;
+      }
+    }
+
+    final convId = ref.read(activeConversationIdProvider);
     setState(() {
-      _messages.add(
-        _ChatMessage(content: text, isUser: true, timestamp: DateTime.now()),
-      );
-      _messageController.clear();
       _isTyping = true;
     });
-
+    _messageController.clear();
     _scrollToBottom();
 
-    // Simulate AI response
-    Future.delayed(const Duration(seconds: 2), () {
+    try {
+      await ref.read(chatMessagesProvider.notifier).sendMessage(convId, text);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to send message: $e')));
+      }
+    } finally {
       if (mounted) {
         setState(() {
-          _messages.add(
-            _ChatMessage(
-              content: _generateAIResponse(text),
-              isUser: false,
-              timestamp: DateTime.now(),
-            ),
-          );
           _isTyping = false;
         });
         _scrollToBottom();
       }
-    });
-  }
-
-  String _generateAIResponse(String userMessage) {
-    // TODO: Replace with actual AI integration via Edge Functions
-    return 'Great question! Let me help you with that. In English, we say "${userMessage.toLowerCase()}". Would you like me to explain the grammar rules or provide more examples?';
+    }
   }
 
   void _scrollToBottom() {
@@ -74,38 +94,49 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final messages = ref.watch(chatMessagesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('AI Tutor'),
         actions: [
           IconButton(
             onPressed: () {
-              // TODO: Show chat settings
+              setState(() {
+                _showTranslation = !_showTranslation;
+              });
             },
+            icon: Icon(
+              Icons.translate,
+              color: _showTranslation
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            tooltip: 'Toggle Malayalam translation',
+          ),
+          IconButton(
+            onPressed: () {},
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
       ),
       body: Column(
         children: [
-          // Messages List
           Expanded(
-            child: _messages.isEmpty
+            child: messages.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(AppSpacing.base),
-                    itemCount: _messages.length + (_isTyping ? 1 : 0),
+                    itemCount: messages.length + (_isTyping ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index == _messages.length) {
+                      if (index == messages.length) {
                         return _buildTypingIndicator();
                       }
-                      return _buildMessageBubble(_messages[index]);
+                      return _buildMessageBubble(messages[index]);
                     },
                   ),
           ),
-
-          // Input Bar
           _buildInputBar(),
         ],
       ),
@@ -174,8 +205,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildMessageBubble(_ChatMessage message) {
-    final isUser = message.isUser;
+  Widget _buildMessageBubble(ChatMessage message) {
+    final isUser = message.role == 'user';
 
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -214,18 +245,265 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 fontSize: 15,
               ),
             ),
+            if (!isUser && message.grammarFeedback != null)
+              _buildGrammarCorrection(message.grammarFeedback!),
+            if (!isUser && _showTranslation && message.translation != null)
+              _buildTranslationCard(message.translation!),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}',
-              style: TextStyle(
-                fontSize: 11,
-                color: isUser
-                    ? Colors.white.withOpacity(0.7)
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${message.timestamp?.hour ?? 0}:${(message.timestamp?.minute ?? 0).toString().padLeft(2, '0')}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isUser
+                        ? Colors.white.withOpacity(0.7)
+                        : Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+                if (!isUser && message.translation != null && !_showTranslation)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _showTranslation = true;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: AppSpacing.sm),
+                      child: Icon(
+                        Icons.translate,
+                        size: 14,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGrammarCorrection(GrammarFeedback feedback) {
+    if (feedback.isCorrect) return const SizedBox.shrink();
+
+    return GestureDetector(
+      onTap: () => _showGrammarExplanation(feedback),
+      child: Container(
+        margin: const EdgeInsets.only(top: AppSpacing.sm),
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        decoration: BoxDecoration(
+          color: AppColors.warning.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.edit_note, size: 16, color: AppColors.warning),
+                SizedBox(width: AppSpacing.xs),
+                Text(
+                  'Grammar correction',
+                  style: TextStyle(
+                    color: AppColors.warning,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Spacer(),
+                Icon(Icons.info_outline, size: 14, color: AppColors.warning),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: feedback.original,
+                    style: const TextStyle(
+                      color: AppColors.error,
+                      fontSize: 13,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  const TextSpan(text: ' → '),
+                  TextSpan(
+                    text: feedback.corrected,
+                    style: const TextStyle(
+                      color: AppColors.success,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showGrammarExplanation(GrammarFeedback feedback) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Grammar Explanation',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.base),
+            if (feedback.category.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Text(
+                  feedback.category,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            const SizedBox(height: AppSpacing.base),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: feedback.original,
+                    style: const TextStyle(
+                      color: AppColors.error,
+                      decoration: TextDecoration.lineThrough,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const TextSpan(text: ' → '),
+                  TextSpan(
+                    text: feedback.corrected,
+                    style: const TextStyle(
+                      color: AppColors.success,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              feedback.explanation,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (feedback.explanationMalayalam.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                feedback.explanationMalayalam,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+            ],
+            if (feedback.examples.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.base),
+              Text('Examples:', style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: AppSpacing.xs),
+              ...feedback.examples.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: Text(
+                    '• $e',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.xl),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Got it'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTranslationCard(TranslationData translation) {
+    return Container(
+      margin: const EdgeInsets.only(top: AppSpacing.sm),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.info.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: AppColors.info.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.translate, size: 14, color: AppColors.info),
+              SizedBox(width: AppSpacing.xs),
+              Text(
+                'Malayalam',
+                style: TextStyle(
+                  color: AppColors.info,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            translation.translation,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.info),
+          ),
+          if (translation.pronunciation.isNotEmpty)
+            Text(
+              translation.pronunciation,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.info.withOpacity(0.7),
+              ),
+            ),
+          if (translation.explanation.isNotEmpty)
+            Text(
+              translation.explanation,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -284,9 +562,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           children: [
             IconButton(
               onPressed: () {
-                // TODO: Show translation toggle
+                setState(() {
+                  _showTranslation = !_showTranslation;
+                });
               },
-              icon: const Icon(Icons.translate),
+              icon: Icon(
+                Icons.translate,
+                color: _showTranslation
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+              tooltip: 'Toggle Malayalam translation',
             ),
             Expanded(
               child: TextField(
@@ -314,7 +600,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               onPressed: () {
-                // TODO: Start voice call
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Voice call coming soon')),
+                );
               },
               icon: const Icon(Icons.mic),
             ),
@@ -331,18 +619,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       ),
     );
   }
-}
-
-class _ChatMessage {
-  final String content;
-  final bool isUser;
-  final DateTime timestamp;
-
-  const _ChatMessage({
-    required this.content,
-    required this.isUser,
-    required this.timestamp,
-  });
 }
 
 class _SuggestionChip extends StatelessWidget {

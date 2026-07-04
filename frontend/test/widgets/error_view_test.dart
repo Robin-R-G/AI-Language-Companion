@@ -7,13 +7,14 @@ void main() {
   group('ErrorView', () {
     testWidgets('renders default error message', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: ErrorView()),
-        ),
+        const MaterialApp(home: Scaffold(body: ErrorView())),
       );
 
       expect(find.text('Something went wrong'), findsOneWidget);
-      expect(find.text('Please check your connection and try again.'), findsOneWidget);
+      expect(
+        find.text('Please check your connection and try again.'),
+        findsOneWidget,
+      );
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
@@ -36,9 +37,7 @@ void main() {
     testWidgets('renders retry button', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: ErrorView(onRetry: () {}),
-          ),
+          home: Scaffold(body: ErrorView(onRetry: () {})),
         ),
       );
 
@@ -50,9 +49,7 @@ void main() {
       bool retryCalled = false;
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: ErrorView(onRetry: () => retryCalled = true),
-          ),
+          home: Scaffold(body: ErrorView(onRetry: () => retryCalled = true)),
         ),
       );
 
@@ -60,11 +57,11 @@ void main() {
       expect(retryCalled, isTrue);
     });
 
-    testWidgets('does not render retry button when onRetry is null', (tester) async {
+    testWidgets('does not render retry button when onRetry is null', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: ErrorView()),
-        ),
+        const MaterialApp(home: Scaffold(body: ErrorView())),
       );
 
       expect(find.byType(AppButton), findsNothing);

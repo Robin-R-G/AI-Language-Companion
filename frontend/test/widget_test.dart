@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_language_coach/app/app.dart';
 
-void main() {
+Future<void> main() async {
   testWidgets('App renders and displays splash screen', (tester) async {
     await tester.pumpWidget(const AILanguageCoachApp());
     await tester.pump();
@@ -11,6 +11,6 @@ void main() {
   });
 
   testWidgets('App can be created', () {
-    expect(true, isTrue);
+    // expect(true, isTrue);
   });
 }

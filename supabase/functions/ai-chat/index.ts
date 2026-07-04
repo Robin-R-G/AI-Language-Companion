@@ -8,11 +8,7 @@ import { ConversationMemory, extractMemoryInsights } from '../shared/memory.ts'
 import { successResponse, badRequest, serverError, aiProviderError } from '../shared/errors.ts'
 import { validateRequired } from '../shared/validator.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
-}
+import { corsHeaders } from '../shared/cors.ts'
 
 serve(async (req: Request) => {
   // Handle CORS preflight

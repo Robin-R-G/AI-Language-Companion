@@ -85,9 +85,7 @@ class _ListeningPageState extends State<ListeningPage>
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Listening Practice'),
-      ),
+      appBar: AppBar(title: const Text('Listening Practice')),
       body: _buildBody(theme),
     );
   }
@@ -157,7 +155,9 @@ class _ListeningPageState extends State<ListeningPage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(20, (index) {
                         final height = _isPlaying
-                            ? (12.0 + (index % 3) * 8.0 + (_waveController.value * 16))
+                            ? (12.0 +
+                                  (index % 3) * 8.0 +
+                                  (_waveController.value * 16))
                             : 8.0;
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -248,7 +248,10 @@ class _ListeningPageState extends State<ListeningPage>
                       items: [0.75, 1.0, 1.25].map((speed) {
                         return DropdownMenuItem(
                           value: speed,
-                          child: Text('${speed}x', style: theme.textTheme.labelMedium),
+                          child: Text(
+                            '${speed}x',
+                            style: theme.textTheme.labelMedium,
+                          ),
                         );
                       }).toList(),
                       onChanged: (val) {
@@ -282,10 +285,7 @@ class _ListeningPageState extends State<ListeningPage>
                   color: theme.colorScheme.primary.withAlpha(25),
                   borderRadius: AppRadius.smAll,
                 ),
-                child: Icon(
-                  Icons.headphones,
-                  color: theme.colorScheme.primary,
-                ),
+                child: Icon(Icons.headphones, color: theme.colorScheme.primary),
               ),
               title: Text(
                 exercise['title'] as String,

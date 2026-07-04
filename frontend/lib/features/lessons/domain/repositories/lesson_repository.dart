@@ -1,7 +1,14 @@
+import '../../../../core/errors/result.dart';
 import '../entities/lesson.dart';
 
 abstract class LessonRepository {
-  Future<List<Lesson>> getLessons({String? category, String? difficulty});
-  Future<Lesson> getLessonById(String id);
-  Future<Map<String, dynamic>> completeLesson(String lessonId, int score);
+  Future<Result<List<Lesson>>> getLessons({
+    String? category,
+    String? difficulty,
+  });
+  Future<Result<Lesson>> getLessonById(String id);
+  Future<Result<Map<String, dynamic>>> completeLesson(
+    String lessonId,
+    int score,
+  );
 }

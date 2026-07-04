@@ -26,15 +26,16 @@ class FakeData {
       'title': 'Conditional Clauses Type 2',
       'difficulty': 'B2',
       'xp_reward': 75,
-    }
+    },
   ];
 
   static const List<Map<String, dynamic>> sampleVocabCards = [
     {
       'word': 'Empathetic',
-      'meaning': 'Showing an ability to understand and share the feelings of another.',
+      'meaning':
+          'Showing an ability to understand and share the feelings of another.',
       'meaning_malayalam': 'സഹാനുഭൂതിയുള്ള',
       'ipa': '/ˌɛmpəˈθɛtɪk/',
-    }
+    },
   ];
 }

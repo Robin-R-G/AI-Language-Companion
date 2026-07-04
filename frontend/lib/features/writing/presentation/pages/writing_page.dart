@@ -30,7 +30,8 @@ class _WritingPageState extends State<WritingPage> {
     'coherence': 6.5,
     'taskAchievement': 6.5,
     'wordCount': 268,
-    'feedback': 'Good overall structure. Watch out for article usage and tense consistency.',
+    'feedback':
+        'Good overall structure. Watch out for article usage and tense consistency.',
   };
 
   @override
@@ -71,9 +72,7 @@ class _WritingPageState extends State<WritingPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Writing Practice'),
-      ),
+      appBar: AppBar(title: const Text('Writing Practice')),
       body: _buildBody(theme),
     );
   }
@@ -122,7 +121,11 @@ class _WritingPageState extends State<WritingPage> {
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Icon(Icons.schedule, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.schedule,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     '40 minutes',
@@ -262,7 +265,10 @@ class _WritingPageState extends State<WritingPage> {
         _ScoreBar(label: 'Grammar', score: _result['grammar'] as double),
         _ScoreBar(label: 'Vocabulary', score: _result['vocabulary'] as double),
         _ScoreBar(label: 'Coherence', score: _result['coherence'] as double),
-        _ScoreBar(label: 'Task Achievement', score: _result['taskAchievement'] as double),
+        _ScoreBar(
+          label: 'Task Achievement',
+          score: _result['taskAchievement'] as double,
+        ),
         const SizedBox(height: AppSpacing.base),
 
         AppButton(

@@ -46,7 +46,9 @@ class InfoTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               )
             : null,
-        trailing: trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
+        trailing:
+            trailing ??
+            (onTap != null ? const Icon(Icons.chevron_right) : null),
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.base,

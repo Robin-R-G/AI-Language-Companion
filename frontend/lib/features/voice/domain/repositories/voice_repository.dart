@@ -1,14 +1,15 @@
+import '../../../../core/errors/result.dart';
 import '../entities/voice_session.dart';
 
 abstract class VoiceRepository {
-  Future<VoiceSession> startSession({
+  Future<Result<VoiceSession>> startSession({
     required String language,
     String? persona,
   });
-  Future<VoiceSession> endSession(String sessionId);
-  Future<PronunciationScore> evaluateSpeaking(
+  Future<Result<VoiceSession>> endSession(String sessionId);
+  Future<Result<PronunciationScore>> evaluateSpeaking(
     String transcriptText, {
     String? targetLanguage,
   });
-  Future<List<VoiceSession>> getSessions({int limit = 20});
+  Future<Result<List<VoiceSession>>> getSessions({int limit = 20});
 }

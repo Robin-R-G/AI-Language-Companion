@@ -20,8 +20,8 @@ class ChatMessages extends _$ChatMessages {
 
   Future<void> loadMessages(String conversationId) async {
     final repo = ref.read(chatRepositoryProvider);
-    final messages = await repo.getMessages(conversationId);
-    state = messages;
+    final result = await repo.getMessages(conversationId);
+    result.fold((_) {}, (messages) => state = messages);
   }
 
   Future<void> sendMessage(String conversationId, String message) async {
@@ -34,17 +34,14 @@ class ChatMessages extends _$ChatMessages {
     );
     state = [...state, userMsg];
 
-    try {
-      final reply = await repo.sendMessage(conversationId, message);
-      state = [...state, reply];
-    } catch (e) {
-      // Keep user message, error handled by UI
-    }
+    final result = await repo.sendMessage(conversationId, message);
+    result.fold((_) {}, (reply) => state = [...state, reply]);
   }
 
-  Future<void> createConversation(String title) async {
+  Future<String?> createConversation(String title) async {
     final repo = ref.read(chatRepositoryProvider);
-    await repo.createConversation(title);
+    final result = await repo.createConversation(title);
+    return result.getOrNull();
   }
 }
 
@@ -63,6 +60,7 @@ class ConversationsList extends _$ConversationsList {
 
   Future<void> loadConversations() async {
     final repo = ref.read(chatRepositoryProvider);
-    state = await repo.getConversations();
+    final result = await repo.getConversations();
+    result.fold((_) {}, (conversations) => state = conversations);
   }
 }

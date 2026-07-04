@@ -7,11 +7,7 @@ void main() {
     testWidgets('renders with label text', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AppTextField(
-              labelText: 'Email',
-            ),
-          ),
+          home: Scaffold(body: AppTextField(labelText: 'Email')),
         ),
       );
 
@@ -22,11 +18,7 @@ void main() {
     testWidgets('renders with hint text', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AppTextField(
-              hintText: 'Enter your email',
-            ),
-          ),
+          home: Scaffold(body: AppTextField(hintText: 'Enter your email')),
         ),
       );
 
@@ -36,11 +28,7 @@ void main() {
     testWidgets('shows prefix icon', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AppTextField(
-              prefixIcon: Icons.email,
-            ),
-          ),
+          home: Scaffold(body: AppTextField(prefixIcon: Icons.email)),
         ),
       );
 
@@ -77,10 +65,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: AppTextField(
-              controller: controller,
-              labelText: 'Name',
-            ),
+            body: AppTextField(controller: controller, labelText: 'Name'),
           ),
         ),
       );

@@ -196,10 +196,7 @@ class _ProgressPageState extends State<ProgressPage> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.base),
-                SizedBox(
-                  height: 200,
-                  child: _WeeklyChart(),
-                ),
+                SizedBox(height: 200, child: _WeeklyChart()),
               ],
             ),
           ),

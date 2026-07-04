@@ -60,30 +60,34 @@ class RouteNames {
 class AppPageTransitions {
   AppPageTransitions._();
 
-  static CustomTransitionPage<void> slideUp(BuildContext context, GoRouterState state, Widget child) {
+  static CustomTransitionPage<void> slideUp(
+    BuildContext context,
+    GoRouterState state,
+    Widget child,
+  ) {
     return CustomTransitionPage<void>(
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final tween = Tween(begin: const Offset(0, 1), end: Offset.zero)
-            .chain(CurveTween(curve: Curves.easeOutCubic));
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        final tween = Tween(
+          begin: const Offset(0, 1),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutCubic));
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
     );
   }
 
-  static CustomTransitionPage<void> fadeThrough(BuildContext context, GoRouterState state, Widget child) {
+  static CustomTransitionPage<void> fadeThrough(
+    BuildContext context,
+    GoRouterState state,
+    Widget child,
+  ) {
     return CustomTransitionPage<void>(
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
+        return FadeTransition(opacity: animation, child: child);
       },
     );
   }
@@ -91,17 +95,20 @@ class AppPageTransitions {
 
 /// Global key for navigation context.
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellNavigatorKey =
+    GlobalKey<NavigatorState>();
 
 /// Main router provider.
-final routerProvider = Provider<GoRouter>((ref) {
+final routerProvider = FutureProvider<GoRouter>((ref) async {
+  final token = await LocalStorage.getUserToken();
+  final bool isLoggedIn = token != null;
+  final bool onboardingDone = LocalStorage.isOnboardingComplete();
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: RouteNames.splash,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      final bool isLoggedIn = LocalStorage.getUserToken() != null;
-      final bool onboardingDone = LocalStorage.isOnboardingComplete();
       final String location = state.matchedLocation;
 
       if (location == RouteNames.splash) {
@@ -145,19 +152,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Auth Routes
       GoRoute(
         path: RouteNames.login,
-        pageBuilder: (context, state) => AppPageTransitions.fadeThrough(
-          context,
-          state,
-          const LoginPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.fadeThrough(context, state, const LoginPage()),
       ),
       GoRoute(
         path: RouteNames.signup,
-        pageBuilder: (context, state) => AppPageTransitions.fadeThrough(
-          context,
-          state,
-          const SignupPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.fadeThrough(context, state, const SignupPage()),
       ),
       GoRoute(
         path: RouteNames.forgotPassword,
@@ -215,20 +216,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.voice,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const VoicePage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const VoicePage()),
       ),
       GoRoute(
         path: RouteNames.mockExam,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const MockExamPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const MockExamPage()),
       ),
       GoRoute(
         path: RouteNames.achievements,
@@ -251,47 +246,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.grammar,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const GrammarPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const GrammarPage()),
       ),
       GoRoute(
         path: RouteNames.progress,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const ProgressPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const ProgressPage()),
       ),
       GoRoute(
         path: RouteNames.reading,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const ReadingPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const ReadingPage()),
       ),
       GoRoute(
         path: RouteNames.listening,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const ListeningPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const ListeningPage()),
       ),
       GoRoute(
         path: RouteNames.writing,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const WritingPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const WritingPage()),
       ),
       GoRoute(
         path: RouteNames.notifications,
@@ -305,11 +285,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.settings,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const SettingsPage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const SettingsPage()),
       ),
       GoRoute(
         path: RouteNames.subscription,
@@ -323,11 +300,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.editProfile,
         parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: (context, state) => AppPageTransitions.slideUp(
-          context,
-          state,
-          const EditProfilePage(),
-        ),
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const EditProfilePage()),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

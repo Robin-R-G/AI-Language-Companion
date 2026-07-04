@@ -72,7 +72,7 @@ export class ConversationMemory {
       .from('chat_messages')
       .select('role, content')
       .eq('conversation_id', conversationId)
-      .order('timestamp', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(MAX_RECENT_TURNS);
 
     if (error) {

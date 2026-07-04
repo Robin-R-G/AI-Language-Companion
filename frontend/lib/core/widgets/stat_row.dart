@@ -18,11 +18,17 @@ class StatRow extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(stat.icon, color: stat.color ?? theme.colorScheme.primary, size: 24),
+                Icon(
+                  stat.icon,
+                  color: stat.color ?? theme.colorScheme.primary,
+                  size: 24,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   stat.value,
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   stat.label,

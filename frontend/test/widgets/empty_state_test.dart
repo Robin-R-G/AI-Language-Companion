@@ -42,7 +42,9 @@ void main() {
       expect(find.byType(AppButton), findsOneWidget);
     });
 
-    testWidgets('does not render action button when not provided', (tester) async {
+    testWidgets('does not render action button when not provided', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(

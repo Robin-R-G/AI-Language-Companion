@@ -16,52 +16,40 @@ VocabularyRepository vocabularyRepository(VocabularyRepositoryRef ref) {
 @riverpod
 class DailyVocabulary extends _$DailyVocabulary {
   @override
-  AsyncValue<List<VocabularyWord>> build() => const AsyncValue.data([]);
+  List<VocabularyWord> build() => [];
 
   Future<void> loadVocabulary() async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(vocabularyRepositoryProvider);
-      final words = await repo.getDailyVocabulary();
-      state = AsyncValue.data(words);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    final repo = ref.read(vocabularyRepositoryProvider);
+    final result = await repo.getDailyVocabulary();
+    result.fold((_) {}, (words) => state = words);
   }
 
   Future<void> updateMastery(String wordId, int masteryScore) async {
     final repo = ref.read(vocabularyRepositoryProvider);
     await repo.updateMastery(wordId, masteryScore);
 
-    final currentWords = state.valueOrNull ?? [];
-    state = AsyncValue.data(
-      currentWords.map((w) {
-        if (w.id == wordId) {
-          return w.copyWith(
+    state = [
+      for (final w in state)
+        if (w.id == wordId)
+          w.copyWith(
             masteryLevel: masteryScore,
             reviewCount: w.reviewCount + 1,
             lastReviewed: DateTime.now(),
-          );
-        }
-        return w;
-      }).toList(),
-    );
+          )
+        else
+          w,
+    ];
   }
 }
 
 @riverpod
 class VocabularyHistory extends _$VocabularyHistory {
   @override
-  AsyncValue<List<VocabularyWord>> build() => const AsyncValue.data([]);
+  List<VocabularyWord> build() => [];
 
   Future<void> loadHistory() async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(vocabularyRepositoryProvider);
-      final words = await repo.getHistory();
-      state = AsyncValue.data(words);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    final repo = ref.read(vocabularyRepositoryProvider);
+    final result = await repo.getHistory();
+    result.fold((_) {}, (words) => state = words);
   }
 }

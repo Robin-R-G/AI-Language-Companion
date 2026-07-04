@@ -6,11 +6,7 @@ void main() {
   group('StreakIndicator', () {
     testWidgets('renders streak count', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: StreakIndicator(streak: 5),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: StreakIndicator(streak: 5))),
       );
 
       expect(find.text('5'), findsOneWidget);
@@ -18,11 +14,7 @@ void main() {
 
     testWidgets('renders with fire icon', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: StreakIndicator(streak: 3),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: StreakIndicator(streak: 3))),
       );
 
       expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
@@ -31,9 +23,7 @@ void main() {
     testWidgets('shows active state', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: StreakIndicator(streak: 7, isActive: true),
-          ),
+          home: Scaffold(body: StreakIndicator(streak: 7, isActive: true)),
         ),
       );
 
@@ -44,9 +34,7 @@ void main() {
     testWidgets('shows inactive state', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: StreakIndicator(streak: 0, isActive: false),
-          ),
+          home: Scaffold(body: StreakIndicator(streak: 0, isActive: false)),
         ),
       );
 
@@ -56,13 +44,11 @@ void main() {
     testWidgets('has semantic label for accessibility', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: StreakIndicator(streak: 10, isActive: true),
-          ),
+          home: Scaffold(body: StreakIndicator(streak: 10, isActive: true)),
         ),
       );
 
-      final SemanticsNode semantics = tester.getSemantics(
+      final semantics = tester.getSemantics(
         find.byType(StreakIndicator),
       );
       expect(semantics.label, contains('10 day streak'));

@@ -14,66 +14,50 @@ VoiceRepository voiceRepository(VoiceRepositoryRef ref) {
 }
 
 @riverpod
-class VoiceSessionState extends _$VoiceSessionState {
+class CurrentVoiceSession extends _$CurrentVoiceSession {
   @override
-  AsyncValue<VoiceSession?> build() => const AsyncValue.data(null);
+  VoiceSession? build() => null;
 
   Future<void> startSession(String language) async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(voiceRepositoryProvider);
-      final session = await repo.startSession(language: language);
-      state = AsyncValue.data(session);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    state = null;
+    final repo = ref.read(voiceRepositoryProvider);
+    final result = await repo.startSession(language: language);
+    result.fold((_) {}, (session) => state = session);
   }
 
   Future<void> endSession() async {
-    final currentSession = state.valueOrNull;
+    final currentSession = state;
     if (currentSession == null) return;
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(voiceRepositoryProvider);
-      final ended = await repo.endSession(currentSession.id);
-      state = AsyncValue.data(ended);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    final repo = ref.read(voiceRepositoryProvider);
+    final result = await repo.endSession(currentSession.id);
+    result.fold((_) {}, (ended) => state = ended);
   }
 }
 
 @riverpod
-class PronunciationState extends _$PronunciationState {
+class PronunciationScoreState extends _$PronunciationScoreState {
   @override
-  AsyncValue<PronunciationScore?> build() => const AsyncValue.data(null);
+  PronunciationScore? build() => null;
 
   Future<void> evaluate(String transcript, {String? targetLanguage}) async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(voiceRepositoryProvider);
-      final score =
-          await repo.evaluateSpeaking(transcript, targetLanguage: targetLanguage);
-      state = AsyncValue.data(score);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    state = null;
+    final repo = ref.read(voiceRepositoryProvider);
+    final result = await repo.evaluateSpeaking(
+      transcript,
+      targetLanguage: targetLanguage,
+    );
+    result.fold((_) {}, (score) => state = score);
   }
 }
 
 @riverpod
 class VoiceSessionsHistory extends _$VoiceSessionsHistory {
   @override
-  AsyncValue<List<VoiceSession>> build() => const AsyncValue.data([]);
+  List<VoiceSession> build() => [];
 
   Future<void> loadSessions() async {
-    state = const AsyncValue.loading();
-    try {
-      final repo = ref.read(voiceRepositoryProvider);
-      final sessions = await repo.getSessions();
-      state = AsyncValue.data(sessions);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+    final repo = ref.read(voiceRepositoryProvider);
+    final result = await repo.getSessions();
+    result.fold((_) {}, (sessions) => state = sessions);
   }
 }

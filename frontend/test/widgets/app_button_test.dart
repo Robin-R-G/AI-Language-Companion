@@ -34,15 +34,13 @@ void main() {
       expect(find.byType(OutlinedButton), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator when isLoading is true', (tester) async {
+    testWidgets('shows loading indicator when isLoading is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: AppButton(
-              label: 'Submit',
-              onPressed: () {},
-              isLoading: true,
-            ),
+            body: AppButton(label: 'Submit', onPressed: () {}, isLoading: true),
           ),
         ),
       );
@@ -89,10 +87,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: AppButton(
-              label: 'Tap Me',
-              onPressed: () => pressed = true,
-            ),
+            body: AppButton(label: 'Tap Me', onPressed: () => pressed = true),
           ),
         ),
       );

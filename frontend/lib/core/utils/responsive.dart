@@ -60,7 +60,9 @@ class ResponsiveBuilder extends StatelessWidget {
     final width = MediaQuery.sizeOf(context).width;
     final layout = ResponsiveLayout(
       isMobile: width < Responsive.mobileBreakpoint,
-      isTablet: width >= Responsive.mobileBreakpoint && width < Responsive.tabletBreakpoint,
+      isTablet:
+          width >= Responsive.mobileBreakpoint &&
+          width < Responsive.tabletBreakpoint,
       isDesktop: width >= Responsive.tabletBreakpoint,
       columns: Responsive.gridColumns(context),
       margin: Responsive.horizontalMargin(context),

@@ -6,11 +6,7 @@ void main() {
   group('ShimmerLoading', () {
     testWidgets('renders with default dimensions', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ShimmerLoading(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: ShimmerLoading())),
       );
 
       expect(find.byType(Container), findsWidgets);
@@ -20,11 +16,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: ShimmerLoading(
-              width: 200,
-              height: 40,
-              borderRadius: 16,
-            ),
+            body: ShimmerLoading(width: 200, height: 40, borderRadius: 16),
           ),
         ),
       );
@@ -36,11 +28,7 @@ void main() {
   group('ShimmerCard', () {
     testWidgets('renders shimmer card skeleton', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ShimmerCard(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: ShimmerCard())),
       );
 
       expect(find.byType(Card), findsOneWidget);

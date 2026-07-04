@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../domain/entities/voice_session.dart';
+import '../providers/voice_providers.dart';
 
 /// Voice call page for AI conversation practice.
 class VoicePage extends ConsumerStatefulWidget {
@@ -15,10 +18,10 @@ class _VoicePageState extends ConsumerState<VoicePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
-  bool _isConnected = false;
-  bool _isSpeaking = false;
+  Timer? _durationTimer;
   bool _isMuted = false;
   int _duration = 0;
+  final List<String> _transcriptLines = [];
 
   @override
   void initState() {
@@ -34,30 +37,76 @@ class _VoicePageState extends ConsumerState<VoicePage>
 
   @override
   void dispose() {
+    _durationTimer?.cancel();
     _animationController.dispose();
     super.dispose();
   }
 
-  void _toggleConnection() {
-    setState(() {
-      _isConnected = !_isConnected;
-      if (_isConnected) {
+  bool _isConnected() {
+    final session = ref.read(currentVoiceSessionProvider);
+    return session != null && session.endedAt == null;
+  }
+
+  Future<void> _toggleConnection() async {
+    if (_isConnected()) {
+      await _endCall();
+    } else {
+      await _startCall();
+    }
+  }
+
+  Future<void> _startCall() async {
+    try {
+      await ref.read(currentVoiceSessionProvider.notifier).startSession('en');
+      if (mounted && _isConnected()) {
         _animationController.repeat(reverse: true);
         _startDurationTimer();
-      } else {
-        _animationController.stop();
-        _animationController.reset();
+        setState(() {
+          _transcriptLines.clear();
+          _transcriptLines.add('Connected. Start speaking...');
+        });
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start voice session: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _endCall() async {
+    _animationController.stop();
+    _animationController.reset();
+
+    try {
+      await ref.read(currentVoiceSessionProvider.notifier).endSession();
+      final session = ref.read(currentVoiceSessionProvider);
+      if (session != null && _transcriptLines.isNotEmpty) {
+        final transcript = _transcriptLines.join('\n');
+        await ref
+            .read(pronunciationScoreStateProvider.notifier)
+            .evaluate(transcript, targetLanguage: 'en');
+      }
+      setState(() {
+        _duration = 0;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to end session: $e')));
+      }
+    }
   }
 
   void _startDurationTimer() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (_isConnected && mounted) {
-        setState(() {
-          _duration++;
-        });
-        _startDurationTimer();
+    _durationTimer?.cancel();
+    _durationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_isConnected() && mounted) {
+        setState(() => _duration++);
+      } else {
+        _durationTimer?.cancel();
       }
     });
   }
@@ -70,66 +119,56 @@ class _VoicePageState extends ConsumerState<VoicePage>
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = _isConnected();
+    final score = ref.watch(pronunciationScoreStateProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
-            // Top Bar
             Padding(
               padding: const EdgeInsets.all(AppSpacing.base),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () {
+                      if (_isConnected()) {
+                        _endCall();
+                      }
+                      context.pop();
+                    },
                     icon: const Icon(Icons.close),
                   ),
                   Text(
-                    _isConnected ? _formatDuration(_duration) : 'Voice Call',
+                    isConnected ? _formatDuration(_duration) : 'Voice Call',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  IconButton(
-                    onPressed: () {
-                      // TODO: Show voice settings
-                    },
-                    icon: const Icon(Icons.speed),
-                  ),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.speed)),
                 ],
               ),
             ),
-
-            // Main Content
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Avatar with Pulse
                   _buildAvatar(),
-
                   const SizedBox(height: AppSpacing.xxl),
-
-                  // Status Text
                   Text(
-                    _isConnected
-                        ? (_isSpeaking ? 'AI is speaking...' : 'Listening...')
-                        : 'Tap to start',
+                    isConnected ? 'Listening...' : 'Tap to start',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withOpacity(0.6),
                     ),
                   ),
-
                   const SizedBox(height: AppSpacing.base),
-
-                  // Live Transcript Card
-                  if (_isConnected) _buildTranscriptCard(),
+                  if (isConnected) _buildTranscriptCard(),
+                  if (!isConnected && score != null) _buildScoreCard(score),
                 ],
               ),
             ),
-
-            // Control Buttons
             _buildControlButtons(),
           ],
         ),
@@ -142,7 +181,7 @@ class _VoicePageState extends ConsumerState<VoicePage>
       animation: _pulseAnimation,
       builder: (context, child) {
         return Transform.scale(
-          scale: _isConnected ? _pulseAnimation.value : 1.0,
+          scale: _isConnected() ? _pulseAnimation.value : 1.0,
           child: Container(
             width: 150,
             height: 150,
@@ -156,7 +195,7 @@ class _VoicePageState extends ConsumerState<VoicePage>
                   Theme.of(context).colorScheme.secondary,
                 ],
               ),
-              boxShadow: _isConnected
+              boxShadow: _isConnected()
                   ? [
                       BoxShadow(
                         color: Theme.of(
@@ -206,14 +245,138 @@ class _VoicePageState extends ConsumerState<VoicePage>
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            'AI: Tell me about your hometown, Rahul. What do you like about it?',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+          ..._transcriptLines.map(
+            (line) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: Text(
+                line,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.8),
+                ),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildScoreCard(PronunciationScore score) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      padding: const EdgeInsets.all(AppSpacing.base),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.assessment, size: 16, color: AppColors.success),
+              SizedBox(width: AppSpacing.xs),
+              Text(
+                'Session Score',
+                style: TextStyle(
+                  color: AppColors.success,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.base),
+          _buildScoreBar('Overall', score.overallScore, AppColors.primary500),
+          const SizedBox(height: AppSpacing.sm),
+          _buildScoreBar(
+            'Pronunciation',
+            score.pronunciationScore,
+            AppColors.secondary,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _buildScoreBar('Fluency', score.fluencyScore, AppColors.info),
+          const SizedBox(height: AppSpacing.sm),
+          _buildScoreBar('Grammar', score.grammarScore, AppColors.warning),
+          const SizedBox(height: AppSpacing.sm),
+          _buildScoreBar(
+            'Vocabulary',
+            score.vocabularyScore,
+            AppColors.success,
+          ),
+          if (score.feedback.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              score.feedback,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+          if (score.strengths.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Wrap(
+              spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
+              children: score.strengths
+                  .map<Widget>(
+                    (s) => Chip(
+                      label: Text(s, style: const TextStyle(fontSize: 12)),
+                      backgroundColor: AppColors.success.withOpacity(0.1),
+                      side: BorderSide(
+                        color: AppColors.success.withOpacity(0.3),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+          if (score.practiceWords.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Practice: ${score.practiceWords.join(', ')}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScoreBar(String label, int score, Color color) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: (score / 100).clamp(0.0, 1.0),
+            backgroundColor: color.withOpacity(0.1),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        SizedBox(
+          width: 30,
+          child: Text(
+            '$score',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ],
     );
   }
 
@@ -223,7 +386,6 @@ class _VoicePageState extends ConsumerState<VoicePage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // Mute Button
           _ControlButton(
             icon: _isMuted ? Icons.mic_off : Icons.mic,
             label: _isMuted ? 'Unmute' : 'Mute',
@@ -234,8 +396,6 @@ class _VoicePageState extends ConsumerState<VoicePage>
               });
             },
           ),
-
-          // Main Connect Button
           GestureDetector(
             onTap: _toggleConnection,
             child: Container(
@@ -243,32 +403,29 @@ class _VoicePageState extends ConsumerState<VoicePage>
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _isConnected ? AppColors.error : AppColors.success,
+                color: _isConnected() ? AppColors.error : AppColors.success,
                 boxShadow: [
                   BoxShadow(
-                    color: (_isConnected ? AppColors.error : AppColors.success)
-                        .withOpacity(0.3),
+                    color:
+                        (_isConnected() ? AppColors.error : AppColors.success)
+                            .withOpacity(0.3),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
                 ],
               ),
               child: Icon(
-                _isConnected ? Icons.call_end : Icons.mic,
+                _isConnected() ? Icons.call_end : Icons.mic,
                 color: Colors.white,
                 size: 36,
               ),
             ),
           ),
-
-          // Speaker Toggle
           _ControlButton(
             icon: Icons.volume_up,
             label: 'Speaker',
             isActive: false,
-            onTap: () {
-              // TODO: Toggle speaker
-            },
+            onTap: () {},
           ),
         ],
       ),
@@ -291,7 +448,11 @@ class _ControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      label: label,
+      button: true,
+      enabled: true,
+      child: GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
@@ -324,6 +485,7 @@ class _ControlButton extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

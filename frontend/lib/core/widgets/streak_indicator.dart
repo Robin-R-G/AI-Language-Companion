@@ -34,7 +34,9 @@ class StreakIndicator extends StatelessWidget {
                     ? AppColors.warning.withAlpha(30)
                     : theme.colorScheme.surfaceContainerHighest,
                 border: Border.all(
-                  color: isActive ? AppColors.warning : theme.colorScheme.outline,
+                  color: isActive
+                      ? AppColors.warning
+                      : theme.colorScheme.outline,
                   width: 2,
                 ),
               ),

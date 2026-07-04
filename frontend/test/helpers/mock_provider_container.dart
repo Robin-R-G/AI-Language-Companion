@@ -1,13 +1,18 @@
-// test/helpers/mock_provider_container.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
 
-/// Helper to create a [ProviderContainer] for testing with overridden providers.
-/// Automatically handles container disposal in [tearDown].
-ProviderContainer createMockContainer({
+Widget createProviderScope({
+  required Widget child,
   List<Override> overrides = const [],
 }) {
-  final container = ProviderContainer(overrides: overrides);
-  addTearDown(container.dispose);
-  return container;
+  return ProviderScope(
+    overrides: overrides,
+    child: MaterialApp(home: Scaffold(body: child)),
+  );
+}
+
+ProviderContainer createProviderContainer({
+  List<Override> overrides = const [],
+}) {
+  return ProviderContainer(overrides: overrides);
 }

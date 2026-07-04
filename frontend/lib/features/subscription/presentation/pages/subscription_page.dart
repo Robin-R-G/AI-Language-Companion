@@ -118,12 +118,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withAlpha(77),
+                  color: theme.colorScheme.surfaceContainerHighest.withAlpha(
+                    77,
+                  ),
                   borderRadius: AppRadius.smAll,
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle, size: 16, color: AppColors.success),
+                    Icon(
+                      Icons.check_circle,
+                      size: 16,
+                      color: AppColors.success,
+                    ),
                     const SizedBox(width: AppSpacing.xs),
                     Text('Current Plan', style: theme.textTheme.labelMedium),
                   ],
@@ -160,14 +166,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: !_isAnnual ? theme.colorScheme.primary : Colors.transparent,
+                  color: !_isAnnual
+                      ? theme.colorScheme.primary
+                      : Colors.transparent,
                   borderRadius: AppRadius.smAll,
                 ),
                 child: Center(
                   child: Text(
                     'Monthly',
                     style: TextStyle(
-                      color: !_isAnnual ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
+                      color: !_isAnnual
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -181,7 +191,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: _isAnnual ? theme.colorScheme.primary : Colors.transparent,
+                  color: _isAnnual
+                      ? theme.colorScheme.primary
+                      : Colors.transparent,
                   borderRadius: AppRadius.smAll,
                 ),
                 child: Center(
@@ -191,21 +203,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       Text(
                         'Annual',
                         style: TextStyle(
-                          color: _isAnnual ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
+                          color: _isAnnual
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       if (_isAnnual) ...[
                         const SizedBox(width: AppSpacing.xs),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.success,
                             borderRadius: AppRadius.roundAll,
                           ),
                           child: const Text(
                             '33% OFF',
-                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -241,7 +262,9 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      color: isPopular ? theme.colorScheme.primaryContainer.withAlpha(30) : null,
+      color: isPopular
+          ? theme.colorScheme.primaryContainer.withAlpha(30)
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -249,19 +272,28 @@ class _PlanCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (isPopular) ...[
                 const SizedBox(width: AppSpacing.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.warning,
                     borderRadius: AppRadius.roundAll,
                   ),
                   child: const Text(
                     'POPULAR',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -273,22 +305,31 @@ class _PlanCard extends StatelessWidget {
             children: [
               Text(
                 price,
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Text(period, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Text(
+                period,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.base),
-          ...features.map((f) => Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Row(
-              children: [
-                Icon(Icons.check_circle, size: 16, color: AppColors.success),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(child: Text(f, style: theme.textTheme.bodyMedium)),
-              ],
+          ...features.map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle, size: 16, color: AppColors.success),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(child: Text(f, style: theme.textTheme.bodyMedium)),
+                ],
+              ),
             ),
-          )),
+          ),
           const SizedBox(height: AppSpacing.base),
           AppButton(
             label: isPopular ? 'Start Free Trial' : 'Choose $title',

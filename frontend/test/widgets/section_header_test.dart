@@ -7,9 +7,7 @@ void main() {
     testWidgets('renders title', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SectionHeader(title: 'Recent Activity'),
-          ),
+          home: Scaffold(body: SectionHeader(title: 'Recent Activity')),
         ),
       );
 
@@ -53,9 +51,7 @@ void main() {
     testWidgets('does not render action when not provided', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SectionHeader(title: 'Title'),
-          ),
+          home: Scaffold(body: SectionHeader(title: 'Title')),
         ),
       );
 

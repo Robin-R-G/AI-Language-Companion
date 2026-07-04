@@ -73,12 +73,9 @@ jobs:
       - name: Run unit and widget tests
         run: flutter test --coverage --coverage-path=coverage/lcov.info
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          directory: ${{ env.WORK_DIR }}/coverage
-          flags: flutter
-          fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage artifacts

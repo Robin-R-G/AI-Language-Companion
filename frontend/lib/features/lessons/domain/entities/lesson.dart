@@ -19,8 +19,7 @@ class Lesson with _$Lesson {
     DateTime? completedAt,
   }) = _Lesson;
 
-  factory Lesson.fromJson(Map<String, dynamic> json) =>
-      _$LessonFromJson(json);
+  factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 }
 
 @freezed

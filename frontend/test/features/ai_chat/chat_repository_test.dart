@@ -1,36 +1,100 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:dio/dio.dart';
-import 'package:ai_language_coach/test/mocks/mocks.dart';
+
+import 'package:ai_language_coach/features/ai_chat/data/repositories/chat_repository_impl.dart';
+import '..\..\mocks/mocks.dart';
 
 void main() {
-  late MockSupabaseClient mockSupabase;
   late MockDio mockDio;
+  late ChatRepositoryImpl repository;
 
   setUp(() {
-    mockSupabase = MockSupabaseClient();
     mockDio = MockDio();
+    repository = ChatRepositoryImpl(dio: mockDio);
   });
 
-  group('Chat Repository', () {
-    test('sendChatMessage returns response on success', () async {
-      when(() => mockSupabase.auth).thenReturn(MockSupabaseAuth());
-      when(() => mockDio.post(
-        any(),
-        data: any(named: 'data'),
-      )).thenAnswer((_) async => MockResponse<dynamic>());
+  group('ChatRepositoryImpl', () {
+    test('getMessages returns messages on success', () async {
+      final response = MockResponse<List<dynamic>>();
+      when(() => response.data).thenReturn([
+        {'id': '1', 'role': 'user', 'content': 'Hello'},
+        {'id': '2', 'role': 'assistant', 'content': 'Hi'},
+      ]);
+      when(
+        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+      ).thenAnswer((_) async => response);
 
-      final response = await mockDio.post(
-        '/ai-chat',
-        data: {'message': 'Hello', 'userId': '123'},
-      );
+      final result = await repository.getMessages('conv_1');
+      expect(result.isSuccess, true);
+      expect(result.value.length, 2);
+    });
 
-      expect(response, isA<Response<dynamic>>());
-      verify(() => mockDio.post(
-        '/ai-chat',
-        data: any(named: 'data'),
-      )).called(1);
+    test('getMessages handles invalid response format', () async {
+      final response = MockResponse<List<dynamic>>();
+      when(() => response.data).thenReturn({'invalid': 'object'});
+      when(
+        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+      ).thenAnswer((_) async => response);
+
+      final result = await repository.getMessages('conv_1');
+      expect(result.isFailure, true);
+    });
+
+    test('getMessages handles DioException', () async {
+      when(
+        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+      ).thenThrow(DioException(
+        requestOptions: RequestOptions(path: ''),
+        message: 'Network error',
+      ));
+
+      final result = await repository.getMessages('conv_1');
+      expect(result.isFailure, true);
+      expect(result.failure.message, contains('Network error'));
+    });
+
+    test('sendMessage returns ChatMessage on success', () async {
+      final response = MockResponse<Map<String, dynamic>>();
+      when(() => response.data).thenReturn({
+        'id': 'msg_1',
+        'role': 'assistant',
+        'content': 'Hello!',
+      });
+      when(
+        () => mockDio.post(any(), data: any(named: 'data')),
+      ).thenAnswer((_) async => response);
+
+      final result = await repository.sendMessage('conv_1', 'Hi');
+      expect(result.isSuccess, true);
+      expect(result.value.content, 'Hello!');
+    });
+
+    test('createConversation returns id on success', () async {
+      final response = MockResponse<Map<String, dynamic>>();
+      when(() => response.data).thenReturn({'id': 'conv_123'});
+      when(
+        () => mockDio.post(any(), data: any(named: 'data')),
+      ).thenAnswer((_) async => response);
+
+      final result = await repository.createConversation('New Chat');
+      expect(result.isSuccess, true);
+      expect(result.value, 'conv_123');
+    });
+
+    test('getConversations returns list on success', () async {
+      final response = MockResponse<List<dynamic>>();
+      when(() => response.data).thenReturn([
+        {'id': 'conv_1', 'title': 'Chat 1'},
+        {'id': 'conv_2', 'title': 'Chat 2'},
+      ]);
+      when(
+        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+      ).thenAnswer((_) async => response);
+
+      final result = await repository.getConversations();
+      expect(result.isSuccess, true);
+      expect(result.value.length, 2);
     });
   });
 }

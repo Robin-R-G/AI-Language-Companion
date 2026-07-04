@@ -63,9 +63,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
+      appBar: AppBar(title: const Text('Edit Profile')),
       body: _buildBody(theme),
     );
   }
@@ -149,7 +147,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _DropdownField(
           label: 'Current Level',
           value: _selectedLevel,
-          items: const ['Beginner', 'Elementary', 'Intermediate', 'Upper Intermediate', 'Advanced'],
+          items: const [
+            'Beginner',
+            'Elementary',
+            'Intermediate',
+            'Upper Intermediate',
+            'Advanced',
+          ],
           onChanged: (val) => setState(() => _selectedLevel = val!),
         ),
         const SizedBox(height: AppSpacing.xxl),

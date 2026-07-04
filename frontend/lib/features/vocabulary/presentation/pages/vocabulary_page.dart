@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../domain/entities/vocabulary_word.dart';
+import '../providers/vocabulary_providers.dart';
 
 /// Vocabulary page with Spaced Repetition System (SRS) flashcards.
 class VocabularyPage extends ConsumerStatefulWidget {
@@ -14,53 +16,26 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
   int _currentCardIndex = 0;
   bool _showFront = true;
 
-  // TODO: Replace with actual vocabulary data from repository
-  final List<_VocabularyCard> _cards = [
-    const _VocabularyCard(
-      word: 'Ephemeral',
-      pronunciation: '/ɪˈfɛm(ə)r(ə)l/',
-      meaning: 'Lasting for a very short time',
-      example: 'The ephemeral beauty of cherry blossoms',
-      cefrLevel: 'C1',
-    ),
-    const _VocabularyCard(
-      word: 'Ubiquitous',
-      pronunciation: '/juːˈbɪkwɪtəs/',
-      meaning: 'Present, appearing, or found everywhere',
-      example: 'Smartphones have become ubiquitous in modern life',
-      cefrLevel: 'C1',
-    ),
-    const _VocabularyCard(
-      word: 'Serendipity',
-      pronunciation: '/ˌsɛr(ə)nˈdɪpɪti/',
-      meaning: 'The occurrence of events by chance in a happy way',
-      example: 'Finding that book was pure serendipity',
-      cefrLevel: 'B2',
-    ),
-    const _VocabularyCard(
-      word: 'Resilient',
-      pronunciation: '/rɪˈzɪliənt/',
-      meaning: 'Able to recover quickly from difficulties',
-      example: 'Children are remarkably resilient',
-      cefrLevel: 'B2',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(dailyVocabularyProvider.notifier).loadVocabulary();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final words = ref.watch(dailyVocabularyProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vocabulary'),
         actions: [
-          IconButton(
-            onPressed: () {
-              // TODO: Show vocabulary stats
-            },
-            icon: const Icon(Icons.bar_chart),
-          ),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.bar_chart)),
         ],
       ),
-      body: _cards.isEmpty ? _buildEmptyState() : _buildCardView(),
+      body: words.isEmpty ? _buildEmptyState() : _buildCardView(words),
     );
   }
 
@@ -94,10 +69,10 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
             const SizedBox(height: AppSpacing.xl),
             ElevatedButton.icon(
               onPressed: () {
-                // TODO: Add vocabulary
+                ref.read(dailyVocabularyProvider.notifier).loadVocabulary();
               },
-              icon: const Icon(Icons.add),
-              label: const Text('Add Words'),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Load Words'),
             ),
           ],
         ),
@@ -105,31 +80,28 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
     );
   }
 
-  Widget _buildCardView() {
-    final card = _cards[_currentCardIndex];
+  Widget _buildCardView(List<VocabularyWord> words) {
+    final card = words[_currentCardIndex.clamp(0, words.length - 1)];
 
     return Column(
       children: [
-        // Progress Indicator
         Padding(
           padding: const EdgeInsets.all(AppSpacing.base),
           child: Row(
             children: [
               Text(
-                '${_currentCardIndex + 1} / ${_cards.length}',
+                '${_currentCardIndex + 1} / ${words.length}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: LinearProgressIndicator(
-                  value: (_currentCardIndex + 1) / _cards.length,
+                  value: (_currentCardIndex + 1) / words.length,
                 ),
               ),
             ],
           ),
         ),
-
-        // Flashcard
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.base),
@@ -151,8 +123,6 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
             ),
           ),
         ),
-
-        // Action Buttons
         Padding(
           padding: const EdgeInsets.all(AppSpacing.base),
           child: Row(
@@ -162,25 +132,23 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                 label: 'Hard',
                 icon: Icons.sentiment_dissatisfied,
                 color: AppColors.error,
-                onTap: () => _rateCard(0),
+                onTap: () => _rateCard(words, 1),
               ),
               _ActionChip(
                 label: 'Good',
                 icon: Icons.sentiment_neutral,
                 color: AppColors.warning,
-                onTap: () => _rateCard(1),
+                onTap: () => _rateCard(words, 3),
               ),
               _ActionChip(
                 label: 'Easy',
                 icon: Icons.sentiment_satisfied,
                 color: AppColors.success,
-                onTap: () => _rateCard(2),
+                onTap: () => _rateCard(words, 5),
               ),
             ],
           ),
         ),
-
-        // Navigation
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.base),
           child: Row(
@@ -198,15 +166,10 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                 icon: const Icon(Icons.arrow_back_ios),
               ),
               const SizedBox(width: AppSpacing.xl),
-              TextButton(
-                onPressed: () {
-                  // TODO: Show vocabulary list
-                },
-                child: const Text('View All'),
-              ),
+              TextButton(onPressed: () {}, child: const Text('View All')),
               const SizedBox(width: AppSpacing.xl),
               IconButton(
-                onPressed: _currentCardIndex < _cards.length - 1
+                onPressed: _currentCardIndex < words.length - 1
                     ? () {
                         setState(() {
                           _currentCardIndex++;
@@ -223,7 +186,7 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
     );
   }
 
-  Widget _buildFrontCard(_VocabularyCard card) {
+  Widget _buildFrontCard(VocabularyWord card) {
     return Card(
       key: const ValueKey('front'),
       child: Padding(
@@ -231,23 +194,24 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Text(
-                card.cefrLevel,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
+            if (card.cefrLevel.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Text(
+                  card.cefrLevel,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: AppSpacing.xl),
             Text(
               card.word,
@@ -256,16 +220,21 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
               ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text(
-              card.pronunciation,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            if (card.pronunciation.isNotEmpty)
+              Text(
+                card.pronunciation,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                ),
               ),
-            ),
             const SizedBox(height: AppSpacing.xl),
             IconButton(
               onPressed: () {
-                // TODO: Play pronunciation audio
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Audio playback coming soon')),
+                );
               },
               icon: Icon(
                 Icons.volume_up,
@@ -273,6 +242,17 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
+            if (card.meaningMalayalam.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                card.meaningMalayalam,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Tap to flip',
@@ -286,7 +266,7 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
     );
   }
 
-  Widget _buildBackCard(_VocabularyCard card) {
+  Widget _buildBackCard(VocabularyWord card) {
     return Card(
       key: const ValueKey('back'),
       color: Theme.of(context).colorScheme.primary,
@@ -310,29 +290,72 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppSpacing.xl),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.base),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppRadius.md),
+            if (card.examples.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.xl),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.base),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Example${card.examples.length > 1 ? 's' : ''}',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    ...card.examples.map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                        child: Text(
+                          '"$e"',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
+            ],
+            const SizedBox(height: AppSpacing.base),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  Icon(
+                    Icons.star,
+                    size: 14,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
-                    'Example',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.7),
+                    'Mastery: ${card.masteryLevel}/5',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.white.withOpacity(0.8),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
-                    '"${card.example}"',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                      fontStyle: FontStyle.italic,
+                    'Reviews: ${card.reviewCount}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.white.withOpacity(0.8),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -350,16 +373,17 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
     );
   }
 
-  void _rateCard(int rating) {
-    // TODO: Update SRS interval based on rating
-    if (_currentCardIndex < _cards.length - 1) {
+  void _rateCard(List<VocabularyWord> words, int rating) {
+    final card = words[_currentCardIndex];
+    ref.read(dailyVocabularyProvider.notifier).updateMastery(card.id, rating);
+
+    if (_currentCardIndex < words.length - 1) {
       setState(() {
         _currentCardIndex++;
         _showFront = true;
       });
     } else {
-      // Show completion dialog
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Session Complete!'),
@@ -382,22 +406,6 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
   }
 }
 
-class _VocabularyCard {
-  final String word;
-  final String pronunciation;
-  final String meaning;
-  final String example;
-  final String cefrLevel;
-
-  const _VocabularyCard({
-    required this.word,
-    required this.pronunciation,
-    required this.meaning,
-    required this.example,
-    required this.cefrLevel,
-  });
-}
-
 class _ActionChip extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -413,7 +421,10 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Semantics(
+      label: label,
+      button: true,
+      child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.round),
       child: Container(
@@ -437,6 +448,7 @@ class _ActionChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

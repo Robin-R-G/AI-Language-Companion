@@ -7,11 +7,7 @@ void main() {
     testWidgets('renders child widget', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AppCard(
-              child: Text('Card Content'),
-            ),
-          ),
+          home: Scaffold(body: AppCard(child: Text('Card Content'))),
         ),
       );
 

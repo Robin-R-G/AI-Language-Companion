@@ -1,7 +1,8 @@
+import '../../../../core/errors/result.dart';
 import '../entities/vocabulary_word.dart';
 
 abstract class VocabularyRepository {
-  Future<List<VocabularyWord>> getDailyVocabulary();
-  Future<void> updateMastery(String wordId, int masteryScore);
-  Future<List<VocabularyWord>> getHistory({int limit = 50});
+  Future<Result<List<VocabularyWord>>> getDailyVocabulary();
+  Future<Result<void>> updateMastery(String wordId, int masteryScore);
+  Future<Result<List<VocabularyWord>>> getHistory({int limit = 50});
 }

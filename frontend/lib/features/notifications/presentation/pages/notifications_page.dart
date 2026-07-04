@@ -105,7 +105,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       return const EmptyState(
         icon: Icons.notifications_none,
         title: 'No Notifications',
-        message: 'You\'re all caught up! Study reminders and updates will appear here.',
+        message:
+            'You\'re all caught up! Study reminders and updates will appear here.',
       );
     }
 
@@ -114,7 +115,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       child: ListView.separated(
         padding: const EdgeInsets.all(AppSpacing.base),
         itemCount: _notifications.length,
-        separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
+        separatorBuilder: (context, index) =>
+            const SizedBox(height: AppSpacing.sm),
         itemBuilder: (context, index) {
           final notification = _notifications[index];
           return _NotificationCard(
@@ -182,7 +184,9 @@ class _NotificationCard extends StatelessWidget {
                       child: Text(
                         title,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
+                          fontWeight: isRead
+                              ? FontWeight.w500
+                              : FontWeight.w700,
                         ),
                       ),
                     ),

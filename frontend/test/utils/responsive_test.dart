@@ -10,9 +10,7 @@ void main() {
           home: Builder(
             builder: (context) {
               final isMobile = Responsive.isMobile(context);
-              return Scaffold(
-                body: Text(isMobile ? 'mobile' : 'not mobile'),
-              );
+              return Scaffold(body: Text(isMobile ? 'mobile' : 'not mobile'));
             },
           ),
         ),
@@ -22,15 +20,15 @@ void main() {
       expect(find.text('not mobile'), findsOneWidget);
     });
 
-    testWidgets('gridColumns returns correct count for desktop', (tester) async {
+    testWidgets('gridColumns returns correct count for desktop', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
             builder: (context) {
               final columns = Responsive.gridColumns(context);
-              return Scaffold(
-                body: Text('$columns'),
-              );
+              return Scaffold(body: Text('$columns'));
             },
           ),
         ),
@@ -46,9 +44,7 @@ void main() {
           home: Builder(
             builder: (context) {
               final padding = Responsive.screenPadding(context);
-              return Scaffold(
-                body: Text('${padding.left}'),
-              );
+              return Scaffold(body: Text('${padding.left}'));
             },
           ),
         ),

@@ -1,41 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../constants/app_constants.dart';
 
-/// Local storage utility using Hive for caching data.
+/// Local storage utility using Hive for cached data and
+/// FlutterSecureStorage (Keychain/Keystore) for sensitive tokens.
 class LocalStorage {
   static late Box<dynamic> _box;
-  static late Box<dynamic> _secureBox;
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-  /// Initialize Hive and open required boxes.
+  /// Initialize Hive.
   static Future<void> init() async {
     await Hive.initFlutter();
     _box = await Hive.openBox('ai_language_coach');
-    _secureBox = await Hive.openBox('secure_storage');
   }
 
-  // Token Management
-  static String? getUserToken() {
-    final value = _secureBox.get(AppConstants.userTokenKey);
-    return value as String?;
+  // Token Management (stored in platform secure storage)
+  static Future<String?> getUserToken() async {
+    return await _secureStorage.read(key: AppConstants.userTokenKey);
   }
 
   static Future<void> setUserToken(String token) async {
-    await _secureBox.put(AppConstants.userTokenKey, token);
+    await _secureStorage.write(key: AppConstants.userTokenKey, value: token);
   }
 
-  static String? getRefreshToken() {
-    final value = _secureBox.get(AppConstants.refreshTokenKey);
-    return value as String?;
+  static Future<String?> getRefreshToken() async {
+    return await _secureStorage.read(key: AppConstants.refreshTokenKey);
   }
 
   static Future<void> setRefreshToken(String token) async {
-    await _secureBox.put(AppConstants.refreshTokenKey, token);
+    await _secureStorage.write(key: AppConstants.refreshTokenKey, value: token);
   }
 
   static Future<void> clearTokens() async {
-    await _secureBox.delete(AppConstants.userTokenKey);
-    await _secureBox.delete(AppConstants.refreshTokenKey);
+    await _secureStorage.delete(key: AppConstants.userTokenKey);
+    await _secureStorage.delete(key: AppConstants.refreshTokenKey);
   }
 
   // User Profile
@@ -104,6 +103,6 @@ class LocalStorage {
   // Clear All Data
   static Future<void> clearAll() async {
     await _box.clear();
-    await _secureBox.clear();
+    await _secureStorage.deleteAll();
   }
 }

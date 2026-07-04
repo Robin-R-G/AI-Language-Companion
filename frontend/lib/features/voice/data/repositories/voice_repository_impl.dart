@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-
 import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/result.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../domain/entities/voice_session.dart';
 import '../../domain/repositories/voice_repository.dart';
@@ -8,63 +8,58 @@ import '../../domain/repositories/voice_repository.dart';
 class VoiceRepositoryImpl implements VoiceRepository {
   final Dio _dio;
 
-  VoiceRepositoryImpl({DioClient? dioClient})
-      : _dio = dioClient?.client ?? DioClient().client;
+  VoiceRepositoryImpl({DioClient? dioClient, Dio? dio})
+    : _dio = dio ?? dioClient?.client ?? DioClient().client;
 
   @override
-  Future<VoiceSession> startSession({
+  Future<Result<VoiceSession>> startSession({
     required String language,
     String? persona,
   }) async {
     try {
       final response = await _dio.post(
         '/voice-session',
-        data: {
-          'language': language,
-          if (persona != null) 'persona': persona,
-        },
+        data: {'language': language, if (persona != null) 'persona': persona},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        return VoiceSession.fromJson(data);
+        return Result.success(VoiceSession.fromJson(data));
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(VoiceServiceFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw VoiceServiceFailure(
-        e.message ?? 'Failed to start voice session',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        VoiceServiceFailure(
+          e.message ?? 'Failed to start voice session',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw VoiceServiceFailure(e.message);
     }
   }
 
   @override
-  Future<VoiceSession> endSession(String sessionId) async {
+  Future<Result<VoiceSession>> endSession(String sessionId) async {
     try {
       final response = await _dio.post(
         '/voice/end',
-        data: {
-          'session_id': sessionId,
-        },
+        data: {'session_id': sessionId},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        return VoiceSession.fromJson(data);
+        return Result.success(VoiceSession.fromJson(data));
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(VoiceServiceFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw VoiceServiceFailure(
-        e.message ?? 'Failed to end voice session',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        VoiceServiceFailure(
+          e.message ?? 'Failed to end voice session',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw VoiceServiceFailure(e.message);
     }
   }
 
   @override
-  Future<PronunciationScore> evaluateSpeaking(
+  Future<Result<PronunciationScore>> evaluateSpeaking(
     String transcriptText, {
     String? targetLanguage,
   }) async {
@@ -78,21 +73,21 @@ class VoiceRepositoryImpl implements VoiceRepository {
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        return PronunciationScore.fromJson(data);
+        return Result.success(PronunciationScore.fromJson(data));
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(VoiceServiceFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw VoiceServiceFailure(
-        e.message ?? 'Failed to evaluate speaking',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        VoiceServiceFailure(
+          e.message ?? 'Failed to evaluate speaking',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw VoiceServiceFailure(e.message);
     }
   }
 
   @override
-  Future<List<VoiceSession>> getSessions({int limit = 20}) async {
+  Future<Result<List<VoiceSession>>> getSessions({int limit = 20}) async {
     try {
       final response = await _dio.get(
         '/voice-session',
@@ -100,18 +95,20 @@ class VoiceRepositoryImpl implements VoiceRepository {
       );
       final data = response.data;
       if (data is List) {
-        return data
-            .map((e) => VoiceSession.fromJson(e as Map<String, dynamic>))
-            .toList();
+        return Result.success(
+          data
+              .map((e) => VoiceSession.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        );
       }
-      throw const FormatException('Invalid response format');
+      return const Result.error(VoiceServiceFailure('Invalid response format'));
     } on DioException catch (e) {
-      throw VoiceServiceFailure(
-        e.message ?? 'Failed to fetch voice sessions',
-        code: e.response?.statusCode?.toString(),
+      return Result.error(
+        VoiceServiceFailure(
+          e.message ?? 'Failed to fetch voice sessions',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
-    } on FormatException catch (e) {
-      throw VoiceServiceFailure(e.message);
     }
   }
 }
