@@ -249,8 +249,17 @@ Every Edge Function returns errors in a standard format:
 
 ---
 
-## 10. CLI Deployment Strategy
+## 10. Testing & CLI Deployment Strategy
 
+### Testing
+Unit tests for shared modules are in `supabase/functions/shared/__tests__/` and use Deno's built-in test runner:
+```bash
+cd supabase
+deno test --allow-net functions/shared/__tests__/
+```
+See `docs/15-Testing.md` section 16 for details.
+
+### Deployment
 Edge Functions are deployed using the Supabase CLI:
 ```bash
 # Deploy all functions to production

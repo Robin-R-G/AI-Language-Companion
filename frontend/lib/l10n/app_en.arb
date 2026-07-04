@@ -1,0 +1,95 @@
+{
+  "@@locale": "en",
+  "appTitle": "AI Language Coach",
+  "appTitleDescription": "The application title",
+
+  "navHome": "Home",
+  "navPractice": "Practice",
+  "navLessons": "Lessons",
+  "navProfile": "Profile",
+
+  "homeContinueLearning": "Continue Learning",
+  "homeDailyStreak": "Daily Streak",
+  "homeQuickActions": "Quick Actions",
+  "homeRecentActivity": "Recent Activity",
+  "homeViewAll": "View All",
+
+  "grammarTitle": "Grammar Check",
+  "grammarHint": "Type or paste your text here...",
+  "grammarCheck": "Check",
+  "grammarChecking": "Checking...",
+  "grammarError": "An error occurred while checking grammar",
+
+  "progressTitle": "Progress",
+  "progressProjectedScore": "Projected Exam Score",
+  "progressWeeklyActivity": "Weekly Activity",
+  "progressScoreBreakdown": "Score Breakdown",
+  "progressStudyTime": "Study Time",
+  "progressDayStreak": "Day Streak",
+  "progressXpEarned": "XP Earned",
+
+  "readingTitle": "Reading Practice",
+  "readingStart": "Start Reading",
+  "readingComprehension": "Reading Comprehension",
+  "readingSelectDifficulty": "Select Difficulty",
+
+  "writingTitle": "Writing Practice",
+  "writingPrompt": "Writing Prompt",
+  "writingSubmit": "Submit",
+  "writingFeedback": "Feedback",
+
+  "listeningTitle": "Listening Practice",
+  "listeningStart": "Start Listening",
+  "listeningTranscript": "Transcript",
+
+  "settingsTitle": "Settings",
+  "settingsGeneral": "General",
+  "settingsLanguage": "Language",
+  "settingsTheme": "Theme",
+  "settingsNotifications": "Notifications",
+  "settingsPrivacy": "Privacy & Security",
+  "settingsAbout": "About",
+  "settingsDarkMode": "Dark Mode",
+  "settingsLightMode": "Light Mode",
+  "settingsSystemMode": "System Default",
+
+  "notificationsTitle": "Notifications",
+  "notificationsEmpty": "No notifications yet",
+  "notificationsMarkRead": "Mark as read",
+  "notificationsClearAll": "Clear all",
+
+  "subscriptionTitle": "Subscription",
+  "subscriptionFree": "Free",
+  "subscriptionPremium": "Premium",
+  "subscriptionSubscribe": "Subscribe",
+  "subscriptionRestore": "Restore Purchases",
+
+  "editProfileTitle": "Edit Profile",
+  "editProfileName": "Name",
+  "editProfileEmail": "Email",
+  "editProfileSave": "Save Changes",
+  "editProfileCancel": "Cancel",
+
+  "errorTitle": "Something went wrong",
+  "errorRetry": "Retry",
+  "errorNoInternet": "No internet connection",
+  "emptyState": "Nothing here yet",
+
+  "lessonDetailTitle": "Lesson Details",
+  "lessonStart": "Start Lesson",
+  "lessonContinue": "Continue",
+  "lessonCompleted": "Completed",
+
+  "splashLoading": "Preparing your experience...",
+
+  "mockExamTitle": "Mock Exam",
+  "mockExamStart": "Start Exam",
+  "mockExamSubmit": "Submit Answers",
+  "mockExamTimeRemaining": "Time Remaining",
+
+  "voiceTitle": "Voice Practice",
+  "voiceStartCall": "Start Call",
+  "voiceEndCall": "End Call",
+  "voiceMute": "Mute",
+  "voiceUnmute": "Unmute"
+}

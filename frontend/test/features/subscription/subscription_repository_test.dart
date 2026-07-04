@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/subscription/data/repositories/subscription_repository_impl.dart';
-import '..\..\mocks/mocks.dart';
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockDio mockDio;
@@ -16,9 +16,12 @@ void main() {
 
   group('SubscriptionRepositoryImpl', () {
     test('getCurrentSubscription returns subscription on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
-        'id': 'sub_1', 'user_id': 'u1', 'plan': 'premium', 'status': 'active',
+        'id': 'sub_1',
+        'userId': 'u1',
+        'plan': 'premium',
+        'status': 'active',
       });
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -28,8 +31,8 @@ void main() {
     });
 
     test('getCurrentSubscription handles invalid format', () async {
-      final response = MockResponse<Map<String, dynamic>>();
-      when(() => response.data).thenReturn('not a map');
+      final response = MockResponse();
+      when(() => response.data).thenReturn(42);
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
       final result = await repository.getCurrentSubscription();
@@ -37,9 +40,16 @@ void main() {
     });
 
     test('getPlans returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([
-        {'id': 'p1', 'name': 'Monthly', 'description': 'Monthly plan', 'price': 9.99, 'currency': 'USD', 'period': 'monthly'},
+        {
+          'id': 'p1',
+          'name': 'Monthly',
+          'description': 'Monthly plan',
+          'price': 9.99,
+          'currency': 'USD',
+          'period': 'monthly',
+        },
       ]);
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -49,9 +59,12 @@ void main() {
     });
 
     test('purchase returns subscription on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
-        'id': 'sub_1', 'user_id': 'u1', 'plan': 'premium', 'status': 'active',
+        'id': 'sub_1',
+        'userId': 'u1',
+        'plan': 'premium',
+        'status': 'active',
       });
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
@@ -62,9 +75,12 @@ void main() {
     });
 
     test('restorePurchases returns subscription on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
-        'id': 'sub_1', 'user_id': 'u1', 'plan': 'premium', 'status': 'active',
+        'id': 'sub_1',
+        'userId': 'u1',
+        'plan': 'premium',
+        'status': 'active',
       });
       when(() => mockDio.post(any())).thenAnswer((_) async => response);
 
@@ -73,17 +89,18 @@ void main() {
     });
 
     test('cancelSubscription succeeds', () async {
-      when(() => mockDio.post(any())).thenAnswer((_) async => MockResponse<void>());
+      when(() => mockDio.post(any())).thenAnswer((_) async => MockResponse());
 
       final result = await repository.cancelSubscription();
       expect(result.isSuccess, true);
     });
 
     test('checkFeatureAccess returns bool on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({'has_access': true});
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.checkFeatureAccess('unlimited_chat');
@@ -92,10 +109,12 @@ void main() {
     });
 
     test('handles DioException', () async {
-      when(() => mockDio.get(any())).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'Payment error',
-      ));
+      when(() => mockDio.get(any())).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          message: 'Payment error',
+        ),
+      );
 
       final result = await repository.getCurrentSubscription();
       expect(result.isFailure, true);

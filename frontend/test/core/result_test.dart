@@ -44,9 +44,10 @@ void main() {
     });
 
     test('map propagates error without transforming', () {
-      final result = Result.error<int>(const CacheFailure('miss')).map((v) => v * 2);
-      expect(result.isFailure, true);
-      expect(result.failure.message, 'miss');
+      final Result<int> result = Result.error(const CacheFailure('miss'));
+      final mapped = result.map((v) => v * 2);
+      expect(mapped.isFailure, true);
+      expect(mapped.failure.message, 'miss');
     });
 
     test('fold calls onSuccess for success', () {

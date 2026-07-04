@@ -82,9 +82,7 @@ void main() {
         ),
       );
 
-      final semantics = tester.getSemantics(
-        find.byType(ProgressCard),
-      );
+      final semantics = tester.getSemantics(find.byType(ProgressCard));
       expect(semantics.label, contains('Speaking'));
       expect(semantics.label, contains('7.5'));
     });

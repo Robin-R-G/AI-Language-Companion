@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/grammar/data/repositories/grammar_repository_impl.dart';
-import '..\..\mocks/mocks.dart';
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockDio mockDio;
@@ -16,11 +16,11 @@ void main() {
 
   group('GrammarRepositoryImpl', () {
     test('checkGrammar returns correction on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
         'id': 'gc_1',
-        'original_text': 'He go to school',
-        'corrected_text': 'He goes to school',
+        'originalText': 'He go to school',
+        'correctedText': 'He goes to school',
         'explanation': 'Subject-verb agreement',
       });
       when(
@@ -33,11 +33,11 @@ void main() {
     });
 
     test('checkGrammar with language', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
         'id': 'gc_1',
-        'original_text': 'text',
-        'corrected_text': 'fixed',
+        'originalText': 'text',
+        'correctedText': 'fixed',
         'explanation': 'rule',
       });
       when(
@@ -54,8 +54,8 @@ void main() {
     });
 
     test('checkGrammar handles invalid format', () async {
-      final response = MockResponse<Map<String, dynamic>>();
-      when(() => response.data).thenReturn('not a map');
+      final response = MockResponse();
+      when(() => response.data).thenReturn(42);
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
       ).thenAnswer((_) async => response);
@@ -65,10 +65,11 @@ void main() {
     });
 
     test('getHistory returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([]);
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.getHistory();
@@ -76,12 +77,12 @@ void main() {
     });
 
     test('handles DioException', () async {
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'AI service error',
-      ));
+      when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          message: 'AI service error',
+        ),
+      );
 
       final result = await repository.checkGrammar('text');
       expect(result.isFailure, true);

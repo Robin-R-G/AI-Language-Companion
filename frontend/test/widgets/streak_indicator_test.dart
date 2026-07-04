@@ -48,9 +48,7 @@ void main() {
         ),
       );
 
-      final semantics = tester.getSemantics(
-        find.byType(StreakIndicator),
-      );
+      final semantics = tester.getSemantics(find.byType(StreakIndicator));
       expect(semantics.label, contains('10 day streak'));
     });
   });

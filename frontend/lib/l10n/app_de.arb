@@ -1,0 +1,51 @@
+{
+  "@@locale": "de",
+  "appTitle": "KI-Sprachtrainer",
+
+  "navHome": "Start",
+  "navPractice": "Üben",
+  "navLessons": "Lektionen",
+  "navProfile": "Profil",
+
+  "homeContinueLearning": "Weiterlernen",
+  "homeDailyStreak": "Tägliche Serie",
+  "homeQuickActions": "Schnellaktionen",
+  "homeRecentActivity": "Letzte Aktivität",
+  "homeViewAll": "Alle anzeigen",
+
+  "grammarTitle": "Grammatikprüfung",
+  "grammarHint": "Geben Sie Ihren Text hier ein...",
+  "grammarCheck": "Prüfen",
+  "grammarChecking": "Prüfe...",
+
+  "progressTitle": "Fortschritt",
+  "progressProjectedScore": "Voraussichtliche Punktzahl",
+  "progressWeeklyActivity": "Wöchentliche Aktivität",
+  "progressStudyTime": "Lernzeit",
+  "progressDayStreak": "Tägliche Serie",
+  "progressXpEarned": "XP verdient",
+
+  "readingTitle": "Lesepraxis",
+  "writingTitle": "Schreibpraxis",
+  "listeningTitle": "Hörpraxis",
+
+  "settingsTitle": "Einstellungen",
+  "settingsDarkMode": "Dunkelmodus",
+  "settingsLightMode": "Hellmodus",
+
+  "notificationsTitle": "Benachrichtigungen",
+  "notificationsEmpty": "Keine Benachrichtigungen",
+
+  "subscriptionTitle": "Abonnement",
+  "subscriptionFree": "Kostenlos",
+  "subscriptionPremium": "Premium",
+
+  "editProfileTitle": "Profil bearbeiten",
+  "editProfileSave": "Änderungen speichern",
+
+  "errorTitle": "Etwas ist schiefgelaufen",
+  "errorRetry": "Wiederholen",
+  "emptyState": "Hier gibt es noch nichts",
+
+  "splashLoading": "Ihre Erfahrung wird vorbereitet..."
+}

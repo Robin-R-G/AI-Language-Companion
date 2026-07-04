@@ -26,7 +26,9 @@ class AILanguageCoachApp extends ConsumerWidget {
         title: 'AI Language Coach',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const Scaffold(body: Center(child: Text('Failed to initialize app'))),
+        home: const Scaffold(
+          body: Center(child: Text('Failed to initialize app')),
+        ),
       ),
       data: (router) => MaterialApp.router(
         title: 'AI Language Coach',

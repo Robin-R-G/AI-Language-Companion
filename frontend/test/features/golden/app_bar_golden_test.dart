@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '..\..\helpers/golden_test_helper.dart';
+import '../../helpers/golden_test_helper.dart';
 
 void main() {
   testWidgets('AppBar renders correctly in light mode', (tester) async {
@@ -15,9 +15,10 @@ void main() {
           ),
           body: const Center(child: Text('Content placeholder')),
         ),
-        isDark: false,
       ),
     );
+
+    await tester.pumpAndSettle();
 
     await expectLater(
       find.byType(MaterialApp),

@@ -464,6 +464,51 @@ lib/features/
 
 ---
 
+---
+
+## M2: Architecture Hardening & Technical Debt Reduction
+
+### ✅ Database Layer (Agent 2)
+- Fixed `memory.ts` column name bug: `timestamp` → `created_at`
+- Added composite indexes for common query patterns (messages, lesson_progress, vocabulary_history, etc.)
+- Added `updated_at` triggers to `user_goals` and `vocabulary_history`
+- Added `ON DELETE CASCADE` to all foreign keys referencing `user_profiles`
+- New migration: `20260704000002_composite_indexes_and_cascades.sql`
+
+### ✅ CORS Consolidation (Agent 2)
+- Consolidated all CORS headers into `shared/cors.ts`
+- Removed duplicate `corsHeaders` definitions from `ai-chat`, `translate`, `grammar-check`, and `errors.ts`
+- All edge functions now import from the single shared module
+
+### ✅ Secure Storage Fix (Agent 1 — Critical)
+- Replaced unencrypted Hive `_secureBox` with platform `FlutterSecureStorage` (Keychain/Keystore)
+- Tokens now stored in device-level secure storage per OWASP MASVS-STORAGE-1
+- Router updated to handle async token retrieval
+
+### ✅ Timer Fixes (Agent 1 — Critical)
+- Replaced recursive `Future.delayed` timers with `Timer.periodic` in `voice_page.dart`
+- Replaced recursive `Future.delayed` timers in `mock_exam_page.dart`
+- Timers are now properly cancelled in `dispose()` methods
+
+### ✅ Domain Layer Buildout (Agent 1)
+- Created freezed domain entities: `User`, `ChatMessage`, `GrammarCorrection`, `Lesson`, `VoiceSession`, `VocabularyWord`, `Achievement`, `MockExam`, `Subscription`
+- Created repository abstractions for all features
+- Created Riverpod presentation providers for all features
+- Implemented data repository implementations for all features
+
+### ✅ Accessibility (Agent 3)
+- Added `Semantics` wrappers to `_NavItem` in `main_scaffold.dart`
+- Added `Semantics` wrappers to `_ControlButton` in `voice_page.dart`
+- Added `Semantics` wrappers to `_ActionChip` in `vocabulary_page.dart`
+
+### ✅ Testing (Agent 4)
+- Created edge function unit tests: `validator_test.ts`, `errors_test.ts`, `cors_test.ts`, `prompts_test.ts`
+- Created frontend unit tests: `result_test.dart` covering `Result<T>` and `Failure` hierarchy
+- Updated `docs/15-Testing.md` with edge function testing section
+- Updated `docs/22-Edge-Functions-Specification.md` with testing section
+
+---
+
 **Next Review:** End of Week 2 (Milestone 2 Completion)  
 **Responsible:** Lead Flutter Engineer  
 **Approval:** Pending stakeholder review

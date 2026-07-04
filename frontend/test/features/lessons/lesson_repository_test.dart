@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/lessons/data/repositories/lesson_repository_impl.dart';
-import '..\..\mocks/mocks.dart';
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockDio mockDio;
@@ -16,13 +16,24 @@ void main() {
 
   group('LessonRepositoryImpl', () {
     test('getLessons returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([
-        {'id': 'l1', 'title': 'Lesson 1', 'category': 'grammar', 'difficulty': 'B1'},
-        {'id': 'l2', 'title': 'Lesson 2', 'category': 'vocabulary', 'difficulty': 'B2'},
+        {
+          'id': 'l1',
+          'title': 'Lesson 1',
+          'category': 'grammar',
+          'difficulty': 'B1',
+        },
+        {
+          'id': 'l2',
+          'title': 'Lesson 2',
+          'category': 'vocabulary',
+          'difficulty': 'B2',
+        },
       ]);
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.getLessons();
@@ -31,26 +42,31 @@ void main() {
     });
 
     test('getLessons filters by category', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([]);
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       await repository.getLessons(category: 'grammar');
       verify(
         () => mockDio.get(
           any(),
-          queryParameters: any(named: 'queryParameters', that: containsPair('category', 'grammar')),
+          queryParameters: any(
+            named: 'queryParameters',
+            that: containsPair('category', 'grammar'),
+          ),
         ),
       ).called(1);
     });
 
     test('getLessons handles invalid response', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({'invalid': true});
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.getLessons();
@@ -58,9 +74,12 @@ void main() {
     });
 
     test('getLessonById returns lesson on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
-        'id': 'l1', 'title': 'Test', 'category': 'grammar', 'difficulty': 'B1',
+        'id': 'l1',
+        'title': 'Test',
+        'category': 'grammar',
+        'difficulty': 'B1',
       });
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -70,7 +89,7 @@ void main() {
     });
 
     test('completeLesson returns data on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({'xp_earned': 50, 'new_streak': 3});
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
@@ -82,11 +101,14 @@ void main() {
 
     test('handles DioException', () async {
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
-      ).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'Server error',
-      ));
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          message: 'Server error',
+        ),
+      );
 
       final result = await repository.getLessons();
       expect(result.isFailure, true);

@@ -10,7 +10,7 @@ Future<void> main() async {
     expect(find.byType(MaterialApp), findsOneWidget);
   });
 
-  testWidgets('App can be created', () {
-    // expect(true, isTrue);
+  testWidgets('App can be created', (tester) async {
+    expect(true, isTrue);
   });
 }

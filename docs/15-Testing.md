@@ -212,6 +212,28 @@ On every Pull Request (PR) to `develop` or `main` branches, the CI/CD pipeline e
 
 ---
 
+## 16. Deno Edge Functions Testing
+
+Edge function unit tests are located in `supabase/functions/shared/__tests__/` and use the built-in Deno test runner.
+
+### Running tests:
+```bash
+cd supabase
+deno test --allow-net functions/shared/__tests__/
+```
+
+### Test suites:
+- **`validator_test.ts`**: Tests request validation helpers (required fields, string/number/enum validation)
+- **`errors_test.ts`**: Tests standardized HTTP error/success response creation (400, 401, 404, 429, 500, 200, 201)
+- **`cors_test.ts`**: Tests CORS header structure
+- **`prompts_test.ts`**: Tests prompt template generation for all AI roles (tutor, grammar, translation, vocabulary, writing, speaking) and CEFR-level scaffolding behavior
+
+### CI/CD integration:
+- Add `deno test` step to `supabase_deploy.yml` workflow
+- New edge function modules should include corresponding test files
+
+---
+
 ## 17. Target Mock Datasets Directory
 
 Test runners utilize standard mock user profiles:

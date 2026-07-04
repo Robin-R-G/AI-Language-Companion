@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +21,7 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
     _examTimer?.cancel();
     super.dispose();
   }
+
   String? _selectedExam;
   String? _selectedSection;
   bool _isStarted = false;
@@ -412,7 +412,10 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
   void _startTimer() {
     _examTimer?.cancel();
     _examTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) { _examTimer?.cancel(); return; }
+      if (!mounted) {
+        _examTimer?.cancel();
+        return;
+      }
       if (_isTimerRunning && _timeRemaining > 0) {
         setState(() => _timeRemaining--);
       } else {

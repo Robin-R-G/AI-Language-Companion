@@ -1,12 +1,25 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:ai_language_coach/core/errors/result.dart';
+import 'package:ai_language_coach/features/achievements/domain/repositories/achievement_repository.dart';
+import 'package:ai_language_coach/features/ai_chat/domain/repositories/chat_repository.dart';
+import 'package:ai_language_coach/features/auth/domain/repositories/auth_repository.dart';
+import 'package:ai_language_coach/features/grammar/domain/repositories/grammar_repository.dart';
+import 'package:ai_language_coach/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:ai_language_coach/features/mock_exam/domain/repositories/mock_exam_repository.dart';
+import 'package:ai_language_coach/features/profile/domain/repositories/profile_repository.dart';
+import 'package:ai_language_coach/features/subscription/domain/repositories/subscription_repository.dart';
+import 'package:ai_language_coach/features/vocabulary/domain/repositories/vocabulary_repository.dart';
+import 'package:ai_language_coach/features/voice/domain/repositories/voice_repository.dart';
 
 // ─── Dio Mocks ───────────────────────────────────────────────────────────────
 
 class MockDio extends Mock implements Dio {}
 
-class MockResponse extends Mock implements Response<dynamic> {}
+class MockResponse<T> extends Mock implements Response<T> {}
 
 class MockRequestOptions extends Mock implements RequestOptions {}
 
@@ -32,12 +45,34 @@ class MockPostgrestFilterBuilder extends Mock
 class MockPostgrestTransformBuilder extends Mock
     implements PostgrestTransformBuilder<dynamic> {}
 
-class MockGoTrueAdminAPI extends Mock implements GoTrueAdminAPI {}
-
-class MockSupabaseQueryBuilder extends Mock
-    implements SupabaseQueryBuilder {}
+class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 
 class MockRealtimeChannel extends Mock implements RealtimeChannel {}
+
+class MockAuthResponse extends Mock implements AuthResponse {}
+
+// ─── Feature Repository Mocks ────────────────────────────────────────────────
+
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockChatRepository extends Mock implements ChatRepository {}
+
+class MockLessonRepository extends Mock implements LessonRepository {}
+
+class MockVocabularyRepository extends Mock implements VocabularyRepository {}
+
+class MockVoiceRepository extends Mock implements VoiceRepository {}
+
+class MockAchievementRepository extends Mock implements AchievementRepository {}
+
+class MockMockExamRepository extends Mock implements MockExamRepository {}
+
+class MockSubscriptionRepository extends Mock
+    implements SubscriptionRepository {}
+
+class MockGrammarRepository extends Mock implements GrammarRepository {}
+
+class MockProfileRepository extends Mock implements ProfileRepository {}
 
 // ─── Register Fallback Values ────────────────────────────────────────────────
 

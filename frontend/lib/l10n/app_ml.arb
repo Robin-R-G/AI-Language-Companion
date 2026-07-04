@@ -1,0 +1,51 @@
+{
+  "@@locale": "ml",
+  "appTitle": "AI ഭാഷാ പരിശീലകൻ",
+
+  "navHome": "ഹോം",
+  "navPractice": "പരിശീലനം",
+  "navLessons": "പാഠങ്ങൾ",
+  "navProfile": "പ്രൊഫൈൽ",
+
+  "homeContinueLearning": "തുടർന്ന് പഠിക്കുക",
+  "homeDailyStreak": "ദൈനംദിന സ്ട്രീക്ക്",
+  "homeQuickActions": "ദ്രുത പ്രവർത്തനങ്ങൾ",
+  "homeRecentActivity": "സമീപകാല പ്രവർത്തനം",
+  "homeViewAll": "എല്ലാം കാണുക",
+
+  "grammarTitle": "വ്യാകരണ പരിശോധന",
+  "grammarHint": "നിങ്ങളുടെ വാചകം ഇവിടെ ടൈപ്പ് ചെയ്യുക...",
+  "grammarCheck": "പരിശോധിക്കുക",
+  "grammarChecking": "പരിശോധിക്കുന്നു...",
+
+  "progressTitle": "പുരോഗതി",
+  "progressProjectedScore": "പ്രതീക്ഷിക്കുന്ന പരീക്ഷ സ്കോർ",
+  "progressWeeklyActivity": "ആഴ്ചയിലെ പ്രവർത്തനം",
+  "progressStudyTime": "പഠന സമയം",
+  "progressDayStreak": "ദിവസങ്ങളുടെ സ്ട്രീക്ക്",
+  "progressXpEarned": "XP നേടിയത്",
+
+  "readingTitle": "വായനാ പരിശീലനം",
+  "writingTitle": "എഴുത്ത് പരിശീലനം",
+  "listeningTitle": "ശ്രവണ പരിശീലനം",
+
+  "settingsTitle": "ക്രമീകരണങ്ങൾ",
+  "settingsDarkMode": "ഡാർക്ക് മോഡ്",
+  "settingsLightMode": "ലൈറ്റ് മോഡ്",
+
+  "notificationsTitle": "അറിയിപ്പുകൾ",
+  "notificationsEmpty": "ഇതുവരെ അറിയിപ്പുകളൊന്നുമില്ല",
+
+  "subscriptionTitle": "സബ്സ്ക്രിപ്ഷൻ",
+  "subscriptionFree": "സൗജന്യം",
+  "subscriptionPremium": "പ്രീമിയം",
+
+  "editProfileTitle": "പ്രൊഫൈൽ എഡിറ്റ് ചെയ്യുക",
+  "editProfileSave": "മാറ്റങ്ങൾ സംരക്ഷിക്കുക",
+
+  "errorTitle": "എന്തോ കുഴപ്പം സംഭവിച്ചു",
+  "errorRetry": "വീണ്ടും ശ്രമിക്കുക",
+  "emptyState": "ഇവിടെ ഒന്നുമില്ല",
+
+  "splashLoading": "നിങ്ങളുടെ അനുഭവം തയ്യാറാക്കുന്നു..."
+}

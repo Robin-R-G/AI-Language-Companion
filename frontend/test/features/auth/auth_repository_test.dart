@@ -1,13 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:ai_language_coach/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:ai_language_coach/features/auth/domain/entities/user.dart';
-import '..\..\mocks/mocks.dart';
-
-class MockAuthResponse extends Mock implements AuthResponse {}
-class MockSupabaseSession extends Mock implements Session {}
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockSupabaseClient mockSupabase;
@@ -32,7 +27,10 @@ void main() {
       final response = MockAuthResponse();
       when(() => response.user).thenReturn(mockUser);
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
       ).thenAnswer((_) async => response);
 
       final result = await repository.signUp('test@test.com', 'password123');
@@ -44,7 +42,10 @@ void main() {
       final response = MockAuthResponse();
       when(() => response.user).thenReturn(null);
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
       ).thenAnswer((_) async => response);
 
       final result = await repository.signUp('test@test.com', 'password123');
@@ -53,7 +54,10 @@ void main() {
 
     test('signUp catches exceptions', () async {
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
       ).thenThrow(Exception('Network error'));
 
       final result = await repository.signUp('test@test.com', 'password123');
@@ -70,7 +74,10 @@ void main() {
       final response = MockAuthResponse();
       when(() => response.user).thenReturn(mockUser);
       when(
-        () => mockAuth.signInWithPassword(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
       ).thenAnswer((_) async => response);
 
       final result = await repository.signIn('test@test.com', 'password123');
@@ -97,8 +104,9 @@ void main() {
     });
 
     test('authStateChanges maps to bool', () {
-      when(() => mockSupabase.auth.onAuthStateChange)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockSupabase.auth.onAuthStateChange,
+      ).thenAnswer((_) => const Stream.empty());
       expect(repository.authStateChanges, isA<Stream<bool>>());
     });
   });

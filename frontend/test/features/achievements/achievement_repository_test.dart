@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/achievements/data/repositories/achievement_repository_impl.dart';
-import '..\..\mocks/mocks.dart';
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockDio mockDio;
@@ -16,10 +16,22 @@ void main() {
 
   group('AchievementRepositoryImpl', () {
     test('getAchievements returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([
-        {'id': 'a1', 'title': 'First!', 'description': 'Desc', 'icon': 'star', 'category': 'milestone'},
-        {'id': 'a2', 'title': 'Streak 7', 'description': '7 days', 'icon': 'fire', 'category': 'streak'},
+        {
+          'id': 'a1',
+          'title': 'First!',
+          'description': 'Desc',
+          'icon': 'star',
+          'category': 'milestone',
+        },
+        {
+          'id': 'a2',
+          'title': 'Streak 7',
+          'description': '7 days',
+          'icon': 'fire',
+          'category': 'streak',
+        },
       ]);
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -29,7 +41,7 @@ void main() {
     });
 
     test('getAchievements handles invalid format', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({'not': 'list'});
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -38,9 +50,9 @@ void main() {
     });
 
     test('getProgress returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([
-        {'achievement_id': 'a1', 'current_value': 3, 'target_value': 5},
+        {'achievementId': 'a1', 'currentValue': 3, 'targetValue': 5},
       ]);
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
@@ -50,10 +62,14 @@ void main() {
     });
 
     test('checkAndAward returns achievement on success', () async {
-      final response = MockResponse<Map<String, dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn({
-        'id': 'a1', 'title': 'Unlocked!', 'description': 'Desc', 'icon': 'star', 'category': 'milestone',
-        'is_unlocked': true,
+        'id': 'a1',
+        'title': 'Unlocked!',
+        'description': 'Desc',
+        'icon': 'star',
+        'category': 'milestone',
+        'isUnlocked': true,
       });
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
@@ -65,10 +81,12 @@ void main() {
     });
 
     test('handles DioException', () async {
-      when(() => mockDio.get(any())).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'Failed to fetch',
-      ));
+      when(() => mockDio.get(any())).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          message: 'Failed to fetch',
+        ),
+      );
 
       final result = await repository.getAchievements();
       expect(result.isFailure, true);

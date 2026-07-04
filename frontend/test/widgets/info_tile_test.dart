@@ -77,9 +77,7 @@ void main() {
         ),
       );
 
-      final semantics = tester.getSemantics(
-        find.byType(InfoTile),
-      );
+      final semantics = tester.getSemantics(find.byType(InfoTile));
       expect(semantics.label, 'Profile');
     });
   });

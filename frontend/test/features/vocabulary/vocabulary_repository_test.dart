@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/vocabulary/data/repositories/vocabulary_repository_impl.dart';
-import '..\..\mocks/mocks.dart';
+import '../../mocks/mocks.dart';
 
 void main() {
   late MockDio mockDio;
@@ -16,7 +16,7 @@ void main() {
 
   group('VocabularyRepositoryImpl', () {
     test('getDailyVocabulary returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([
         {'id': 'v1', 'word': 'ephemeral', 'meaning': 'Short-lived'},
         {'id': 'v2', 'word': 'eloquent', 'meaning': 'Fluent'},
@@ -29,8 +29,8 @@ void main() {
     });
 
     test('getDailyVocabulary handles invalid format', () async {
-      final response = MockResponse<List<dynamic>>();
-      when(() => response.data).thenReturn('not a list');
+      final response = MockResponse();
+      when(() => response.data).thenReturn({'invalid': 'object'});
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
 
       final result = await repository.getDailyVocabulary();
@@ -40,7 +40,7 @@ void main() {
     test('updateMastery calls correct endpoint', () async {
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => MockResponse<void>());
+      ).thenAnswer((_) async => MockResponse());
 
       final result = await repository.updateMastery('v1', 3);
       expect(result.isSuccess, true);
@@ -53,10 +53,11 @@ void main() {
     });
 
     test('getHistory returns list on success', () async {
-      final response = MockResponse<List<dynamic>>();
+      final response = MockResponse();
       when(() => response.data).thenReturn([]);
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.getHistory();
@@ -64,10 +65,12 @@ void main() {
     });
 
     test('handles DioException', () async {
-      when(() => mockDio.get(any())).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'Failed to fetch',
-      ));
+      when(() => mockDio.get(any())).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ''),
+          message: 'Failed to fetch',
+        ),
+      );
 
       final result = await repository.getDailyVocabulary();
       expect(result.isFailure, true);
