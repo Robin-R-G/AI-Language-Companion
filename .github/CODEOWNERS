@@ -1,0 +1,21 @@
+# Global fallback reviewer
+*       @LanguageAICoachTeam
+
+# Backend-specific review paths
+/supabase/migrations/                @SupabaseDBArchitects
+/supabase/functions/                 @EdgeFunctionsDevelopers
+
+# Mobile-specific review paths
+/frontend/lib/app/                   @FlutterLeadEngineers
+/frontend/lib/core/                  @DesignSystemReviewers
+
+# Feature domains
+/frontend/lib/features/auth/         @FlutterLeadEngineers
+/frontend/lib/features/ai_chat/      @EdgeFunctionsDevelopers @FlutterLeadEngineers
+/frontend/lib/features/voice/        @EdgeFunctionsDevelopers @FlutterLeadEngineers
+/frontend/lib/features/payments/     @FlutterLeadEngineers
+
+# Infrastructure
+/.github/                            @LanguageAICoachTeam
+/.devcontainer/                      @LanguageAICoachTeam
+/Makefile                            @LanguageAICoachTeam

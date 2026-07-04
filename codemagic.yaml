@@ -1,0 +1,92 @@
+workflows:
+  validate:
+    name: Validate
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    working_directory: frontend
+    triggering:
+      events:
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Format check
+        script: dart format --set-exit-if-changed .
+      - name: Static analysis
+        script: flutter analyze
+      - name: Run unit and widget tests
+        script: flutter test --coverage
+    artifacts:
+      - coverage/lcov.info
+    publishing:
+      reports:
+        junit:
+          patterns:
+            - "**/test-results/**/*.xml"
+
+  build-android:
+    name: Build Android
+    environment:
+      flutter: stable
+    working_directory: frontend
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: develop
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Build Android APK
+        script: flutter build apk --release --split-per-abi
+      - name: Build Android App Bundle
+        script: flutter build appbundle --release
+    artifacts:
+      - build/**/outputs/flutter-apk/**/*.apk
+      - build/**/outputs/bundle/release/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+
+  build-ios:
+    name: Build iOS
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    working_directory: frontend
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: develop
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Install CocoaPods
+        script: pod install
+      - name: Build iOS Release
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/**/*.ipa
+      - build/ios/archive/**/*.xcarchive
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true

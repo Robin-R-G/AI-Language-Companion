@@ -1,0 +1,63 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build Android release APK and AAB"
+  lane :build do
+    gradle(task: "clean")
+    flutter_build(
+      build_type: "release",
+      flavor: ENV["FLAVOR"] || "production"
+    )
+  end
+
+  desc "Deploy Android AAB to Google Play Internal Track"
+  lane :deploy do
+    build
+    upload_to_play_store(
+      track: "internal",
+      aab: Dir.glob("build/app/outputs/bundle/release/*.aab").first,
+      release_status: "completed"
+    )
+  end
+
+  desc "Run Android unit and widget tests"
+  lane :test do
+    flutter_test
+  end
+end
+
+platform :ios do
+  desc "Build iOS release archive"
+  lane :build do
+    cocoapods
+    flutter_build(
+      build_type: "release",
+      flavor: ENV["FLAVOR"] || "production"
+    )
+  end
+
+  desc "Deploy iOS build to TestFlight"
+  lane :deploy do
+    build
+    upload_to_testflight
+  end
+
+  desc "Run iOS unit and widget tests"
+  lane :test do
+    flutter_test
+  end
+end
+
+desc "Run all tests"
+lane :test_all do
+  flutter_test
+end
+
+desc "Run lint and analyze"
+lane :lint do
+  flutter_analyze
+end
+
+before_all do
+  setup_ci if ENV["CI"]
+end

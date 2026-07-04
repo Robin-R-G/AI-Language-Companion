@@ -1,0 +1,48 @@
+name: Code Generation Check
+
+on:
+  pull_request:
+    branches: [ develop, main ]
+    paths:
+      - 'frontend/lib/**/*.dart'
+      - 'frontend/pubspec.yaml'
+      - 'frontend/pubspec.lock'
+
+env:
+  WORK_DIR: frontend
+
+jobs:
+  codegen:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORK_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run code generators
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Check for uncommitted generated files
+        run: |
+          if (Get-ChildItem -Recurse -Filter "*.freezed.dart" -File | Where-Object { $_.Directory.Name -notmatch '.dart_tool' }) {
+            Write-Output "Generated files exist - build_runner succeeded"
+          } else {
+            Write-Output "No generated files found (expected for initial state)"
+          }

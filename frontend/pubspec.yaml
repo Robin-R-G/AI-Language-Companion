@@ -1,0 +1,97 @@
+name: ai_language_coach
+description: "AI-powered language learning application for exam preparation and fluency."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.8.1
+
+  # Networking
+  dio: ^5.7.0
+
+  # Supabase
+  supabase_flutter: ^2.8.4
+
+  # Local Storage
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.2.4
+
+  # Data Models
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # UI
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.17
+  shimmer: ^3.0.0
+  confetti: ^0.7.0
+  fl_chart: ^0.70.2
+
+  # Utils
+  intl: ^0.19.0
+  uuid: ^4.5.1
+  equatable: ^2.0.7
+  dartz: ^0.10.1
+  connectivity_plus: ^6.1.0
+
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_analytics: ^11.4.1
+  firebase_crashlytics: ^4.3.1
+  firebase_messaging: ^15.2.1
+
+  # Voice
+  livekit_client: ^2.3.1
+
+  # Payments
+  purchases_flutter: ^8.1.4
+
+  # Animations
+  lottie: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Linting
+  flutter_lints: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.14
+  freezed: ^2.5.8
+  json_serializable: ^6.9.4
+  riverpod_generator: ^2.6.3
+
+  # Testing
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/illustrations/
+    - assets/animations/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700

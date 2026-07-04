@@ -1,0 +1,38 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencies
+node_modules/
+.pub-cache/
+
+# Build output
+build/
+dist/
+out/
+
+# Coverage
+coverage/
+
+# Fastlane
+frontend/fastlane/report.xml
+frontend/fastlane/test_output
+
+# Secrets
+**/*.keystore
+**/*.jks
+**/auth_keys.json
+**/service_account.json

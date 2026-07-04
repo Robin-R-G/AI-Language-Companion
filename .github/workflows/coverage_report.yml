@@ -1,0 +1,65 @@
+name: Coverage Report
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+env:
+  WORK_DIR: frontend
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORK_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        run: flutter test --coverage --coverage-path=coverage/lcov.info
+
+      - name: Check minimum coverage
+        run: |
+          $coverage = (Select-String -Path "coverage/lcov.info" -Pattern "^SF:" | Measure-Object | Select-Object -ExpandProperty Count)
+          $linesFound = (Select-String -Path "coverage/lcov.info" -Pattern "^DA:" | Measure-Object | Select-Object -ExpandProperty Count)
+          $linesHit = (Select-String -Path "coverage/lcov.info" -Pattern "^DA:.*,1$" | Measure-Object | Select-Object -ExpandProperty Count)
+          if ($linesFound -gt 0) {
+            $pct = [math]::Round(($linesHit / $linesFound) * 100, 2)
+            echo "Coverage: $pct%"
+            if ($pct -lt 70) {
+              echo "::warning::Coverage $pct% is below 70% threshold"
+            }
+          }
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ${{ env.WORK_DIR }}/coverage
+          flags: flutter
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-coverage-report
+          path: ${{ env.WORK_DIR }}/coverage/
+          retention-days: 90

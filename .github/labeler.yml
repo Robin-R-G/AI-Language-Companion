@@ -1,0 +1,38 @@
+# PR Labeler Configuration
+# Auto-labels PRs based on changed file paths
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**"
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: "supabase/**"
+
+infrastructure:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - ".devcontainer/**"
+          - "Makefile"
+          - "codemagic.yaml"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**"
+
+flutter:
+  - changed-files:
+      - any-glob-to-any-file: "frontend/lib/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/test/**"
+          - "frontend/integration_test/**"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/pubspec.yaml"
+          - "frontend/pubspec.lock"
