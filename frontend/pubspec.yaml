@@ -35,7 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.17
   shimmer: ^3.0.0
-  confetti: ^0.7.0
+  confetti: ^0.8.0
   fl_chart: ^0.70.2
 
   # Utils
