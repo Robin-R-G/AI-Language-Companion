@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "id": "goethe-writing-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Goethe-Zertifikat writing task evaluation. Supports A1-C2 across all Goethe modules (Schreiben). Formell/Informell letter grading with Goethe-specific criteria.",
+    "models": ["gemini-2.0-flash", "gpt-4o"],
+    "cost_estimate": "~400 tokens",
+    "target_languages": ["de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n[L1 SCAFFOLDING RULES]\n\nROLE: Goethe-Zertifikat Prüfer (examiner). You grade German writing tasks strictly according to Goethe-Institut criteria.\nTARGET LANGUAGE: German\nUSER LEVEL: {{learning_level}}\nTARGET EXAM: Goethe-Zertifikat\n\nGOETHE WRITING FORMATS BY LEVEL:\n- A1: Simple forms, short personal messages (20-30 words)\n- A2: Short emails/letters about everyday topics (40-50 words)\n- B1: Personal and formal emails, forum posts (80-100 words)\n- B2: Formal letters, opinion essays, complaints (150-200 words)\n- C1: Detailed formal letters, reports, argumentative texts (250-300 words)\n- C2: Complex formal correspondence, critical analyses (350+ words)\n\nASSESSMENT CRITERIA (Goethe-specific):\n- Inhalt (Content): Did the writer address all required points?\n- Kommunikative Gestaltung (Communicative Design): Text structure, coherence, appropriate register (formell/informell)\n- Sprachliche Richtigkeit (Linguistic Accuracy): Grammar, spelling, word order, case/gender\n- Wortschatz (Vocabulary): Range and appropriateness of vocabulary\n\nRULES:\n- For A1-B1: Feedback can include English/L1 explanation if level-appropriate.\n- For B2-C2: Feedback entirely in German.\n- Always note the required word count vs actual word count.\n- Provide a corrected version (korrigierte Version) that demonstrates how to reach the next level.\n- The score disclaimer must be included.\n\nOUTPUT FORMAT:\n{\n  \"pruefungsniveau\": \"A2 | B1 | B2 | C1 | C2\",\n  \"aufgabe\": \"The writing task prompt in German\",\n  \"bewertung\": {\n    \"inhalt\": \"Punkte 0-5 + Kommentar\",\n    \"kommunikative_gestaltung\": \"Punkte 0-5 + Kommentar\",\n    \"sprachliche_richtigkeit\": \"Punkte 0-5 + Kommentar\",\n    \"wortschatz\": \"Punkte 0-5 + Kommentar\",\n    \"gesamt\": \"Gesamtpunkte / Max\"\n  },\n  \"estimated_stufe\": \"Bestanden | Gut | Sehr Gut\",\n  \"disclaimer\": \"Dies ist eine KI-basierte Bewertung und keine offizielle Goethe-Prüfungsbewertung.\",\n  \"staerken\": [\"2-3 Stärken\"],\n  \"schwaechen\": [\"2-3 Schwächen\"],\n  \"korrigierte_version\": \"Full corrected version of the user's text\",\n  \"korrekturen\": [{\"fehler\": \"original error\", \"korrektur\": \"correction\", \"erklaerung\": \"rule explanation\"}],\n  \"uebungen\": [\"2-3 Übungen zur Verbesserung\"]\n}",
+    "user_template": "Bewerten Sie den folgenden Text für die Goethe-Prüfung {{learning_level}} Schreiben:\n\nAUFGABE:\n\"{{prompt}}\"\n\nTEXT:\n\"{{user_text}}\"\n\nAntworten Sie NUR mit gültigem JSON.",
+    "output_schema": {
+      "type": "object",
+      "required": ["pruefungsniveau", "bewertung", "estimated_stufe", "disclaimer", "staerken", "schwaechen"],
+      "properties": {
+        "pruefungsniveau": { "type": "string" },
+        "aufgabe": { "type": "string" },
+        "bewertung": {
+          "type": "object",
+          "properties": {
+            "inhalt": { "type": "string" },
+            "kommunikative_gestaltung": { "type": "string" },
+            "sprachliche_richtigkeit": { "type": "string" },
+            "wortschatz": { "type": "string" },
+            "gesamt": { "type": "string" }
+          }
+        },
+        "estimated_stufe": { "type": "string" },
+        "disclaimer": { "type": "string" },
+        "staerken": { "type": "array", "items": { "type": "string" } },
+        "schwaechen": { "type": "array", "items": { "type": "string" } },
+        "korrigierte_version": { "type": "string" },
+        "korrekturen": { "type": "array", "items": { "type": "object" } },
+        "uebungen": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "variables": {
+      "learning_level": "string — Goethe level A1–C2",
+      "prompt": "string — The writing task in German",
+      "user_text": "string — The user's German text"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "learning_level": "B1",
+      "prompt": "Sie haben einen Kurs an der Volkshochschule besucht. Schreiben Sie eine E-Mail an die Kursleiterin: Sagen Sie, was Ihnen gut gefallen hat. Machen Sie einen Verbesserungsvorschlag. Fragen Sie nach einem neuen Kurs. (ca. 80 Wörter)",
+      "user_text": "Sehr geehrte Frau Müller, ich habe den Deutschkurs bei Ihnen besucht. Der Kurs war sehr gut. Mir hat die Grammatikübungen gefallen. Aber der Raum war zu klein. Können Sie nächste Mal einen größeren Raum nehmen? Gibt es nächsten Monat ein neuen Kurs? Mit freundlichen Grüßen, Thomas"
+    },
+    "sample_output": {
+      "pruefungsniveau": "B1",
+      "aufgabe": "Sie haben einen Kurs an der Volkshochschule besucht...",
+      "bewertung": {
+        "inhalt": "4/5 — Alle drei Punkte wurden angesprochen, aber der Verbesserungsvorschlag könnte detaillierter sein.",
+        "kommunikative_gestaltung": "4/5 — Gute Struktur mit Anrede, Einleitung, Hauptteil, Fragen, Grußformel.",
+        "sprachliche_richtigkeit": "3/5 — Mehrere Fehler: 'hat mir die Grammatikübungen gefallen' (Nominativ statt Dativ), 'nächste Mal' (falsche Endung), 'ein neuen Kurs' (falsche Endung).",
+        "wortschatz": "3/5 — Grundlegender Wortschatz vorhanden, aber wenig Variation.",
+        "gesamt": "14/20"
+      },
+      "estimated_stufe": "Bestanden (befriedigend)",
+      "disclaimer": "Dies ist eine KI-basierte Bewertung und keine offizielle Goethe-Prüfungsbewertung.",
+      "staerken": ["Alle drei Aufgabenpunkte wurden behandelt", "Angemessene formelle Anrede und Grußformel"],
+      "schwaechen": ["Kasusfehler (Dativ nach 'mir', Akkusativ nach 'einen')", "Adjektivendungen teilweise falsch"],
+      "korrigierte_version": "Sehr geehrte Frau Müller, ich habe den Deutschkurs bei Ihnen besucht. Der Kurs war sehr gut. Mir haben die Grammatikübungen gefallen. Aber der Raum war zu klein. Können Sie nächstes Mal einen größeren Raum nehmen? Gibt es nächsten Monat einen neuen Kurs? Mit freundlichen Grüßen, Thomas",
+      "korrekturen": [
+        {"fehler": "Mir hat die Grammatikübungen", "korrektur": "Mir haben die Grammatikübungen", "erklaerung": "Das Subjekt 'die Grammatikübungen' ist Plural, daher 'haben' statt 'hat'."},
+        {"fehler": "nächste Mal", "korrektur": "nächstes Mal", "erklaerung": "Nach 'nächst-' folgt die Adjektivendung -es (Neutrum, Akkusativ)."},
+        {"fehler": "ein neuen Kurs", "korrektur": "einen neuen Kurs", "erklaerung": "Nach 'geben' steht der Akkusativ: einen neuen Kurs."}
+      ],
+      "uebungen": ["Üben Sie die Dativ- und Akkusativendungen mit der Tabelle: der/dem/den", "Schreiben Sie 5 Sätze mit 'mir gefällt/gefallen'", "Wiederholen Sie die Adjektivendungen nach unbestimmten Artikeln"]
+    },
+    "test_cases": [
+      {
+        "id": "a2-simple-form",
+        "description": "A2 level simple form/personal message",
+        "input": { "learning_level": "A2", "prompt": "Schreiben Sie eine kurze Nachricht an Ihre Freundin: Sagen Sie, dass Sie morgen Geburtstag haben. Laden Sie sie zur Party ein.", "user_text": "Hallo Anna, ich habe morgen Geburtstag. Komm zu meine Party um 5 Uhr." },
+        "validates": ["bewertung has all 4 sub-scores", "feedback is in English/German mix for A2"]
+      },
+      {
+        "id": "c1-formal-letter",
+        "description": "C1 level formal complaint letter",
+        "input": { "learning_level": "C1", "prompt": "Sie haben eine teure Kamera online bestellt, die defekt geliefert wurde. Schreiben Sie eine formelle Beschwerde.", "user_text": "Sehr geehrte Damen und Herren, am 15. Juni bestellte ich eine Kamera..." },
+        "validates": ["feedback is entirely in German", "korrigierte_version shows higher-level phrasing", "estimated_stufe is Gut or Sehr Gut"]
+      },
+      {
+        "id": "word-count-check",
+        "description": "Verifies word count adherence to Goethe standards",
+        "input": { "learning_level": "B1", "prompt": "B1 prompt requiring ~80 words", "user_text": "Kurzer Text." },
+        "validates": ["bewertung notes insufficient word count", "inhalt score reflects incomplete task"]
+      }
+    ]
+  }
+}

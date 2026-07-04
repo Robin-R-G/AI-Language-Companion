@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "id": "ielts-writing-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "IELTS Writing Task 1 (Academic: charts/graphs) and Task 2 (Essay) evaluation rubric. Provides band scores per criterion, detailed corrections, and improved model answer.",
+    "models": ["gpt-4o", "claude-3-sonnet"],
+    "cost_estimate": "~500 tokens",
+    "target_languages": ["en"],
+    "cefr_range": "B1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n\nROLE: IELTS Writing Examiner and Essay Coach. You grade writing tasks strictly according to the official IELTS Writing Band Descriptors.\nTARGET LANGUAGE: English\nUSER LEVEL: {{learning_level}}\nTARGET EXAM: IELTS\n\nTASK TYPE DETECTION:\n- Task 1 (Academic): User describes a chart, graph, table, diagram, or map. Assessed on: Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy.\n- Task 1 (General): User writes a letter (formal/semi-formal/informal). Same criteria.\n- Task 2: User writes an essay responding to a point of view, argument, or problem. Assessed on: Task Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy.\n\nBAND DESCRIPTOR REFERENCES:\n- Band 9: Fully operational command. Accurate, appropriate, fluent.\n- Band 8: Fully operational with occasional inaccuracies.\n- Band 7: Operational command, occasional errors, good range.\n- Band 6: Generally effective command, some errors, adequate range.\n- Band 5: Partial command, frequent errors, limited range.\n- Band 4-0: Basic to no ability.\n\nRULES:\n- The score disclaimer must be included verbatim in every response.\n- Provide a rewritten model answer (improved_version) that demonstrates how to achieve the next band level.\n- Corrections must be specific: cite the exact sentence/error, provide the correction, and explain the rule.\n- If the target exam is IELTS General, adjust Task 1 to letter format.",
+    "user_template": "Evaluate the following IELTS {{task_type}} response to the prompt:\n\nPROMPT:\n\"{{prompt}}\"\n\nUSER RESPONSE:\n\"{{user_essay}}\"\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["task_type", "prompt", "estimated_band", "disclaimer", "criterion_scores", "strengths", "mistakes", "improved_version", "recommendations"],
+      "properties": {
+        "task_type": { "type": "string", "enum": ["Task 1 (Academic)", "Task 1 (General)", "Task 2"] },
+        "prompt": { "type": "string", "description": "The writing prompt given" },
+        "estimated_band": { "type": "string", "description": "Overall advisory band score" },
+        "disclaimer": { "type": "string", "description": "Must be: 'This is an advisory estimate based on AI scoring. It is NOT an official IELTS result.'" },
+        "criterion_scores": {
+          "type": "object",
+          "properties": {
+            "task_achievement": { "type": "string", "description": "Band for TA/TR" },
+            "coherence_cohesion": { "type": "string", "description": "Band for CC" },
+            "lexical_resource": { "type": "string", "description": "Band for LR" },
+            "grammatical_range": { "type": "string", "description": "Band for GRA" }
+          }
+        },
+        "word_count": { "type": "number", "description": "Word count of user response" },
+        "strengths": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 3 },
+        "mistakes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "correction": { "type": "string" },
+              "rule": { "type": "string" },
+              "category": { "type": "string", "enum": ["grammar", "spelling", "vocabulary", "cohesion", "task_response"] }
+            }
+          }
+        },
+        "improved_version": { "type": "string", "description": "Rewritten model answer showing next-band-level quality" },
+        "recommendations": { "type": "array", "items": { "type": "string" }, "minItems": 3, "description": "3 custom exercises to fix weak areas" },
+        "practice_task": { "type": "string", "description": "New writing prompt targeting identified weaknesses" }
+      }
+    },
+    "variables": {
+      "task_type": "string — 'Task 1 (Academic)' | 'Task 1 (General)' | 'Task 2'",
+      "learning_level": "string — CEFR level B1–C2",
+      "prompt": "string — The original IELTS writing prompt",
+      "user_essay": "string — The user's written response"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "task_type": "Task 2",
+      "learning_level": "B2",
+      "prompt": "Some people believe that unpaid community service should be a compulsory part of high school programs. To what extent do you agree or disagree?",
+      "user_essay": "I agree that community service should be compulsory in high school. Firstly, it teaches students responsibility. Secondly, it helps the community. Finally, it looks good on university applications. In my opinion, every student should do at least 50 hours of community service before graduating."
+    },
+    "sample_output": {
+      "task_type": "Task 2",
+      "prompt": "Some people believe that unpaid community service should be a compulsory part of high school programs. To what extent do you agree or disagree?",
+      "estimated_band": "Band 6.0",
+      "disclaimer": "This is an advisory estimate based on AI scoring. It is NOT an official IELTS result.",
+      "criterion_scores": {
+        "task_achievement": "Band 6.0",
+        "coherence_cohesion": "Band 6.0",
+        "lexical_resource": "Band 5.5",
+        "grammatical_range": "Band 5.5"
+      },
+      "word_count": 62,
+      "strengths": ["Clear position stated in first sentence", "Logical paragraph structure with 'firstly/secondly/finally'"],
+      "mistakes": [
+        { "error": "Essay is only 62 words (needs 250+)", "correction": "Expand each point into a full paragraph with examples and reasoning", "rule": "IELTS Task 2 requires a minimum of 250 words", "category": "task_response" },
+        { "error": "Limited vocabulary range", "correction": "Use synonyms: 'mandatory', 'obligatory', 'civic duty', 'volunteer work'", "rule": "Band 7+ requires a wide range of less common vocabulary", "category": "vocabulary" }
+      ],
+      "improved_version": "I firmly agree that unpaid community service should be an integral part of high school curricula. Firstly, engaging in community service instills a sense of civic responsibility in young people...",
+      "recommendations": [
+        "Practice writing 250-word essays within 40 minutes",
+        "Study topic-specific vocabulary for common IELTS themes (education, environment, technology)",
+        "Practice using complex sentence structures: relative clauses, conditionals, passive voice"
+      ],
+      "practice_task": "Some people think that the best way to reduce crime is to give longer prison sentences. Others believe that there are better ways to reduce crime. Discuss both views and give your opinion."
+    },
+    "test_cases": [
+      {
+        "id": "task-1-chart",
+        "description": "Task 1 Academic chart description",
+        "input": { "task_type": "Task 1 (Academic)", "learning_level": "B2", "prompt": "The chart below shows the number of visitors to three museums in London from 2000 to 2020.", "user_essay": "The line graph illustrates the number of people visiting three museums in London over a 20-year period..." },
+        "validates": ["task_achievement mentions overview", "word_count is tracked", "improved_version includes data trends"]
+      },
+      {
+        "id": "task-1-general-letter",
+        "description": "Task 1 General letter",
+        "input": { "task_type": "Task 1 (General)", "learning_level": "B1", "prompt": "You have lost your library card. Write a letter to the librarian explaining the situation and requesting a new card.", "user_essay": "Dear Sir, I am writing to inform you that I have lost my library card..." },
+        "validates": ["output identifies letter format", "tone/formality is evaluated"]
+      },
+      {
+        "id": "task-2-essay",
+        "description": "Standard Task 2 essay evaluation",
+        "input": { "task_type": "Task 2", "learning_level": "C1", "prompt": "In many countries, people are living longer. What are the causes of this? What effects does it have on society?", "user_essay": "The phenomenon of increased life expectancy is a global trend with multiple contributing factors..." },
+        "validates": ["criterion_scores has all 4 bands", "disclaimer is verbatim", "recommendations has 3+ items"]
+      },
+      {
+        "id": "disclaimer-present",
+        "description": "Disclaimer always included",
+        "input": { "task_type": "Task 2", "learning_level": "B2", "prompt": "Any prompt", "user_essay": "Any essay" },
+        "validates": ["disclaimer contains 'NOT an official IELTS result'"]
+      }
+    ]
+  }
+}

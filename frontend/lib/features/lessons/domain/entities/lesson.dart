@@ -4,34 +4,38 @@ part 'lesson.freezed.dart';
 part 'lesson.g.dart';
 
 @freezed
-class Lesson with _$Lesson {
+abstract class Lesson with _$Lesson {
   const factory Lesson({
     required String id,
     required String title,
-    required String category,
-    required String difficulty,
-    @Default(15) int estimatedMinutes,
-    @Default('') String content,
-    @Default([]) List<LessonQuiz> quizzes,
-    @Default(0) int earnedXp,
-    @Default(0.0) double completionPercentage,
-    DateTime? startedAt,
-    DateTime? completedAt,
+    required String description,
+    required String language,
+    required String level,
+    required int order,
+    required int xpReward,
+    required int estimatedMinutes,
+    required List<String> tags,
+    required bool isLocked,
+    required DateTime createdAt,
+    required DateTime updatedAt,
   }) = _Lesson;
 
   factory Lesson.fromJson(Map<String, dynamic> json) => _$LessonFromJson(json);
 }
 
 @freezed
-class LessonQuiz with _$LessonQuiz {
-  const factory LessonQuiz({
-    required String questionId,
-    required String question,
-    required List<String> options,
-    required int correctOptionIndex,
-    @Default('') String explanation,
-  }) = _LessonQuiz;
+abstract class LessonProgress with _$LessonProgress {
+  const factory LessonProgress({
+    required String userId,
+    required String lessonId,
+    required bool isCompleted,
+    required int score,
+    required int attempts,
+    required DateTime? completedAt,
+    required DateTime startedAt,
+    required DateTime updatedAt,
+  }) = _LessonProgress;
 
-  factory LessonQuiz.fromJson(Map<String, dynamic> json) =>
-      _$LessonQuizFromJson(json);
+  factory LessonProgress.fromJson(Map<String, dynamic> json) =>
+      _$LessonProgressFromJson(json);
 }

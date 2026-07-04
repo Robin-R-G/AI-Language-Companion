@@ -425,6 +425,14 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   Widget _buildExamPage() {
+    final filteredExams = AppConstants.exams
+        .where(
+          (e) =>
+              e['language'] == _selectedTargetLanguage ||
+              e['language'] == 'all',
+        )
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
@@ -445,42 +453,54 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           ),
           const SizedBox(height: AppSpacing.xl),
           Expanded(
-            child: ListView.builder(
-              itemCount: AppConstants.exams.length,
-              itemBuilder: (context, index) {
-                final exam = AppConstants.exams[index];
-                final isSelected = _selectedExam == exam['code'];
-
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isSelected
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.surface,
-                      child: Icon(
-                        Icons.school,
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.onSurface,
+            child: filteredExams.isEmpty
+                ? Center(
+                    child: Text(
+                      'No exams available for this language yet.',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
-                    title: Text(exam['name']!),
-                    subtitle: Text(exam['description']!),
-                    trailing: isSelected
-                        ? Icon(
-                            Icons.check_circle,
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                        : null,
-                    onTap: () {
-                      setState(() {
-                        _selectedExam = exam['code'];
-                      });
+                  )
+                : ListView.builder(
+                    itemCount: filteredExams.length,
+                    itemBuilder: (context, index) {
+                      final exam = filteredExams[index];
+                      final isSelected = _selectedExam == exam['code'];
+
+                      return Card(
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.surface,
+                            child: Icon(
+                              Icons.school,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          title: Text(exam['name']!),
+                          subtitle: Text(exam['description']!),
+                          trailing: isSelected
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color:
+                                      Theme.of(context).colorScheme.primary,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedExam = exam['code'];
+                            });
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

@@ -367,6 +367,7 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
   List<Map<String, String>> _getSectionsForExam(String examCode) {
     switch (examCode) {
+      // ─── English Exams ──────────────────────────────────────────────────
       case 'ielts':
         return [
           {'code': 'speaking', 'name': 'Speaking'},
@@ -374,13 +375,84 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'reading', 'name': 'Reading'},
           {'code': 'listening', 'name': 'Listening'},
         ];
-      case 'pte':
+      case 'toefl':
         return [
+          {'code': 'reading', 'name': 'Reading'},
+          {'code': 'listening', 'name': 'Listening'},
           {'code': 'speaking', 'name': 'Speaking'},
           {'code': 'writing', 'name': 'Writing'},
+        ];
+      case 'pte':
+        return [
+          {'code': 'speaking', 'name': 'Speaking & Writing'},
           {'code': 'reading', 'name': 'Reading'},
           {'code': 'listening', 'name': 'Listening'},
         ];
+      case 'oet':
+        return [
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'reading', 'name': 'Reading'},
+          {'code': 'writing', 'name': 'Writing'},
+          {'code': 'speaking', 'name': 'Speaking'},
+        ];
+      case 'toeic':
+        return [
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'reading', 'name': 'Reading'},
+        ];
+      case 'cambridge_a2_key':
+      case 'cambridge_b1_preliminary':
+      case 'cambridge_b2_first':
+      case 'cambridge_c1_advanced':
+      case 'cambridge_c2_proficiency':
+        return [
+          {'code': 'reading', 'name': 'Reading & Use of English'},
+          {'code': 'writing', 'name': 'Writing'},
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'speaking', 'name': 'Speaking'},
+        ];
+      case 'duolingo':
+        return [
+          {'code': 'reading', 'name': 'Reading & Writing'},
+          {'code': 'listening', 'name': 'Listening & Speaking'},
+        ];
+      case 'celpip':
+        return [
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'reading', 'name': 'Reading'},
+          {'code': 'writing', 'name': 'Writing'},
+          {'code': 'speaking', 'name': 'Speaking'},
+        ];
+      case 'linguaskill':
+        return [
+          {'code': 'reading', 'name': 'Reading & Writing'},
+          {'code': 'listening', 'name': 'Listening & Speaking'},
+        ];
+      case 'sat':
+        return [
+          {'code': 'reading', 'name': 'Reading & Writing'},
+          {'code': 'math', 'name': 'Math'},
+        ];
+      case 'act':
+        return [
+          {'code': 'english', 'name': 'English'},
+          {'code': 'reading', 'name': 'Reading'},
+          {'code': 'math', 'name': 'Math'},
+          {'code': 'science', 'name': 'Science'},
+        ];
+      case 'gre':
+        return [
+          {'code': 'verbal', 'name': 'Verbal Reasoning'},
+          {'code': 'quantitative', 'name': 'Quantitative Reasoning'},
+          {'code': 'analytical', 'name': 'Analytical Writing'},
+        ];
+      case 'gmat':
+        return [
+          {'code': 'verbal', 'name': 'Verbal'},
+          {'code': 'quantitative', 'name': 'Quantitative'},
+          {'code': 'data_insights', 'name': 'Data Insights'},
+        ];
+      // ─── German Exams ───────────────────────────────────────────────────
       case 'goethe_a1':
       case 'goethe_a2':
       case 'goethe_b1':
@@ -393,6 +465,85 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'schreiben', 'name': 'Writing'},
           {'code': 'sprechen', 'name': 'Speaking'},
         ];
+      case 'telc':
+        return [
+          {'code': 'lesen', 'name': 'Reading'},
+          {'code': 'horen', 'name': 'Listening'},
+          {'code': 'schreiben', 'name': 'Writing'},
+          {'code': 'sprechen', 'name': 'Speaking'},
+        ];
+      case 'testdaf':
+        return [
+          {'code': 'lesen', 'name': 'Reading'},
+          {'code': 'horen', 'name': 'Listening'},
+          {'code': 'schreiben', 'name': 'Writing'},
+          {'code': 'sprechen', 'name': 'Speaking'},
+        ];
+      case 'dsh':
+        return [
+          {'code': 'lesen', 'name': 'Reading'},
+          {'code': 'horen', 'name': 'Listening'},
+          {'code': 'schreiben', 'name': 'Writing'},
+          {'code': 'sprechen', 'name': 'Speaking'},
+        ];
+      // ─── French Exams ───────────────────────────────────────────────────
+      case 'delf_dalf':
+        return [
+          {'code': 'comprehension_orale', 'name': 'Listening'},
+          {'code': 'comprehension_ecrite', 'name': 'Reading'},
+          {'code': 'production_ecrite', 'name': 'Writing'},
+          {'code': 'production_orale', 'name': 'Speaking'},
+        ];
+      case 'tcf':
+        return [
+          {'code': 'comprehension_orale', 'name': 'Listening'},
+          {'code': 'comprehension_ecrite', 'name': 'Reading'},
+          {'code': 'expression_ecrite', 'name': 'Writing'},
+          {'code': 'expression_orale', 'name': 'Speaking'},
+        ];
+      case 'tef':
+        return [
+          {'code': 'comprehension_orale', 'name': 'Listening'},
+          {'code': 'comprehension_ecrite', 'name': 'Reading'},
+          {'code': 'production_ecrite', 'name': 'Writing'},
+          {'code': 'production_orale', 'name': 'Speaking'},
+        ];
+      // ─── Spanish Exams ──────────────────────────────────────────────────
+      case 'dele':
+        return [
+          {'code': 'comprension_lectora', 'name': 'Reading'},
+          {'code': 'comprension_auditiva', 'name': 'Listening'},
+          {'code': 'expresion_escrita', 'name': 'Writing'},
+          {'code': 'expresion_oral', 'name': 'Speaking'},
+        ];
+      case 'siele':
+        return [
+          {'code': 'comprension_lectora', 'name': 'Reading'},
+          {'code': 'comprension_auditiva', 'name': 'Listening'},
+          {'code': 'expresion_escrita', 'name': 'Writing'},
+          {'code': 'expresion_oral', 'name': 'Speaking'},
+        ];
+      // ─── Japanese Exams ─────────────────────────────────────────────────
+      case 'jlpt':
+        return [
+          {'code': 'kanji_vocabulary', 'name': 'Language Knowledge (Kanji/Vocabulary)'},
+          {'code': 'grammar_reading', 'name': 'Language Knowledge (Grammar) & Reading'},
+          {'code': 'listening', 'name': 'Listening'},
+        ];
+      // ─── Korean Exams ───────────────────────────────────────────────────
+      case 'topik':
+        return [
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'reading', 'name': 'Reading'},
+          {'code': 'writing', 'name': 'Writing'},
+        ];
+      // ─── Chinese Exams ──────────────────────────────────────────────────
+      case 'hsk':
+        return [
+          {'code': 'listening', 'name': 'Listening'},
+          {'code': 'reading', 'name': 'Reading'},
+        ];
+      // ─── Default Fallback ───────────────────────────────────────────────
       default:
         return [
           {'code': 'speaking', 'name': 'Speaking'},

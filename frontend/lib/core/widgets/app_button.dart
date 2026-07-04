@@ -33,7 +33,7 @@ class AppButton extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : icon != null
-              ? Icon(icon!)
+              ? Icon(icon)
               : const SizedBox.shrink(),
           label: Text(label),
         ),
@@ -54,7 +54,7 @@ class AppButton extends StatelessWidget {
                 ),
               )
             : icon != null
-            ? Icon(icon!)
+            ? Icon(icon)
             : const SizedBox.shrink(),
         label: Text(label),
       ),

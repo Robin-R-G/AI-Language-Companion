@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/router.dart';
@@ -142,12 +143,19 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SizedBox(height: AppSpacing.sm),
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.round),
-              child: LinearProgressIndicator(
-                value: 0.75,
-                minHeight: 8,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withOpacity(0.2),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.0, end: 0.75),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) {
+                  return LinearProgressIndicator(
+                    value: value,
+                    minHeight: 8,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.2),
+                  );
+                },
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -317,7 +325,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
-class _QuickActionCard extends StatelessWidget {
+class _QuickActionCard extends StatefulWidget {
   final IconData icon;
   final String label;
   final Color color;
@@ -331,27 +339,43 @@ class _QuickActionCard extends StatelessWidget {
   });
 
   @override
+  State<_QuickActionCard> createState() => _QuickActionCardState();
+}
+
+class _QuickActionCardState extends State<_QuickActionCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 32, color: color),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                label,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
-            ],
+    return AnimatedScale(
+      scale: _isPressed ? 0.95 : 1.0,
+      duration: AppDuration.fast,
+      curve: Curves.easeOut,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          onHighlightChanged: (isHighlighted) {
+            if (isHighlighted) HapticFeedback.lightImpact();
+            setState(() => _isPressed = isHighlighted);
+          },
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(widget.icon, size: 32, color: widget.color),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  widget.label,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),

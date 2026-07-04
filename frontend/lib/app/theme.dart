@@ -9,7 +9,6 @@ class AppTheme {
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary500,
-      brightness: Brightness.light,
       primary: AppColors.primary500,
       secondary: AppColors.secondary,
       surface: AppColors.surface,
@@ -41,7 +40,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgAll,
-          side: const BorderSide(color: AppColors.border, width: 1),
+          side: const BorderSide(color: AppColors.border),
         ),
         margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.base,
@@ -176,7 +175,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgAll,
-          side: const BorderSide(color: AppColors.darkBorder, width: 1),
+          side: const BorderSide(color: AppColors.darkBorder),
         ),
         margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.base,

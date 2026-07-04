@@ -1,0 +1,152 @@
+{
+  "metadata": {
+    "id": "flashcard-generation-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "SRS (Spaced Repetition System) flashcard generation template. Creates Anki-compatible flashcards from text with front/back pairs, mnemonics, example sentences, and L1 translations.",
+    "models": ["gemini-2.0-flash", "gpt-4o"],
+    "cost_estimate": "~100 tokens per card — shorter prompt because task is simple",
+    "target_languages": ["en", "de", "ml"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "You are the AI Language Coach, an expert language tutor.\n\nROLE: Flashcard Creator — you generate high-quality flashcards for spaced repetition learning.\nTARGET LANGUAGE: {{target_language}}\nNATIVE LANGUAGE: {{native_language}}\nUSER LEVEL: {{learning_level}}\n\nFLASHCARD TYPES:\n1. vocabulary — Word on front, definition + example + pronunciation on back\n2. phrase — Phrase on front, meaning + usage notes on back\n3. grammar_rule — Rule name on front, explanation + example on back\n4. sentence — Target language sentence on front, L1 translation + breakdown on back\n\nFLASHCARD QUALITY RULES:\n- Each card must have exactly one clear concept (no compound cards)\n- Front should be concise (1-5 words typically)\n- Back should include: meaning, example sentence, memory aid\n- All examples must be level-appropriate\n- Include IPA pronunciation for vocabulary cards (English)\n- Include gender/plural for German noun cards\n- The L1 field is required for A1-B1 levels, optional for B2+\n\nOUTPUT FORMAT:\n{\n  \"deck_name\": \"Name of the flashcard deck\",\n  \"cefr_level\": \"A1-C2\",\n  \"total_cards\": number,\n  \"cards\": [\n    {\n      \"type\": \"vocabulary | phrase | grammar_rule | sentence\",\n      \"front\": {\n        \"text\": \"Text on the front of the card\",\n        \"hint\": \"Optional hint (e.g., first letter, category)\"\n      },\n      \"back\": {\n        \"meaning\": \"Definition in target language\",\n        \"meaning_l1\": \"Definition in native language (required A1-B1)\",\n        \"pronunciation\": \"IPA guide (vocabulary cards only)\",\n        \"example\": \"Level-appropriate example sentence\",\n        \"example_l1\": \"L1 translation of example (A1-B1)\",\n        \"memory_aid\": \"Mnemonic or association tip\",\n        \"notes\": \"Grammar notes, gender/plural for German, register notes\"\n      },\n      \"tags\": [\"topic_tag\", \"cefr_level\", \"card_type\"]\n    }\n  ]\n}",
+    "user_template": "Generate {{count}} flashcards for a {{learning_level}} {{target_language}} learner (native language: {{native_language}}).\n\nFocus area (optional): {{focus_area}}\nFlashcard type (optional): {{card_type}}\n\nSource text or words to convert:\n\"{{user_input}}\"\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["deck_name", "cefr_level", "total_cards", "cards"],
+      "properties": {
+        "deck_name": { "type": "string" },
+        "cefr_level": { "type": "string" },
+        "total_cards": { "type": "number" },
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "front", "back", "tags"],
+            "properties": {
+              "type": { "type": "string", "enum": ["vocabulary", "phrase", "grammar_rule", "sentence"] },
+              "front": {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string" },
+                  "hint": { "type": "string" }
+                }
+              },
+              "back": {
+                "type": "object",
+                "properties": {
+                  "meaning": { "type": "string" },
+                  "meaning_l1": { "type": "string" },
+                  "pronunciation": { "type": "string" },
+                  "example": { "type": "string" },
+                  "example_l1": { "type": "string" },
+                  "memory_aid": { "type": "string" },
+                  "notes": { "type": "string" }
+                }
+              },
+              "tags": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "variables": {
+      "count": "number — How many cards to generate (1-20)",
+      "target_language": "string — Language being studied",
+      "native_language": "string — User's native language",
+      "learning_level": "string — CEFR level A1–C2",
+      "focus_area": "string — Optional: topic or theme",
+      "card_type": "string — Optional: vocabulary|phrase|grammar_rule|sentence",
+      "user_input": "string — Source text, word list, or topic description"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "count": 3,
+      "target_language": "English",
+      "native_language": "Malayalam",
+      "learning_level": "B1",
+      "focus_area": "Travel vocabulary",
+      "card_type": "vocabulary",
+      "user_input": "Generate cards for common travel phrases: book a hotel, check-in, departure gate, boarding pass."
+    },
+    "sample_output": {
+      "deck_name": "Travel Vocabulary — B1 English",
+      "cefr_level": "B1",
+      "total_cards": 3,
+      "cards": [
+        {
+          "type": "vocabulary",
+          "front": { "text": "book a hotel", "hint": "verb phrase — travel" },
+          "back": {
+            "meaning": "to reserve a room at a hotel",
+            "meaning_l1": "ഒരു ഹോട്ടലിൽ മുറി റിസർവ് ചെയ്യുക",
+            "pronunciation": "/bʊk ə həʊˈtel/",
+            "example": "I need to book a hotel for my trip to London.",
+            "example_l1": "ലണ്ടൻ യാത്രയ്ക്കായി ഞാൻ ഒരു ഹോട്ടൽ ബുക്ക് ചെയ്യണം.",
+            "memory_aid": "Think of 'booking' like reserving a seat — you 'book' a hotel room just like you 'book' a ticket.",
+            "notes": "Synonyms: reserve, make a reservation"
+          },
+          "tags": ["travel", "B1", "vocabulary"]
+        },
+        {
+          "type": "vocabulary",
+          "front": { "text": "check-in", "hint": "noun/verb — airport" },
+          "back": {
+            "meaning": "the process of confirming your arrival at the airport and dropping luggage",
+            "meaning_l1": "വിമാനത്താവളത്തിൽ എത്തിയതായി സ്ഥിരീകരിക്കുക, ലഗേജ് കൈമാറുക",
+            "pronunciation": "/ˈtʃek.ɪn/",
+            "example": "Please go to the check-in counter to drop your bags.",
+            "example_l1": "ദയവായി നിങ്ങളുടെ ബാഗുകൾ ഡ്രോപ്പ് ചെയ്യാൻ ചെക്ക്-ഇൻ കൗണ്ടറിൽ പോകുക.",
+            "memory_aid": "You 'check in' at the airport, just like you 'check in' to a hotel — it means 'I'm here!'",
+            "notes": "Also used as a verb: 'I need to check in online.'"
+          },
+          "tags": ["travel", "B1", "vocabulary", "airport"]
+        },
+        {
+          "type": "vocabulary",
+          "front": { "text": "boarding pass", "hint": "noun — airport" },
+          "back": {
+            "meaning": "a document (paper or digital) that allows you to board the plane",
+            "meaning_l1": "വിമാനത്തിൽ കയറാൻ അനുവദിക്കുന്ന രേഖ (പേപ്പർ അല്ലെങ്കിൽ ഡിജിറ്റൽ)",
+            "pronunciation": "/ˈbɔːr.dɪŋ pæs/",
+            "example": "Please show your boarding pass at the gate.",
+            "example_l1": "ഗേറ്റിൽ നിങ്ങളുടെ ബോർഡിംഗ് പാസ് കാണിക്കുക.",
+            "memory_aid": "It's your 'pass' to 'board' the plane — like a ticket to get on.",
+            "notes": "Can be digital (on your phone) or printed."
+          },
+          "tags": ["travel", "B1", "vocabulary", "airport"]
+        }
+      ]
+    },
+    "test_cases": [
+      {
+        "id": "vocabulary-cards",
+        "description": "Generate vocabulary flashcards",
+        "input": { "count": 2, "learning_level": "A2", "target_language": "English", "card_type": "vocabulary", "user_input": "apple, book" },
+        "validates": ["each card has front.text and back.meaning", "pronunciation includes IPA", "meaning_l1 is non-empty for A2"]
+      },
+      {
+        "id": "german-noun-cards",
+        "description": "German noun cards include gender and plural",
+        "input": { "count": 2, "learning_level": "A1", "target_language": "German", "card_type": "vocabulary", "user_input": "Haus, Tisch" },
+        "validates": ["notes include gender (der/die/das)", "notes include plural form"]
+      },
+      {
+        "id": "b2-no-l1",
+        "description": "B2 level cards do not require L1",
+        "input": { "count": 1, "learning_level": "B2", "target_language": "English", "card_type": "vocabulary", "user_input": "ubiquitous" },
+        "validates": ["meaning_l1 may be absent or empty", "tags include B2"]
+      },
+      {
+        "id": "grammar-rule-card",
+        "description": "Grammar rule flashcard",
+        "input": { "count": 1, "learning_level": "B1", "target_language": "English", "card_type": "grammar_rule", "user_input": "Second conditional" },
+        "validates": ["type is grammar_rule", "back.notes contains rule explanation", "front.text is the rule name"]
+      }
+    ]
+  }
+}

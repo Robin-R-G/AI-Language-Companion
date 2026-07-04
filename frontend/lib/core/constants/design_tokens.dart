@@ -85,7 +85,7 @@ class AppElevation {
 
   static List<BoxShadow> get level1 => [
     BoxShadow(
-      color: const Color(0x0A000000),
+      color: AppColors.primary500.withAlpha(15),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),
@@ -93,7 +93,7 @@ class AppElevation {
 
   static List<BoxShadow> get level2 => [
     BoxShadow(
-      color: const Color(0x14000000),
+      color: AppColors.primary500.withAlpha(25),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
@@ -101,7 +101,7 @@ class AppElevation {
 
   static List<BoxShadow> get level3 => [
     BoxShadow(
-      color: AppColors.primary500.withAlpha(51),
+      color: AppColors.primary500.withAlpha(45),
       blurRadius: 16,
       spreadRadius: 2,
       offset: const Offset(0, 4),

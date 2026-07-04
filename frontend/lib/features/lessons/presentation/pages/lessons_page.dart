@@ -105,7 +105,7 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
           // Category Filter
           _FilterChip(
             label: _selectedCategory,
-            options: [
+            options: const [
               'All',
               'Grammar',
               'Vocabulary',
@@ -121,7 +121,7 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
           // Difficulty Filter
           _FilterChip(
             label: _selectedDifficulty,
-            options: ['All', 'Beginner', 'Intermediate', 'Advanced'],
+            options: const ['All', 'Beginner', 'Intermediate', 'Advanced'],
             onSelected: (value) {
               setState(() => _selectedDifficulty = value);
             },
@@ -273,7 +273,7 @@ class _LessonCard extends StatelessWidget {
                   ),
                   // Status Icon
                   if (isCompleted)
-                    Icon(Icons.check_circle, color: AppColors.success)
+                    const Icon(Icons.check_circle, color: AppColors.success)
                   else if (isInProgress)
                     SizedBox(
                       width: 24,
@@ -328,7 +328,7 @@ class _LessonCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   // XP Reward
-                  Icon(Icons.star, size: 14, color: AppColors.warning),
+                  const Icon(Icons.star, size: 14, color: AppColors.warning),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     '+${lesson.xpReward} XP',

@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "id": "listening-lesson-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Listening exercise generation template. Creates dictation exercises, gap-fill (cloze) listening tasks, and comprehension questions based on level-appropriate audio scripts.",
+    "models": ["gemini-2.0-flash", "gpt-4o"],
+    "cost_estimate": "~300 tokens",
+    "target_languages": ["en", "de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n\nROLE: Listening Comprehension Designer — you create effective listening exercises for language learners.\nTARGET LANGUAGE: {{target_language}}\nUSER LEVEL: {{learning_level}}\n\nLISTENING SCRIPT GUIDELINES:\n- Generate a natural speech script appropriate for the CEFR level.\n- A1: 15-20 words, very slow pace, basic vocabulary, simple present\n- A2: 30-40 words, slow pace, familiar topics, present + past\n- B1: 50-80 words, moderate pace, some hesitation and fillers (natural speech)\n- B2: 100-150 words, natural pace, varied vocabulary, some idioms\n- C1: 150-200 words, fast pace, complex vocabulary, nuanced expression\n- C2: 200-250 words, native speed, sophisticated language, cultural references\n\nEXERCISE TYPES:\n1. dictation — User listens and writes what they hear. Words given as hints for lower levels.\n2. gap_fill — Script with blanks where target words/phrases are removed. User fills in.\n3. comprehension — Questions about the script content (multiple choice, short answer).\n4. true_false — Statements about the script to verify.\n5. shadowing — Transcript for the user to repeat for pronunciation practice.\n\nSPEAKER VARIETY:\n- Use different speaker personas: news reporter, friend, teacher, customer, tour guide\n- Include natural speech features: contractions, fillers (um, well, you know), interruptions\n\nOUTPUT FORMAT:\n{\n  \"title\": \"Exercise title in target language\",\n  \"scenario\": \"Brief context (e.g., 'A friend describing their weekend')\",\n  \"cefr_level\": \"A1-C2\",\n  \"estimated_minutes\": number,\n  \"script\": {\n    \"full\": \"Full script of what the speaker(s) say\",\n    \"speaker_notes\": \"Pace, tone, and style guidance for TTS or recording\"\n  },\n  \"exercises\": [\n    {\n      \"type\": \"dictation | gap_fill | comprehension | true_false | shadowing\",\n      \"instructions\": \"Clear instructions in target language (with L1 support for A1-B1)\",\n      \"content\": \"Exercise content (text with gaps, questions, etc.)\",\n      \"answers\": [\"Correct answers\"],\n      \"hints\": [\"Optional hints for learners\"]\n    }\n  ],\n  \"vocabulary_help\": [\n    {\n      \"word_or_phrase\": \"item\",\n      \"meaning\": \"definition\",\n      \"appears_at\": \"timestamp or line reference\"\n    }\n  ],\n  \"transcript_l1\": \"L1 translation of script (A1-B1 only)\"\n}",
+    "user_template": "Generate a listening exercise for a {{learning_level}} {{target_language}} learner.\n\nTopic (optional): {{topic}}\nExercise type preference (optional): {{exercise_type}}\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["title", "cefr_level", "script", "exercises"],
+      "properties": {
+        "title": { "type": "string" },
+        "scenario": { "type": "string" },
+        "cefr_level": { "type": "string" },
+        "estimated_minutes": { "type": "number" },
+        "script": {
+          "type": "object",
+          "properties": {
+            "full": { "type": "string" },
+            "speaker_notes": { "type": "string" }
+          }
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["dictation", "gap_fill", "comprehension", "true_false", "shadowing"] },
+              "instructions": { "type": "string" },
+              "content": { "type": "string" },
+              "answers": { "type": "array", "items": { "type": "string" } },
+              "hints": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "vocabulary_help": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "word_or_phrase": { "type": "string" },
+              "meaning": { "type": "string" },
+              "appears_at": { "type": "string" }
+            }
+          }
+        },
+        "transcript_l1": { "type": "string" }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language of the listening exercise",
+      "learning_level": "string — CEFR level A1–C2",
+      "topic": "string — Optional topic preference",
+      "exercise_type": "string — Optional: dictation|gap_fill|comprehension|true_false|shadowing"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "learning_level": "A2",
+      "topic": "Shopping",
+      "exercise_type": "gap_fill"
+    },
+    "sample_output": {
+      "title": "At the Supermarket",
+      "scenario": "A person is at the supermarket talking to a shop assistant about where to find items.",
+      "cefr_level": "A2",
+      "estimated_minutes": 10,
+      "script": {
+        "full": "Excuse me, can you help me? I'm looking for the bread aisle. Is it near the dairy section? Oh, I see it. Thank you! Also, how much are the apples today? They look fresh.",
+        "speaker_notes": "Slow pace, clear enunciation. Short pauses between sentences."
+      },
+      "exercises": [
+        {
+          "type": "gap_fill",
+          "instructions": "Listen and fill in the missing words:",
+          "content": "Excuse me, can you _____ me? I'm looking for the bread _____. Is it near the _____ section? Oh, I see it. _____ you! Also, how much are the _____ today? They look fresh.",
+          "answers": ["help", "aisle", "dairy", "Thank", "apples"],
+          "hints": ["First letter: h ___ ___ p", "First letter: a ___ ___ ___ ___"]
+        },
+        {
+          "type": "comprehension",
+          "instructions": "Answer the questions about what you heard:",
+          "content": "1. What is the person looking for?\n2. What section is near the bread aisle?\n3. What fruit does the person ask about?",
+          "answers": ["The bread aisle", "The dairy section", "Apples"]
+        }
+      ],
+      "vocabulary_help": [
+        { "word_or_phrase": "aisle", "meaning": "a passage between rows of shelves", "appears_at": "Line 1" },
+        { "word_or_phrase": "dairy section", "meaning": "the part of the shop with milk, cheese, eggs", "appears_at": "Line 1" }
+      ],
+      "transcript_l1": "എക്സ്ക്യൂസ് മീ, താങ്കൾക്ക് എന്നെ സഹായിക്കാമോ? ഞാൻ ബ്രെഡ് ഐലിനായി നോക്കുകയാണ്. അത് ഡയറി സെക്ഷന് സമീപമാണോ? ഓ, ഞാൻ കണ്ടു. നന്ദി! ഇന്ന് ആപ്പിൾ എത്രയാണ്? അവ പുതിയതായി തോന്നുന്നു."
+    },
+    "test_cases": [
+      {
+        "id": "a1-dictation",
+        "description": "A1 dictation exercise with simple vocabulary",
+        "input": { "learning_level": "A1", "target_language": "English", "exercise_type": "dictation" },
+        "validates": ["script is 15-20 words", "exercises include dictation type", "hints are provided"]
+      },
+      {
+        "id": "b1-comprehension",
+        "description": "B1 comprehension exercise with multiple speakers",
+        "input": { "learning_level": "B1", "target_language": "English", "topic": "Restaurant conversation" },
+        "validates": ["script is 50-80 words", "exercises include comprehension", "script includes natural speech features like fillers"]
+      },
+      {
+        "id": "german-listening",
+        "description": "German B1 listening exercise",
+        "input": { "learning_level": "B1", "target_language": "German", "topic": "Im Restaurant" },
+        "validates": ["script is in German", "exercises are in German", "exercises match the type requested"]
+      }
+    ]
+  }
+}

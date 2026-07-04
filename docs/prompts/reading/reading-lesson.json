@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "id": "reading-lesson-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Reading passage and comprehension question generation. Generates level-appropriate reading texts with vocabulary extraction and multi-format comprehension questions.",
+    "models": ["gemini-2.0-flash", "gpt-4o", "claude-3-sonnet"],
+    "cost_estimate": "~350 tokens",
+    "target_languages": ["en", "de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n\nROLE: Educational Content Designer — you create engaging, level-appropriate reading lessons.\nTARGET LANGUAGE: {{target_language}}\nUSER LEVEL: {{learning_level}}\n\nREADING PASSAGE GUIDELINES:\n- Match the passage difficulty to the CEFR level precisely.\n- A1: 30-50 words, basic vocabulary, present tense only, simple sentences\n- A2: 50-100 words, familiar topics, present + past tense, compound sentences\n- B1: 150-250 words, broader vocabulary, mix of tenses, some complex sentences\n- B2: 300-400 words, abstract topics, idiomatic language, varied structures\n- C1: 400-500 words, nuanced arguments, sophisticated vocabulary\n- C2: 500+ words, literary or academic style, complex rhetoric\n\nPASSAGE TYPES:\n- Descriptive (places, people, traditions)\n- Narrative (short stories, personal anecdotes)\n- Informative (cultural notes, scientific topics)\n- Argumentative (opinion pieces, debates)\n\nCOMPREHENSION QUESTION TYPES:\n- Multiple choice (4 options)\n- True/False/Not Given\n- Short answer\n- Gap fill (cloze)\n- Vocabulary matching\n- Inference questions (B2+)\n\nVOCABULARY EXTRACTION:\n- Extract 5-7 key vocabulary items from the passage\n- Provide definition, part of speech, example sentence, and CEFR level\n\nOUTPUT FORMAT:\n{\n  \"title\": \"Passage title in target language\",\n  \"category\": \"descriptive | narrative | informative | argumentative\",\n  \"cefr_level\": \"A1-C2\",\n  \"estimated_minutes\": number,\n  \"passage\": \"The reading text in the target language\",\n  \"vocabulary\": [\n    {\n      \"word\": \"target word\",\n      \"part_of_speech\": \"noun/verb/adjective/etc\",\n      \"definition\": \"definition in target language\",\n      \"definition_l1\": \"definition in native language (A1-B1 only)\",\n      \"example\": \"sentence from passage or new example\",\n      \"cefr_level\": \"estimated CEFR of this word\"\n    }\n  ],\n  \"questions\": [\n    {\n      \"type\": \"multiple_choice | true_false | short_answer | gap_fill | vocabulary_matching | inference\",\n      \"question\": \"question text\",\n      \"options\": [\"A\", \"B\", \"C\", \"D\"] (for multiple choice),\n      \"correct_answer\": \"the correct answer\",\n      \"explanation\": \"why this is correct\",\n      \"skill_tested\": \"main idea | detail | inference | vocabulary | purpose\"\n    }\n  ],\n  \"discussion_prompt\": \"An open-ended question for conversation practice\"\n}",
+    "user_template": "Generate a reading lesson for a {{learning_level}} {{target_language}} learner.\n\nTopic (optional): {{topic}}\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["title", "cefr_level", "passage", "vocabulary", "questions"],
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["descriptive", "narrative", "informative", "argumentative"] },
+        "cefr_level": { "type": "string" },
+        "estimated_minutes": { "type": "number" },
+        "passage": { "type": "string" },
+        "vocabulary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "word": { "type": "string" },
+              "part_of_speech": { "type": "string" },
+              "definition": { "type": "string" },
+              "definition_l1": { "type": "string" },
+              "example": { "type": "string" },
+              "cefr_level": { "type": "string" }
+            }
+          }
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["multiple_choice", "true_false", "short_answer", "gap_fill", "vocabulary_matching", "inference"] },
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correct_answer": { "type": "string" },
+              "explanation": { "type": "string" },
+              "skill_tested": { "type": "string" }
+            }
+          }
+        },
+        "discussion_prompt": { "type": "string" }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language of the reading passage",
+      "learning_level": "string — CEFR level A1–C2",
+      "topic": "string — Optional topic preference"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "learning_level": "B1",
+      "topic": "Food and culture"
+    },
+    "sample_output": {
+      "title": "Street Food Around the World",
+      "category": "informative",
+      "cefr_level": "B1",
+      "estimated_minutes": 15,
+      "passage": "Street food is an important part of many cultures around the world. In Thailand, you can buy Pad Thai from small stalls on almost every corner. In Mexico, tacos are sold by vendors who have been making them for generations. Street food is not only delicious but also affordable. Many people prefer it because it gives them a taste of local traditions. Recently, some cities have started to regulate street food to ensure it is safe and clean. This has helped street food become more popular with tourists and locals alike.",
+      "vocabulary": [
+        { "word": "stall", "part_of_speech": "noun", "definition": "a small shop or stand, often outdoors", "example": "The market has many food stalls.", "cefr_level": "A2" },
+        { "word": "vendor", "part_of_speech": "noun", "definition": "a person who sells something", "example": "The vendor sells fresh fruit every morning.", "cefr_level": "B1" },
+        { "word": "affordable", "part_of_speech": "adjective", "definition": "cheap enough for most people to buy", "example": "The restaurant offers affordable meals.", "cefr_level": "B1" },
+        { "word": "generations", "part_of_speech": "noun", "definition": "groups of people born around the same time", "example": "This recipe has been passed down for generations.", "cefr_level": "B1" },
+        { "word": "regulate", "part_of_speech": "verb", "definition": "to control by rules", "example": "The government regulates food safety.", "cefr_level": "B2" }
+      ],
+      "questions": [
+        { "type": "multiple_choice", "question": "What is the main idea of the passage?", "options": ["Street food is unhealthy", "Street food is an important cultural tradition", "Street food should be banned", "Street food is only popular in Asia"], "correct_answer": "Street food is an important cultural tradition", "explanation": "The passage discusses how street food reflects local traditions and culture worldwide.", "skill_tested": "main idea" },
+        { "type": "true_false", "question": "Street food has become more popular because of regulations.", "correct_answer": "True", "explanation": "The passage says regulations have helped street food become more popular with tourists and locals.", "skill_tested": "detail" },
+        { "type": "short_answer", "question": "Name two countries mentioned in the passage and their street foods.", "correct_answer": "Thailand (Pad Thai) and Mexico (tacos)", "explanation": "The passage mentions Thailand and Mexico as examples.", "skill_tested": "detail" },
+        { "type": "vocabulary_matching", "question": "Match the word 'vendor' with its meaning:", "options": ["A type of food", "A person who sells things", "A cooking method", "A type of market"], "correct_answer": "A person who sells things", "explanation": "A vendor is someone who sells products, often at a stall.", "skill_tested": "vocabulary" }
+      ],
+      "discussion_prompt": "What is your favorite street food? Describe it and explain why you like it."
+    },
+    "test_cases": [
+      {
+        "id": "a1-simple-passage",
+        "description": "A1 reading with very basic vocabulary",
+        "input": { "learning_level": "A1", "target_language": "English", "topic": "Daily routine" },
+        "validates": ["passage is 30-50 words", "vocabulary has 5-7 items", "questions include multiple_choice", "no complex tenses"]
+      },
+      {
+        "id": "c1-argumentative",
+        "description": "C1 argumentative passage with inference questions",
+        "input": { "learning_level": "C1", "target_language": "English", "topic": "Climate change policy" },
+        "validates": ["passage is 400-500 words", "includes inference-type question", "vocabulary includes B2-C1 words"]
+      },
+      {
+        "id": "german-reading",
+        "description": "German B1 reading passage",
+        "input": { "learning_level": "B1", "target_language": "German", "topic": "Reisen und Urlaub" },
+        "validates": ["passage is in German", "vocabulary items have German definitions", "questions are in German"]
+      }
+    ]
+  }
+}

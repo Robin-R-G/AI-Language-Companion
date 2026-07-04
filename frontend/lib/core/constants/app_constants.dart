@@ -6,6 +6,10 @@ class AppConstants {
   static const String appName = 'AI Language Coach';
   static const String appVersion = '1.0.0';
 
+  // Platform Identifiers
+  static const String androidPackageName = 'com.ailanguagecoach.app';
+  static const String iosAppStoreId = '1234567890';
+
   // API Configuration
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
@@ -127,63 +131,233 @@ class AppConstants {
     },
   ];
 
-  // Exams
+  // Exams - Aligned with Official Exam Resource Guide
+  // Each exam includes a 'language' field for onboarding filtering.
+  // 'language' values: 'en', 'de', 'fr', 'es', 'ja', 'ko', 'zh', 'all'
   static const List<Map<String, String>> exams = [
+    // ─── English Exams ──────────────────────────────────────────────────────
     {
       'code': 'ielts',
       'name': 'IELTS',
       'description': 'International English Language Testing System',
+      'language': 'en',
+    },
+    {
+      'code': 'toefl',
+      'name': 'TOEFL iBT',
+      'description': 'Test of English as a Foreign Language',
+      'language': 'en',
     },
     {
       'code': 'pte',
       'name': 'PTE Academic',
       'description': 'Pearson Test of English Academic',
+      'language': 'en',
     },
     {
-      'code': 'toefl',
-      'name': 'TOEFL',
-      'description': 'Test of English as a Foreign Language',
+      'code': 'oet',
+      'name': 'OET',
+      'description': 'Occupational English Test',
+      'language': 'en',
     },
-    {'code': 'oet', 'name': 'OET', 'description': 'Occupational English Test'},
+    {
+      'code': 'toeic',
+      'name': 'TOEIC',
+      'description': 'Test of English for International Communication',
+      'language': 'en',
+    },
+    {
+      'code': 'cambridge_a2_key',
+      'name': 'Cambridge A2 Key',
+      'description': 'Cambridge English: A2 Key (KET)',
+      'language': 'en',
+    },
+    {
+      'code': 'cambridge_b1_preliminary',
+      'name': 'Cambridge B1 Preliminary',
+      'description': 'Cambridge English: B1 Preliminary (PET)',
+      'language': 'en',
+    },
+    {
+      'code': 'cambridge_b2_first',
+      'name': 'Cambridge B2 First',
+      'description': 'Cambridge English: B2 First (FCE)',
+      'language': 'en',
+    },
+    {
+      'code': 'cambridge_c1_advanced',
+      'name': 'Cambridge C1 Advanced',
+      'description': 'Cambridge English: C1 Advanced (CAE)',
+      'language': 'en',
+    },
+    {
+      'code': 'cambridge_c2_proficiency',
+      'name': 'Cambridge C2 Proficiency',
+      'description': 'Cambridge English: C2 Proficiency (CPE)',
+      'language': 'en',
+    },
+    {
+      'code': 'duolingo',
+      'name': 'Duolingo English Test',
+      'description': 'Duolingo English Test',
+      'language': 'en',
+    },
+    {
+      'code': 'celpip',
+      'name': 'CELPIP',
+      'description': 'Canadian English Language Proficiency Index Program',
+      'language': 'en',
+    },
+    {
+      'code': 'linguaskill',
+      'name': 'Linguaskill',
+      'description': 'Cambridge Linguaskill',
+      'language': 'en',
+    },
+    {
+      'code': 'sat',
+      'name': 'SAT',
+      'description': 'College Board SAT',
+      'language': 'en',
+    },
+    {
+      'code': 'act',
+      'name': 'ACT',
+      'description': 'ACT College Readiness Assessment',
+      'language': 'en',
+    },
+    {
+      'code': 'gre',
+      'name': 'GRE',
+      'description': 'Graduate Record Examinations',
+      'language': 'en',
+    },
+    {
+      'code': 'gmat',
+      'name': 'GMAT',
+      'description': 'Graduate Management Admission Test',
+      'language': 'en',
+    },
+    // ─── German Exams ───────────────────────────────────────────────────────
     {
       'code': 'goethe_a1',
       'name': 'Goethe A1',
       'description': 'Goethe-Zertifikat A1',
+      'language': 'de',
     },
     {
       'code': 'goethe_a2',
       'name': 'Goethe A2',
       'description': 'Goethe-Zertifikat A2',
+      'language': 'de',
     },
     {
       'code': 'goethe_b1',
       'name': 'Goethe B1',
       'description': 'Goethe-Zertifikat B1',
+      'language': 'de',
     },
     {
       'code': 'goethe_b2',
       'name': 'Goethe B2',
       'description': 'Goethe-Zertifikat B2',
+      'language': 'de',
     },
     {
       'code': 'goethe_c1',
       'name': 'Goethe C1',
       'description': 'Goethe-Zertifikat C1',
+      'language': 'de',
     },
     {
       'code': 'goethe_c2',
       'name': 'Goethe C2',
       'description': 'Goethe-Zertifikat C2',
+      'language': 'de',
     },
+    {
+      'code': 'telc',
+      'name': 'TELC',
+      'description': 'The European Language Certificates',
+      'language': 'de',
+    },
+    {
+      'code': 'testdaf',
+      'name': 'TestDaF',
+      'description': 'Test Deutsch als Fremdsprache',
+      'language': 'de',
+    },
+    {
+      'code': 'dsh',
+      'name': 'DSH',
+      'description': 'Deutsche Sprachpruefung fuer den Hochschulzugang',
+      'language': 'de',
+    },
+    // ─── French Exams ───────────────────────────────────────────────────────
+    {
+      'code': 'delf_dalf',
+      'name': 'DELF/DALF',
+      'description': 'Diplome d\'Etudes en Langue Francaise / Diplome Approfondi de Langue Francaise',
+      'language': 'fr',
+    },
+    {
+      'code': 'tcf',
+      'name': 'TCF',
+      'description': 'Test de Connaissance du Francais',
+      'language': 'fr',
+    },
+    {
+      'code': 'tef',
+      'name': 'TEF',
+      'description': 'Test d\'Evaluation de Francais',
+      'language': 'fr',
+    },
+    // ─── Spanish Exams ──────────────────────────────────────────────────────
+    {
+      'code': 'dele',
+      'name': 'DELE',
+      'description': 'Diplomas de Espanol como Lengua Extranjera',
+      'language': 'es',
+    },
+    {
+      'code': 'siele',
+      'name': 'SIELE',
+      'description': 'Servicio Internacional de Evaluacion de la Lengua Espanola',
+      'language': 'es',
+    },
+    // ─── Japanese Exams ─────────────────────────────────────────────────────
+    {
+      'code': 'jlpt',
+      'name': 'JLPT',
+      'description': 'Japanese-Language Proficiency Test',
+      'language': 'ja',
+    },
+    // ─── Korean Exams ───────────────────────────────────────────────────────
+    {
+      'code': 'topik',
+      'name': 'TOPIK',
+      'description': 'Test of Proficiency in Korean',
+      'language': 'ko',
+    },
+    // ─── Chinese Exams ──────────────────────────────────────────────────────
+    {
+      'code': 'hsk',
+      'name': 'HSK',
+      'description': 'Hanyu Shuiping Kaoshi (Chinese Proficiency Test)',
+      'language': 'zh',
+    },
+    // ─── General / Universal ────────────────────────────────────────────────
     {
       'code': 'general',
       'name': 'General',
       'description': 'Everyday language learning',
+      'language': 'all',
     },
     {
       'code': 'business',
       'name': 'Business English',
       'description': 'Professional communication skills',
+      'language': 'en',
     },
   ];
 

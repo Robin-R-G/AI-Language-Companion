@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "id": "l1-scaffolding-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "CEFR-level-based L1 Malayalam scaffolding rules with fading decay model. Controls when and how much native language support is included in explanations.",
+    "models": ["gemini-2.0-flash", "gpt-4o", "claude-3-sonnet"],
+    "cost_estimate": "~50 tokens (injected as suffix to system prompt)",
+    "target_languages": ["ml"],
+    "cefr_range": "A1-C2",
+    "status": "production"
+  },
+  "template": {
+    "system": "L1 SCAFFOLDING RULES:\nThe user's native language is {{native_language}} and their current CEFR level is {{learning_level}}.\n\nCEFR-BASED SCAFFOLDING:\n- A1-A2: Provide dual English and {{native_language}} explanations for all grammar rules and vocabulary. Include {{native_language}} translations for every example sentence and instruction.\n- B1: Use English as the primary language. Provide {{native_language}} translations only for complex abstract grammar terms (e.g., 'subjunctive mood', 'relative clauses') or idiomatic expressions. Example sentences are in English only.\n- B2-C2: Deliver explanations entirely in English. Do NOT include {{native_language}} translations. The user should be immersed in the target language.\n\nDECAY MODEL (percentage of L1 support by level):\n- A1: 100% dual language\n- A2: ~85% dual language, 15% English only\n- B1: ~30% L1 (complex terms only), 70% English only\n- B2: 0% L1\n- C1-C2: 0% L1, target language only\n\nEXCEPTION: If the user explicitly requests a translation, clarification, or explanation in {{native_language}}, provide it regardless of level. This respects user agency.",
+    "user_template": "",
+    "output_schema": {},
+    "variables": {
+      "native_language": "string — User's native language name (e.g., Malayalam)",
+      "learning_level": "string — CEFR level A1–C2"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "native_language": "Malayalam",
+      "learning_level": "A1"
+    },
+    "sample_output": {},
+    "test_cases": [
+      {
+        "id": "a1-dual",
+        "description": "A1 learner receives dual language explanations",
+        "input": { "learning_level": "A1", "native_language": "Malayalam" },
+        "validates": ["explanation_l1 is non-empty", "explanation contains both English and Malayalam"]
+      },
+      {
+        "id": "b1-partial",
+        "description": "B1 learner receives English primarily, L1 for complex terms only",
+        "input": { "learning_level": "B1", "native_language": "Malayalam" },
+        "validates": ["explanation_l1 is empty or contains only complex term translations", "primary explanation is in English"]
+      },
+      {
+        "id": "c1-english-only",
+        "description": "C1 learner receives English-only explanations",
+        "input": { "learning_level": "C1", "native_language": "Malayalam" },
+        "validates": ["explanation_l1 is empty", "no Malayalam text in explanation"]
+      },
+      {
+        "id": "explicit-request-override",
+        "description": "User explicitly requests L1 translation at C2 level",
+        "input": { "learning_level": "C2", "native_language": "Malayalam", "user_request": "Please explain this in Malayalam" },
+        "validates": ["L1 translation is provided despite C2 level"]
+      }
+    ]
+  }
+}

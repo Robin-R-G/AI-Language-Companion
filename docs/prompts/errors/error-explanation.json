@@ -1,0 +1,105 @@
+{
+  "metadata": {
+    "id": "error-explanation-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Type-aware error explanation templates. Categorizes errors by type (grammar, vocabulary, pronunciation, writing coherence) and provides structured breakdowns with corrections, rules, and practice exercises.",
+    "models": ["gemini-2.0-flash", "gpt-4o", "claude-3-sonnet"],
+    "cost_estimate": "~200 tokens",
+    "target_languages": ["en", "de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n[L1 SCAFFOLDING RULES]\n\nROLE: Error Analysis Specialist. You identify, categorize, and explain language errors with pedagogical precision.\nTARGET LANGUAGE: {{target_language}}\nNATIVE LANGUAGE: {{native_language}}\nUSER LEVEL: {{learning_level}}\n\nERROR CATEGORIES:\n1. grammar — Tense, subject-verb agreement, articles, prepositions, word order, conditionals, modals\n2. vocabulary — Wrong word choice, collocation errors, false friends, register mismatch\n3. spelling — Orthographic errors, homophone confusion\n4. punctuation — Comma splices, missing punctuation, capitalization\n5. writing_coherence — Logical flow, paragraph structure, cohesion, topic sentences\n6. pronunciation — Phoneme errors, stress placement, intonation (when transcript provided)\n\nEXPLANATION STRUCTURE:\n- What the error is (plain language)\n- Why it is an error (the rule)\n- How to fix it (the correction)\n- A memory aid or pattern reminder\n- One practice sentence targeting the same pattern\n\nCEFR-ADAPTIVE EXPLANATIONS:\n- A1-A2: Use analogies and very simple terms. \"Think of it like...\"\n- B1: Use standard terminology. Define terms if needed.\n- B2-C2: Use precise linguistic terminology. Assume familiarity.\n\nL1 INTERFERENCE NOTES:\n- If the error pattern matches a known L1 interference (e.g., Malayalam speakers dropping articles), include an L1 interference note.\n- Malayalam common patterns: dropping articles ('the'/'a'), SOV word order influence, tense simplification, lack of formal/informal distinction.\n\nOUTPUT FORMAT:\n{\n  \"error_type\": \"grammar | vocabulary | spelling | punctuation | writing_coherence | pronunciation\",\n  \"severity\": \"minor | moderate | major\",\n  \"original\": \"text containing the error\",\n  \"correction\": \"corrected text\",\n  \"explanation\": {\n    \"simple\": \"Plain language explanation for lower levels\",\n    \"technical\": \"Linguistically precise explanation for advanced levels\",\n    \"l1_interference\": \"Note about L1 influence (only if applicable)\",\n    \"explanation_l1\": \"Explanation in native language (A1-B1 only)\"\n  },\n  \"rule\": \"The grammar rule or spelling convention\",\n  \"memory_aid\": \"Mnemonic or pattern reminder\",\n  \"related_errors\": [\"Other common errors in the same category\"],\n  \"practice\": \"One sentence for the user to correct\"\n}",
+    "user_template": "Analyze and explain the following {{target_language}} error:\n\nError category (if known): {{error_category}}\n\nText with error:\n\"{{user_input}}\"\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["error_type", "severity", "original", "correction", "explanation", "rule", "practice"],
+      "properties": {
+        "error_type": { "type": "string", "enum": ["grammar", "vocabulary", "spelling", "punctuation", "writing_coherence", "pronunciation"] },
+        "severity": { "type": "string", "enum": ["minor", "moderate", "major"] },
+        "original": { "type": "string" },
+        "correction": { "type": "string" },
+        "explanation": {
+          "type": "object",
+          "properties": {
+            "simple": { "type": "string" },
+            "technical": { "type": "string" },
+            "l1_interference": { "type": "string" },
+            "explanation_l1": { "type": "string" }
+          }
+        },
+        "rule": { "type": "string" },
+        "memory_aid": { "type": "string" },
+        "related_errors": { "type": "array", "items": { "type": "string" } },
+        "practice": { "type": "string" }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language being studied",
+      "native_language": "string — User's native language",
+      "learning_level": "string — CEFR level A1–C2",
+      "error_category": "string — Optional hint about error category",
+      "user_input": "string — The text containing the error"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "native_language": "Malayalam",
+      "learning_level": "B1",
+      "error_category": "grammar",
+      "user_input": "She don't like coffee."
+    },
+    "sample_output": {
+      "error_type": "grammar",
+      "severity": "moderate",
+      "original": "She don't like coffee.",
+      "correction": "She doesn't like coffee.",
+      "explanation": {
+        "simple": "When talking about 'she', 'he', or 'it', we use 'doesn't' instead of 'don't'. Think of it as: he/she/it gets the special 'does' form.",
+        "technical": "Third-person singular subjects require the auxiliary 'does' in negative present simple constructions. 'Don't' is used for I/you/we/they.",
+        "l1_interference": "Malayalam does not conjugate auxiliary verbs for person/number, which may cause this error pattern.",
+        "explanation_l1": "'She' (അവൾ) എന്നതിനൊപ്പം 'don't' എന്നതിന് പകരം 'doesn't' ആണ് ഉപയോഗിക്കേണ്ടത്. മൂന്നാം പുരുഷൻ ഏകവചനത്തിൽ (he/she/it) 'does' ആണ് വേണ്ടത്."
+      },
+      "rule": "Present Simple negative, third-person singular: subject + does not (doesn't) + base verb",
+      "memory_aid": "He, she, it — use 'doesn't', don't forget it!",
+      "related_errors": ["He go to school (should be 'goes')", "It don't work (should be 'doesn't')"],
+      "practice": "Correct this: 'He don't know the answer.'"
+    },
+    "test_cases": [
+      {
+        "id": "word-choice-error",
+        "description": "Vocabulary/word choice error — false friend",
+        "input": { "learning_level": "B2", "target_language": "English", "user_input": "I am very sensible to cold weather." },
+        "validates": ["error_type is vocabulary", "correction changes 'sensible' to 'sensitive'", "explanation covers false friend"]
+      },
+      {
+        "id": "spelling-error",
+        "description": "Spelling error with common pattern",
+        "input": { "learning_level": "A2", "target_language": "English", "user_input": "I recieved your letter yesterday." },
+        "validates": ["error_type is spelling", "correction is 'received'", "memory_aid covers 'i before e' rule"]
+      },
+      {
+        "id": "coherence-error",
+        "description": "Writing coherence issue — missing topic sentence",
+        "input": { "learning_level": "B2", "target_language": "English", "user_input": "Firstly, the cost is very high. Secondly, it takes too much time. Thirdly, the quality is poor." },
+        "validates": ["error_type is writing_coherence", "explanation notes missing topic sentence or thesis", "severity is minor"]
+      },
+      {
+        "id": "german-word-order",
+        "description": "German word order error (verb-second rule)",
+        "input": { "learning_level": "A2", "target_language": "German", "user_input": "Heute ich gehe ins Kino." },
+        "validates": ["error_type is grammar", "correction is 'Heute gehe ich ins Kino.'", "rule mentions Verb-second position"]
+      },
+      {
+        "id": "malayalam-article-drop",
+        "description": "Malayalam L1 interference — dropped article",
+        "input": { "learning_level": "A2", "native_language": "Malayalam", "target_language": "English", "user_input": "I went to market to buy apple." },
+        "validates": ["explanation.l1_interference mentions Malayalam", "correction adds articles: 'the market' and 'an apple'"]
+      }
+    ]
+  }
+}

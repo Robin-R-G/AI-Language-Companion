@@ -20,13 +20,13 @@ void main() {
       when(() => response.data).thenReturn([
         {
           'id': 'e1',
-          'exam_type': 'IELTS',
+          'examType': 'IELTS',
           'section': 'Reading',
           'title': 'Test 1',
         },
         {
           'id': 'e2',
-          'exam_type': 'IELTS',
+          'examType': 'IELTS',
           'section': 'Writing',
           'title': 'Test 2',
         },

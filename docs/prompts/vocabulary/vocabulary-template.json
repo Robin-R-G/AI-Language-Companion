@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "id": "vocabulary-template-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Vocabulary teaching template with SRS (Spaced Repetition System) integration. Introduces new words with collocations, IPA pronunciation, mnemonics, and mini-quizzes. Supports the existing vocabulary SRS queue system.",
+    "models": ["gemini-2.0-flash", "gpt-4o"],
+    "cost_estimate": "~180 tokens",
+    "target_languages": ["en", "de", "ml"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n[L1 SCAFFOLDING RULES]\n\nROLE: Lexical Tutor — you introduce new vocabulary using research-backed techniques for long-term retention.\nTARGET LANGUAGE: {{target_language}}\nNATIVE LANGUAGE: {{native_language}}\nUSER LEVEL: {{learning_level}}\n\nVOCABULARY TEACHING METHOD:\n1. Present the word in context (a natural sentence)\n2. Give the definition using the target language at the user's level\n3. Provide L1 translation (A1-B1 only)\n4. Show IPA pronunciation + stress marking\n5. Teach 2-3 common collocations (words that go together)\n6. Provide a memory aid (mnemonic, visual association, or etymology)\n7. Include a mini-quiz to verify understanding\n\nSRS INTEGRATION:\n- Words taught here enter the SRS queue for spaced repetition review\n- Cards should follow format: front = target word, back = definition + example + pronunciation\n- Track which CEFR level the word belongs to for appropriate scheduling\n\nCOLLOCATION EXAMPLES:\n- Strong collocations: 'make a decision' (not 'do a decision')\n- Show grammatical patterns: 'interested in', 'depend on', 'capable of'\n\nOUTPUT FORMAT:\n{\n  \"word\": \"target word\",\n  \"part_of_speech\": \"noun | verb | adjective | adverb | preposition | phrase\",\n  \"cefr_level\": \"A1-C2\",\n  \"pronunciation\": {\n    \"ipa\": \"International Phonetic Alphabet notation\",\n    \"stress\": \"syllable stress pattern (e.g., 'PHO-to-graph')\",\n    \"audio_hint\": \"description of how to pronounce\"\n  },\n  \"definition\": {\n    \"target_language\": \"Definition in the target language at the user's level\",\n    \"l1\": \"Definition in native language (A1-B1 only)\"\n  },\n  \"example_sentences\": [\n    {\n      \"sentence\": \"Level-appropriate example\",\n      \"translation_l1\": \"L1 translation (A1-B1 only)\"\n    }\n  ],\n  \"collocations\": [\n    {\n      \"phrase\": \"common collocation\",\n      \"example\": \"example usage\"\n    }\n  ],\n  \"synonyms\": [\"word1\", \"word2\"],\n  \"antonyms\": [\"word1\", \"word2\"],\n  \"memory_aid\": {\n    \"type\": \"mnemonic | etymology | visual | story\",\n    \"content\": \"The memory aid content\"\n  },\n  \"common_mistakes\": [\"Error 1 to watch out for\", \"Error 2\"],\n  \"mini_quiz\": {\n    \"question\": \"Multiple choice question\",\n    \"options\": [\"A\", \"B\", \"C\", \"D\"],\n    \"correct_index\": number (0-3),\n    \"explanation\": \"Why this answer is correct\"\n  },\n  \"srs_card\": {\n    \"front\": \"Word or phrase for flashcard front\",\n    \"back\": \"Content for flashcard back\",\n    \"interval_days\": \"Suggested SRS interval for first review\"\n  }\n}",
+    "user_template": "Introduce the following {{target_language}} vocabulary to a {{learning_level}} learner:\n\nWord(s) to teach: {{user_input}}\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["word", "part_of_speech", "cefr_level", "pronunciation", "definition", "example_sentences", "collocations", "mini_quiz", "srs_card"],
+      "properties": {
+        "word": { "type": "string" },
+        "part_of_speech": { "type": "string", "enum": ["noun", "verb", "adjective", "adverb", "preposition", "phrase"] },
+        "cefr_level": { "type": "string" },
+        "pronunciation": {
+          "type": "object",
+          "properties": {
+            "ipa": { "type": "string" },
+            "stress": { "type": "string" },
+            "audio_hint": { "type": "string" }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "properties": {
+            "target_language": { "type": "string" },
+            "l1": { "type": "string" }
+          }
+        },
+        "example_sentences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sentence": { "type": "string" },
+              "translation_l1": { "type": "string" }
+            }
+          }
+        },
+        "collocations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phrase": { "type": "string" },
+              "example": { "type": "string" }
+            }
+          }
+        },
+        "synonyms": { "type": "array", "items": { "type": "string" } },
+        "antonyms": { "type": "array", "items": { "type": "string" } },
+        "memory_aid": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["mnemonic", "etymology", "visual", "story"] },
+            "content": { "type": "string" }
+          }
+        },
+        "common_mistakes": { "type": "array", "items": { "type": "string" } },
+        "mini_quiz": {
+          "type": "object",
+          "properties": {
+            "question": { "type": "string" },
+            "options": { "type": "array", "items": { "type": "string" } },
+            "correct_index": { "type": "number" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "srs_card": {
+          "type": "object",
+          "properties": {
+            "front": { "type": "string" },
+            "back": { "type": "string" },
+            "interval_days": { "type": "number" }
+          }
+        }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language being studied",
+      "native_language": "string — User's native language",
+      "learning_level": "string — CEFR level A1–C2",
+      "user_input": "string — The word(s) to teach"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "native_language": "Malayalam",
+      "learning_level": "B1",
+      "user_input": "significant"
+    },
+    "sample_output": {
+      "word": "significant",
+      "part_of_speech": "adjective",
+      "cefr_level": "B1",
+      "pronunciation": {
+        "ipa": "/sɪɡˈnɪf.ɪ.kənt/",
+        "stress": "sig-NI-fi-cant",
+        "audio_hint": "Stress the second syllable: nɪf"
+      },
+      "definition": {
+        "target_language": "large or important enough to be noticed or have an effect",
+        "l1": "ശ്രദ്ധേയമായ അല്ലെങ്കിൽ ഫലമുണ്ടാക്കുന്നത്ര വലുതോ പ്രധാനമോ ആയ"
+      },
+      "example_sentences": [
+        { "sentence": "There has been a significant increase in sales this year.", "translation_l1": "ഈ വർഷം വിൽപ്പനയിൽ ഗണ്യമായ വർദ്ധനവ് ഉണ്ടായിട്ടുണ്ട്." },
+        { "sentence": "This is a significant discovery for medical science.", "translation_l1": "വൈദ്യശാസ്ത്രത്തിന് ഇത് ഒരു സുപ്രധാന കണ്ടെത്തലാണ്." }
+      ],
+      "collocations": [
+        { "phrase": "significant change", "example": "The company made a significant change to its policy." },
+        { "phrase": "significant difference", "example": "There is no significant difference between the two methods." },
+        { "phrase": "significant contribution", "example": "She made a significant contribution to the project." }
+      ],
+      "synonyms": ["important", "notable", "considerable"],
+      "antonyms": ["insignificant", "minor", "negligible"],
+      "memory_aid": { "type": "etymology", "content": "From Latin 'significare' — to 'make a sign' (signum + facere). Something significant 'makes a sign' — it stands out." },
+      "common_mistakes": ["Confusing 'significant' with 'significate' (not a word)", "Overusing 'very significant' — 'significant' already implies importance"],
+      "mini_quiz": {
+        "question": "Which sentence uses 'significant' correctly?",
+        "options": [
+          "A. I had a significant breakfast this morning.",
+          "B. There was a significant increase in temperature.",
+          "C. She is a significant person in my class.",
+          "D. This book is very significant long."
+        ],
+        "correct_index": 1,
+        "explanation": "'Significant increase' is a common collocation meaning a large/important rise. Options A and C would use 'big' or 'important' instead."
+      },
+      "srs_card": {
+        "front": "significant",
+        "back": "/sɪɡˈnɪf.ɪ.kənt/ — important or large enough to be noticed. Collocations: significant change, significant difference, significant contribution.",
+        "interval_days": 1
+      }
+    },
+    "test_cases": [
+      {
+        "id": "basic-vocab",
+        "description": "Basic vocabulary introduction",
+        "input": { "learning_level": "A2", "target_language": "English", "user_input": "beautiful" },
+        "validates": ["definition.l1 is non-empty for A2", "pronunciation.ipa is present", "mini_quiz has 4 options", "srs_card has front and back"]
+      },
+      {
+        "id": "german-vocab-gender",
+        "description": "German noun with gender/plural in notes",
+        "input": { "learning_level": "A1", "target_language": "German", "user_input": "Buch" },
+        "validates": ["common_mistakes or collocations include gender info (das Buch)", "memory_aid is present"]
+      },
+      {
+        "id": "c2-advanced",
+        "description": "C2 advanced vocabulary without L1",
+        "input": { "learning_level": "C2", "target_language": "English", "user_input": "ubiquitous" },
+        "validates": ["definition.l1 is absent or empty", "synonyms include advanced words", "memory_aid uses etymology"]
+      },
+      {
+        "id": "collocation-emphasis",
+        "description": "Collocations are relevant and accurate",
+        "input": { "learning_level": "B1", "target_language": "English", "user_input": "decision" },
+        "validates": ["collocations includes 'make a decision'", "example_sentences use real contexts"]
+      }
+    ]
+  }
+}

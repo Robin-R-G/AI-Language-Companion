@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "id": "speaking-evaluation-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Speaking evaluation and pronunciation assessment template. Scores fluency, grammar, vocabulary, pronunciation, intonation, and clarity. Provides phoneme-level feedback and shadowing exercises.",
+    "models": ["gpt-4o", "gemini-2.0-flash"],
+    "cost_estimate": "~350 tokens",
+    "target_languages": ["en", "de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "[GLOBAL SYSTEM PROMPT]\n\nROLE: Speaking Coach and Pronunciation Trainer. You evaluate spoken language performance for fluency, accuracy, and pronunciation.\nTARGET LANGUAGE: {{target_language}}\nUSER LEVEL: {{learning_level}}\nTARGET EXAM: {{target_exam}}\n\nSPEAKING ASSESSMENT DIMENSIONS:\n1. Fluency (0-100): Speech rate, pausing, hesitation, rhythm. Smooth and natural flow vs frequent stops and restarts.\n2. Grammar (0-100): Grammatical accuracy in spoken language. Correct use of tenses, subject-verb agreement, word order.\n3. Vocabulary (0-100): Range and appropriateness of words. Use of idiomatic expressions and topic-specific vocabulary.\n4. Pronunciation (0-100): Phoneme accuracy, word stress, sentence stress, clarity of individual sounds.\n5. Intonation (0-100): Pitch variation, rising/falling tones, question vs statement intonation, emotional nuance.\n6. Clarity (0-100): Overall comprehensibility. How easy it is to understand the speaker.\n\nRULES:\n- For pronunciation issues, identify specific phonemes or words that were mispronounced.\n- Provide IPA notation for problem sounds when relevant.\n- The shadowing exercise should be a transcript roughly matching the user's current level.\n- For exam preparation (IELTS Speaking, Goethe Sprechen), align feedback to exam rubrics.\n- Never over-correct. Focus on errors that significantly impact intelligibility.\n- One area of improvement at a time to avoid overwhelming the user.\n\nOUTPUT FORMAT:\n{\n  \"scores\": {\n    \"fluency\": number (0-100),\n    \"grammar\": number (0-100),\n    \"vocabulary\": number (0-100),\n    \"pronunciation\": number (0-100),\n    \"intonation\": number (0-100),\n    \"clarity\": number (0-100),\n    \"overall\": number (0-100)\n  },\n  \"estimated_proficiency\": \"CEFR level or exam band\",\n  \"analysis\": {\n    \"strengths\": [\"2-3 positive aspects\"],\n    \"fluency_notes\": \"Specific observation about speech flow\",\n    \"grammar_notes\": \"Common grammar patterns observed\",\n    \"vocabulary_notes\": \"Vocabulary range assessment\",\n    \"pronunciation_issues\": [\"phoneme or word level issues with IPA if relevant\"],\n    \"intonation_notes\": \"Intonation pattern observations\",\n    \"clarity_notes\": \"Overall comprehensibility notes\"\n  },\n  \"practice_words\": [\"words targeting specific problem phonemes\"],\n  \"shadowing_exercise\": \"A short transcript (3-5 sentences) for the user to repeat, targeting their weak areas\",\n  \"practice_prompt\": \"A speaking topic prompt for independent practice\",\n  \"next_focus\": \"The single most important thing to work on before the next session\"\n}",
+    "user_template": "Evaluate the following {{target_language}} speech transcript or spoken response:\n\nSPEAKING PROMPT:\n\"{{prompt}}\"\n\nUSER'S RESPONSE:\n\"{{user_speech}}\"\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["scores", "estimated_proficiency", "analysis", "practice_words", "shadowing_exercise"],
+      "properties": {
+        "scores": {
+          "type": "object",
+          "properties": {
+            "fluency": { "type": "number", "minimum": 0, "maximum": 100 },
+            "grammar": { "type": "number", "minimum": 0, "maximum": 100 },
+            "vocabulary": { "type": "number", "minimum": 0, "maximum": 100 },
+            "pronunciation": { "type": "number", "minimum": 0, "maximum": 100 },
+            "intonation": { "type": "number", "minimum": 0, "maximum": 100 },
+            "clarity": { "type": "number", "minimum": 0, "maximum": 100 },
+            "overall": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "estimated_proficiency": { "type": "string" },
+        "analysis": {
+          "type": "object",
+          "properties": {
+            "strengths": { "type": "array", "items": { "type": "string" } },
+            "fluency_notes": { "type": "string" },
+            "grammar_notes": { "type": "string" },
+            "vocabulary_notes": { "type": "string" },
+            "pronunciation_issues": { "type": "array", "items": { "type": "string" } },
+            "intonation_notes": { "type": "string" },
+            "clarity_notes": { "type": "string" }
+          }
+        },
+        "practice_words": { "type": "array", "items": { "type": "string" } },
+        "shadowing_exercise": { "type": "string" },
+        "practice_prompt": { "type": "string" },
+        "next_focus": { "type": "string" }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language being spoken (English/German)",
+      "learning_level": "string — CEFR level A1–C2",
+      "target_exam": "string — Target exam (IELTS, Goethe, PTE, TOEFL, General)",
+      "prompt": "string — The speaking prompt or topic",
+      "user_speech": "string — The user's spoken response transcript"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "learning_level": "B1",
+      "target_exam": "IELTS",
+      "prompt": "Describe a place you like to visit. You should say: where it is, how you get there, what you do there, and explain why you like it.",
+      "user_speech": "My favorite place is the beach near my home. I go there every weekend. The water is very... uh... beautiful. And the sand is soft. I like to... uh... sit and read books there. It is very relaxing for me. My family also come with me sometimes."
+    },
+    "sample_output": {
+      "scores": { "fluency": 68, "grammar": 75, "vocabulary": 62, "pronunciation": 70, "intonation": 55, "clarity": 72, "overall": 67 },
+      "estimated_proficiency": "B1 (IELTS Band 5.5-6.0)",
+      "analysis": {
+        "strengths": ["Good use of descriptive adjectives (beautiful, soft, relaxing)", "Clear structure addressing all prompt points"],
+        "fluency_notes": "Notable hesitation with 'uh' fillers between phrases. Speech slows mid-sentence.",
+        "grammar_notes": "Minor error: 'My family also come' should be 'comes'. Otherwise good tense usage.",
+        "vocabulary_notes": "Basic vocabulary. Consider topic-specific words like 'shoreline', 'tide', 'breeze', 'serenity'.",
+        "pronunciation_issues": ["'beach' vs 'bitch' — vowel length /i:/ needs lengthening", "'relaxing' — stress on second syllable /rɪˈlæk.sɪŋ/"],
+        "intonation_notes": "Monotone pattern. Rising intonation needed for list items and sentence-final emphasis.",
+        "clarity_notes": "Generally clear. Work on linking words together (connected speech)."
+      },
+      "practice_words": ["beach /biːtʃ/", "relaxing /rɪˈlæk.sɪŋ/", "serenity /səˈren.ə.ti/", "shoreline /ˈʃɔːr.laɪn/"],
+      "shadowing_exercise": "My favorite place to visit is the coastline near my hometown. The gentle waves and warm sand create a serene atmosphere where I can read and reflect.",
+      "practice_prompt": "Describe a memorable meal you had. Include details about the food, the setting, and who you were with.",
+      "next_focus": "Reduce filler words ('uh') by practicing pausing silently instead. Work on intonation variety."
+    },
+    "test_cases": [
+      {
+        "id": "basic-fluency",
+        "description": "B1 learner with moderate fluency",
+        "input": { "learning_level": "B1", "target_language": "English", "user_speech": "I think that... uh... technology is good because... it helps people to... communicate." },
+        "validates": ["fluency score reflects hesitation", "pronunciation_issues lists specific problem phonemes", "shadowing_exercise targets weak areas"]
+      },
+      {
+        "id": "advanced-speaker",
+        "description": "C1 learner with near-native speech",
+        "input": { "learning_level": "C1", "target_language": "English", "user_speech": "The proliferation of digital communication platforms has fundamentally transformed interpersonal relationships, creating both opportunities and challenges." },
+        "validates": ["overall score above 80", "pronunciation_issues minimal or empty", "next_focus is about nuance, not basics"]
+      },
+      {
+        "id": "german-pronunciation",
+        "description": "German pronunciation with common learner errors",
+        "input": { "target_language": "German", "learning_level": "A2", "user_speech": "Ich heiße Thomas und ich wohne in Berlin." },
+        "validates": ["pronunciation_issues covers ich-Laut if mispronounced", "practice_words include German-specific phonemes"]
+      },
+      {
+        "id": "ielts-speaking-format",
+        "description": "Aligns to IELTS Speaking rubric when exam is IELTS",
+        "input": { "learning_level": "B2", "target_exam": "IELTS", "user_speech": "Let me describe my hometown..." },
+        "validates": ["estimated_proficiency includes IELTS band", "analysis references fluency/coherence"]
+      }
+    ]
+  }
+}

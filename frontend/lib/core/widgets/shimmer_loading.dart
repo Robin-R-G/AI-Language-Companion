@@ -33,24 +33,24 @@ class ShimmerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(
+    return const Card(
+      margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.base,
         vertical: AppSpacing.sm,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.base),
+        padding: EdgeInsets.all(AppSpacing.base),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const ShimmerLoading(width: 40, height: 40, borderRadius: 20),
-                const SizedBox(width: AppSpacing.sm),
+                ShimmerLoading(width: 40, height: 40, borderRadius: 20),
+                SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       ShimmerLoading(width: 120, height: 16),
                       SizedBox(height: AppSpacing.xs),
                       ShimmerLoading(width: 80, height: 12),
@@ -59,10 +59,10 @@ class ShimmerCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.base),
-            const ShimmerLoading(height: 14),
-            const SizedBox(height: AppSpacing.xs),
-            const ShimmerLoading(width: 200, height: 14),
+            SizedBox(height: AppSpacing.base),
+            ShimmerLoading(height: 14),
+            SizedBox(height: AppSpacing.xs),
+            ShimmerLoading(width: 200, height: 14),
           ],
         ),
       ),

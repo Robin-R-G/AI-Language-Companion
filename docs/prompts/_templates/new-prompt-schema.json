@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "id": "template-placeholder-id-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Replace with a brief description of what this prompt does",
+    "models": ["gemini-2.0-flash", "gpt-4o", "claude-3-sonnet"],
+    "cost_estimate": "~XXX tokens (system + average user input)",
+    "target_languages": ["en", "de", "ml"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "You are the AI Language Coach, an expert language tutor.\n\n[GLOBAL RULES — reference docs/prompts/system/global-system-prompt.json]\n\nROLE: Define the role here.\nTARGET LANGUAGE: {{target_language}}\nNATIVE LANGUAGE: {{native_language}}\nUSER LEVEL: {{learning_level}}\n\n[L1 SCAFFOLDING RULES — reference docs/prompts/system/l1-scaffolding.json]\n\nRESPONSIBILITIES:\n- List key responsibilities\n- In order of importance",
+    "user_template": "Replace with the user-facing prompt template using {{variable}} placeholders:\n\n\"{{user_input}}\"\n\nRespond ONLY with valid JSON matching the schema below.",
+    "output_schema": {
+      "type": "object",
+      "required": ["field1", "field2"],
+      "properties": {
+        "field1": { "type": "string", "description": "Description of field1" },
+        "field2": { "type": "number", "description": "Description of field2" }
+      }
+    },
+    "variables": {
+      "target_language": "string - The language being studied",
+      "native_language": "string - User's native language",
+      "learning_level": "string - CEFR level A1-C2",
+      "user_input": "string - The user's input text"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "native_language": "Malayalam",
+      "learning_level": "B1",
+      "user_input": "Example input text"
+    },
+    "sample_output": {
+      "field1": "Expected value",
+      "field2": 42
+    },
+    "test_cases": [
+      {
+        "id": "case-1",
+        "description": "Basic functionality test",
+        "input": { "learning_level": "B1", "user_input": "Test input" },
+        "validates": ["field1 is non-empty", "field2 is a number"]
+      }
+    ]
+  }
+}

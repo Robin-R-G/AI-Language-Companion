@@ -1,7 +1,7 @@
 # AI Language Coach - Implementation Progress
-**Version:** 2.0  
+**Version:** 2.1  
 **Last Updated:** July 4, 2026  
-**Current Milestone:** M0 (Foundation) - Completed, M1 (Screen UI) - Completed
+**Current Milestone:** M0 (Foundation) - Completed, M1 (Screen UI) - Completed, M2 (Domain/Data/Test Infrastructure) - Completed
 
 ---
 
@@ -506,6 +506,31 @@ lib/features/
 - Created frontend unit tests: `result_test.dart` covering `Result<T>` and `Failure` hierarchy
 - Updated `docs/15-Testing.md` with edge function testing section
 - Updated `docs/22-Edge-Functions-Specification.md` with testing section
+
+### ✅ Domain Layer Buildout (Agent 5 — This Session)
+- Created domain entities, repository interfaces, data implementations, and Riverpod providers for: **progress**, **reading**, **writing**, **listening**, **settings**, **notifications**
+- Created `UserProfile` entity for profile/edit_profile feature
+- Refactored `repository_providers.dart` from riverpod_generator to plain Riverpod `Provider` (avoiding code-gen dependency)
+- All 6 new features follow Clean Architecture: domain/entities, domain/repositories, data/repositories, presentation/providers
+
+### ✅ Test Infrastructure Fix (Agent 5)
+- Fixed `..\..\` → `../../` import paths in 11 test files (Windows backslash → URI forward slash)
+- Fixed `golden_test_helper.dart` return type (`WidgetController` → `Widget`)
+- Fixed `mocks.dart`: removed invalid `MockGoTrueAdminAPI`, added generic type parameter to `MockResponse<T>`
+- Fixed `widget_test.dart`: added missing `tester` parameter
+- Fixed `auth_repository_test.dart`: positional → named arg for `signUp()`, `createdAt` null → string
+- Added `integration_test` SDK dependency to pubspec.yaml
+- **Analyzer now passes with 0 errors** (down from ~420+)
+
+### ✅ Localization Setup (Agent 5)
+- Added `flutter_localizations: sdk: flutter` to pubspec.yaml
+- Created `l10n.yaml` with generation config
+- Created ARB files for **English** (app_en.arb), **Malayalam** (app_ml.arb), **German** (app_de.arb) — 80+ UI strings each
+- Run `flutter gen-l10n` to generate `AppLocalizations` when needed
+
+### ✅ Feature Page Widget Tests (Agent 5)
+- Created 9 new widget test files: grammar, progress, reading, writing, listening, settings, notifications, subscription, edit_profile
+- Total test count: **22 test files** (13 widget + 9 feature page), 60+ tests
 
 ---
 

@@ -1,0 +1,136 @@
+{
+  "metadata": {
+    "id": "daily-challenge-v1",
+    "version": "1.0.0",
+    "author": "AI Language Coach Team",
+    "created": "2026-07-04",
+    "description": "Personalized daily challenge generation. Creates level-appropriate, context-aware challenges based on user's error history, weak topics, learning memory, and CEFR level.",
+    "models": ["gemini-2.0-flash", "gpt-4o"],
+    "cost_estimate": "~250 tokens",
+    "target_languages": ["en", "de"],
+    "cefr_range": "A1-C2",
+    "status": "draft"
+  },
+  "template": {
+    "system": "You are the AI Language Coach, an expert language tutor.\n\nROLE: Daily Challenge Creator — you design personalized language challenges that target the user's specific weak areas.\nTARGET LANGUAGE: {{target_language}}\nNATIVE LANGUAGE: {{native_language}}\nUSER LEVEL: {{learning_level}}\nTARGET EXAM: {{target_exam}}\n\nCHALLENGE PERSONALIZATION:\n- Use {{recent_errors}} to target specific weak areas with relevant exercises\n- Use {{learning_memory}} to incorporate user interests (e.g., if they like cooking, use food-based examples)\n- Use {{conversation_history}} to build on recent topics and maintain continuity\n- Vary challenge types to keep engagement high\n\nCHALLENGE TYPES:\n1. grammar_correction — Find and fix grammar errors in a short paragraph\n2. vocabulary_builder — Learn 3 new words and use them in sentences\n3. writing_prompt — Write a short paragraph on a given topic (exam-style)\n4. translation_challenge — Translate sentences between target language and L1\n5. speaking_prompt — Record yourself answering a question (output: prompt + tips)\n6. mixed_review — Combination of mini-exercises targeting recent weak areas\n\nCHALLENGE DESIGN RULES:\n- Each challenge should take 5-10 minutes\n- Include clear instructions in the target language (with L1 support for A1-B1)\n- Include hints that the user can request if stuck\n- End with a 'reflect' question to encourage self-assessment\n- Difficulty should be calibrated so the user gets ~70% correct (not too hard, not too easy)\n- For exam-prep users (IELTS/Goethe), align challenge format to exam tasks\n- Track which error patterns are reinforced (based on recent_errors)\n\nOUTPUT FORMAT:\n{\n  \"challenge_id\": \"daily-challenge-YYYYMMDD\",\n  \"title\": \"Engaging challenge title\",\n  \"type\": \"grammar_correction | vocabulary_builder | writing_prompt | translation_challenge | speaking_prompt | mixed_review\",\n  \"cefr_level\": \"A1-C2\",\n  \"estimated_minutes\": number (5-10),\n  \"target_weakness\": \"Specific skill or error pattern this challenge addresses\",\n  \"instructions\": {\n    \"target_language\": \"Instructions in the target language\",\n    \"l1\": \"Instructions in native language (A1-B1 only)\"\n  },\n  \"content\": {\n    \"prompt\": \"The main challenge prompt or exercise\",\n    \"hints\": [\"2-3 progressive hints\"],\n    \"vocabulary_help\": [{\"word\": \"difficult word\", \"definition\": \"level-appropriate definition\"}]\n  },\n  \"expected_output\": \"What the user should produce\",\n  \"tips\": [\"2-3 tips for completing the challenge\"],\n  \"follow_up\": \"A reflect question or extension activity\"\n}",
+    "user_template": "Generate a personalized daily challenge for a {{learning_level}} {{target_language}} learner.\n\nRecent errors: {{recent_errors}}\nInterests: {{learning_memory}}\nPreferred challenge type (optional): {{challenge_type}}\n\nRespond ONLY with valid JSON matching the schema.",
+    "output_schema": {
+      "type": "object",
+      "required": ["challenge_id", "title", "type", "cefr_level", "estimated_minutes", "instructions", "content"],
+      "properties": {
+        "challenge_id": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["grammar_correction", "vocabulary_builder", "writing_prompt", "translation_challenge", "speaking_prompt", "mixed_review"] },
+        "cefr_level": { "type": "string" },
+        "estimated_minutes": { "type": "number", "minimum": 5, "maximum": 10 },
+        "target_weakness": { "type": "string" },
+        "instructions": {
+          "type": "object",
+          "properties": {
+            "target_language": { "type": "string" },
+            "l1": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": "object",
+          "properties": {
+            "prompt": { "type": "string" },
+            "hints": { "type": "array", "items": { "type": "string" } },
+            "vocabulary_help": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "word": { "type": "string" },
+                  "definition": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "expected_output": { "type": "string" },
+        "tips": { "type": "array", "items": { "type": "string" } },
+        "follow_up": { "type": "string" }
+      }
+    },
+    "variables": {
+      "target_language": "string — Language being studied",
+      "native_language": "string — User's native language",
+      "learning_level": "string — CEFR level A1–C2",
+      "target_exam": "string — Target exam (IELTS, Goethe, PTE, TOEFL, General)",
+      "recent_errors": "string — Comma-separated list of recent error patterns",
+      "learning_memory": "string — User's interests and preferences",
+      "conversation_history": "string — Recent conversation topics",
+      "challenge_type": "string — Optional challenge type preference"
+    }
+  },
+  "testing": {
+    "sample_input": {
+      "target_language": "English",
+      "native_language": "Malayalam",
+      "learning_level": "B1",
+      "target_exam": "IELTS",
+      "recent_errors": "Subject-verb agreement, Articles (a/an/the), Past tense",
+      "learning_memory": "Interested in technology, likes cooking",
+      "challenge_type": "grammar_correction"
+    },
+    "sample_output": {
+      "challenge_id": "daily-challenge-20260704",
+      "title": "Tech News Grammar Fix",
+      "type": "grammar_correction",
+      "cefr_level": "B1",
+      "estimated_minutes": 8,
+      "target_weakness": "Subject-verb agreement and article usage",
+      "instructions": {
+        "target_language": "Read the paragraph below about a new smartphone. There are 5 grammar errors. Find them and write the corrected version.",
+        "l1": "ഒരു പുതിയ സ്മാർട്ട്ഫോണിനെ കുറിച്ചുള്ള താഴെയുള്ള ഖണ്ഡിക വായിക്കുക. 5 വ്യാകരണ പിശകുകൾ ഉണ്ട്. അവ കണ്ടെത്തി ശരിയായ പതിപ്പ് എഴുതുക."
+      },
+      "content": {
+        "prompt": "The new smartphone have a amazing camera. It take very good photos in low light. The battery last for two whole days. User say it is the best phone of the year. A company plan to release update next month.",
+        "hints": [
+          "Hint 1: Look at each verb — does it match the subject?",
+          "Hint 2: Check if articles (a/an/the) are used correctly.",
+          "Hint 3: There are exactly 5 errors."
+        ],
+        "vocabulary_help": [
+          { "word": "smartphone", "definition": "a mobile phone with advanced features" },
+          { "word": "low light", "definition": "conditions with not much brightness" },
+          { "word": "release", "definition": "to make available to the public" }
+        ]
+      },
+      "expected_output": "Corrected paragraph with all 5 errors fixed.",
+      "tips": [
+        "Read the sentence aloud — does it sound right?",
+        "Remember: he/she/it + verb needs an 's' (The phone has, It takes)",
+        "Use 'an' before vowel sounds: 'an amazing camera'"
+      ],
+      "follow_up": "Write 3 sentences about a technology product you own, making sure each verb agrees with its subject."
+    },
+    "test_cases": [
+      {
+        "id": "targets-recent-errors",
+        "description": "Challenge targets specific error patterns from recent_errors",
+        "input": { "learning_level": "B1", "recent_errors": "Prepositions, Present Perfect tense" },
+        "validates": ["target_weakness mentions Prepositions or Present Perfect", "exercises practice these patterns"]
+      },
+      {
+        "id": "incorporates-interests",
+        "description": "Challenge content uses user's interests from learning_memory",
+        "input": { "learning_level": "A2", "learning_memory": "Loves football", "recent_errors": "Past tense" },
+        "validates": ["content.prompt mentions football or sports", "type makes sense for A2"]
+      },
+      {
+        "id": "ielts-aligned",
+        "description": "Challenge aligns to IELTS format when target_exam is IELTS",
+        "input": { "learning_level": "B2", "target_exam": "IELTS", "recent_errors": "Task response, Cohesion" },
+        "validates": ["type is writing_prompt or mixed_review", "prompt resembles IELTS task format"]
+      },
+      {
+        "id": "german-challenge",
+        "description": "German daily challenge with appropriate format",
+        "input": { "learning_level": "A2", "target_language": "German", "recent_errors": "Artikel, Akkusativ" },
+        "validates": ["instructions.target_language is in German", "target_weakness references cases or articles"]
+      }
+    ]
+  }
+}

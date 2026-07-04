@@ -15,11 +15,11 @@ class StreakFab extends StatelessWidget {
       child: FloatingActionButton(
         onPressed: () => context.push(RouteNames.voice),
         backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.mic, color: Colors.white, size: 28),
-            const SizedBox(height: 2),
+            Icon(Icons.mic, color: Colors.white, size: 28),
+            SizedBox(height: 2),
             Text(
               '5🔥',
               style: TextStyle(

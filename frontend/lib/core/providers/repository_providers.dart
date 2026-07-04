@@ -117,7 +117,9 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepositoryImpl(dioClient: dioClient);
 });
 
-final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) {
+final notificationsRepositoryProvider = Provider<NotificationsRepository>((
+  ref,
+) {
   final dioClient = ref.watch(dioClientProvider);
   return NotificationsRepositoryImpl(dioClient: dioClient);
 });

@@ -21,8 +21,7 @@ class AppAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundImage: NetworkImage(imageUrl!),
-        onBackgroundImageError: (_, __) {},
-        child: null,
+        onBackgroundImageError: (_, _) {},
       );
     }
 

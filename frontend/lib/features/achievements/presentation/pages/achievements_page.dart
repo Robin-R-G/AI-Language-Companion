@@ -42,9 +42,9 @@ class _BadgesTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Stats Summary
-          Card(
+          const Card(
             child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.base),
+              padding: EdgeInsets.all(AppSpacing.base),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -85,7 +85,7 @@ class _BadgesTab extends StatelessWidget {
             height: 120,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: [
+              children: const [
                 _BadgeCard(
                   icon: Icons.local_fire_department,
                   label: '7-Day Streak',
@@ -166,14 +166,10 @@ class _LeagueTab extends StatelessWidget {
           ),
           child: Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 32,
                 backgroundColor: AppColors.warning,
-                child: const Icon(
-                  Icons.emoji_events,
-                  color: Colors.white,
-                  size: 32,
-                ),
+                child: Icon(Icons.emoji_events, color: Colors.white, size: 32),
               ),
               const SizedBox(width: AppSpacing.base),
               Expanded(
@@ -386,7 +382,7 @@ class _LeaderboardItem extends StatelessWidget {
                     ? AppColors.warning
                     : rank == 2
                     ? Colors.grey
-                    : Color(0xFFCD7F32))
+                    : const Color(0xFFCD7F32))
               : Theme.of(context).colorScheme.surface,
           child: Text(
             rank <= 3 ? _getMedalEmoji(rank) : '$rank',
