@@ -16,7 +16,7 @@ class ProgressRepositoryImpl implements ProgressRepository {
     try {
       final response = await _dio.get(
         '/progress',
-        queryParameters: {if (period != null) 'period': period},
+        queryParameters: {'period': ?period},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {

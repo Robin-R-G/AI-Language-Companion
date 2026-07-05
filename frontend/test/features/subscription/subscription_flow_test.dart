@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
+import 'package:ai_language_coach/core/errors/failure.dart';
 import '../../test_utils/fake_services.dart';
 
 void main() {
@@ -14,7 +15,7 @@ void main() {
       final result = await fakeSubscriptionRepository.getCurrentSubscription();
 
       expect(result.isSuccess, isTrue);
-      expect(result.value.plan, 'free');
+      expect(result.value.planId, 'free');
       expect(result.value.status, 'active');
     });
 
@@ -34,7 +35,7 @@ void main() {
       );
 
       expect(result.isSuccess, isTrue);
-      expect(result.value.plan, 'premium');
+      expect(result.value.planId, 'premium');
     });
 
     test('should restore purchases', () async {
@@ -95,26 +96,26 @@ void main() {
       await fakeSubscriptionRepository.purchase('premium', 'store_id');
 
       final sub = await fakeSubscriptionRepository.getCurrentSubscription();
-      expect(sub.value.plan, 'premium');
+      expect(sub.value.planId, 'premium');
     });
   });
 
   group('Subscription State Transitions', () {
     test('free -> premium -> free transition', () async {
       expect(
-        (await fakeSubscriptionRepository.getCurrentSubscription()).value.plan,
+        (await fakeSubscriptionRepository.getCurrentSubscription()).value.planId,
         'free',
       );
 
       await fakeSubscriptionRepository.purchase('premium', 'store_id');
       expect(
-        (await fakeSubscriptionRepository.getCurrentSubscription()).value.plan,
+        (await fakeSubscriptionRepository.getCurrentSubscription()).value.planId,
         'premium',
       );
 
       await fakeSubscriptionRepository.cancelSubscription();
       expect(
-        (await fakeSubscriptionRepository.getCurrentSubscription()).value.plan,
+        (await fakeSubscriptionRepository.getCurrentSubscription()).value.planId,
         'free',
       );
     });

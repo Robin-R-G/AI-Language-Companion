@@ -112,12 +112,14 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     if (_shouldFail) {
       return const Result.error(PaymentFailure('Failed'));
     }
-    return Result.success(Subscription(
-      id: 'sub_1',
-      userId: 'user_1',
-      plan: _currentPlan,
-      status: 'active',
-    ));
+    return Result.success(
+      Subscription(
+        id: 'sub_1',
+        userId: 'user_1',
+        plan: _currentPlan,
+        status: 'active',
+      ),
+    );
   }
 
   @override
@@ -125,8 +127,8 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     if (_shouldFail) {
       return const Result.error(PaymentFailure('Failed'));
     }
-    return Result.success([
-      const SubscriptionPlan(
+    return const Result.success([
+      SubscriptionPlan(
         id: 'free',
         name: 'Free',
         description: 'Basic access with limited features',
@@ -135,7 +137,7 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
         period: 'monthly',
         features: ['5 voice mins/day'],
       ),
-      const SubscriptionPlan(
+      SubscriptionPlan(
         id: 'premium',
         name: 'Premium',
         description: 'Full access to all features',
@@ -149,17 +151,22 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
   }
 
   @override
-  Future<Result<Subscription>> purchase(String planId, String storeProductId) async {
+  Future<Result<Subscription>> purchase(
+    String planId,
+    String storeProductId,
+  ) async {
     if (_shouldFail) {
       return const Result.error(PaymentFailure('Purchase failed'));
     }
     _currentPlan = planId;
-    return Result.success(Subscription(
-      id: 'sub_2',
-      userId: 'user_1',
-      plan: planId,
-      status: 'active',
-    ));
+    return Result.success(
+      Subscription(
+        id: 'sub_2',
+        userId: 'user_1',
+        plan: planId,
+        status: 'active',
+      ),
+    );
   }
 
   @override
@@ -167,12 +174,14 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     if (_shouldFail) {
       return const Result.error(PaymentFailure('Restore failed'));
     }
-    return Result.success(Subscription(
-      id: 'sub_1',
-      userId: 'user_1',
-      plan: _currentPlan,
-      status: 'active',
-    ));
+    return Result.success(
+      Subscription(
+        id: 'sub_1',
+        userId: 'user_1',
+        plan: _currentPlan,
+        status: 'active',
+      ),
+    );
   }
 
   @override

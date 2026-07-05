@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:ai_language_coach/core/errors/failure.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
 import 'package:ai_language_coach/features/auth/domain/repositories/auth_repository.dart';
 import 'package:ai_language_coach/features/auth/domain/entities/user.dart';

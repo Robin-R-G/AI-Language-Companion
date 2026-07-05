@@ -12,16 +12,31 @@ class ListeningRepositoryImpl implements ListeningRepository {
     : _dio = dio ?? dioClient?.client ?? DioClient().client;
 
   @override
-  Future<Result<List<ListeningExercise>>> getExercises({String? difficulty, int limit = 20}) async {
+  Future<Result<List<ListeningExercise>>> getExercises({
+    String? difficulty,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _dio.get('/listening', queryParameters: {'limit': limit, if (difficulty != null) 'difficulty': difficulty});
+      final response = await _dio.get(
+        '/listening',
+        queryParameters: {'limit': limit, 'difficulty': ?difficulty},
+      );
       final data = response.data;
       if (data is List) {
-        return Result.success(data.map((e) => ListeningExercise.fromJson(e as Map<String, dynamic>)).toList());
+        return Result.success(
+          data
+              .map((e) => ListeningExercise.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        );
       }
       return const Result.error(DatabaseFailure('Invalid response format'));
     } on DioException catch (e) {
-      return Result.error(DatabaseFailure(e.message ?? 'Failed to fetch exercises', code: e.response?.statusCode?.toString()));
+      return Result.error(
+        DatabaseFailure(
+          e.message ?? 'Failed to fetch exercises',
+          code: e.response?.statusCode?.toString(),
+        ),
+      );
     }
   }
 
@@ -35,7 +50,12 @@ class ListeningRepositoryImpl implements ListeningRepository {
       }
       return const Result.error(DatabaseFailure('Invalid response format'));
     } on DioException catch (e) {
-      return Result.error(DatabaseFailure(e.message ?? 'Failed to fetch exercise', code: e.response?.statusCode?.toString()));
+      return Result.error(
+        DatabaseFailure(
+          e.message ?? 'Failed to fetch exercise',
+          code: e.response?.statusCode?.toString(),
+        ),
+      );
     }
   }
 }

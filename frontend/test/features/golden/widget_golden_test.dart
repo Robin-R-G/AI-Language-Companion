@@ -118,7 +118,7 @@ void main() {
         createGoldenWrapper(
           const SectionHeader(
             title: 'Recent Activity',
-            actionText: 'View All',
+            actionLabel: 'View All',
           ),
         ),
       );
@@ -150,9 +150,9 @@ void main() {
         createGoldenWrapper(
           StatRow(
             stats: const [
-              StatItem(value: '1,200', label: 'XP'),
-              StatItem(value: '5', label: 'Streak'),
-              StatItem(value: '8', label: 'Level'),
+              StatItem(icon: Icons.star, value: '1,200', label: 'XP'),
+              StatItem(icon: Icons.local_fire_department, value: '5', label: 'Streak'),
+              StatItem(icon: Icons.school, value: '8', label: 'Level'),
             ],
           ),
         ),

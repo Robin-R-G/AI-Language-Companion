@@ -23,14 +23,19 @@ VoiceSession _$VoiceSessionFromJson(Map<String, dynamic> json) {
 mixin _$VoiceSession {
   String get id => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
-  String get provider => throw _privateConstructorUsedError;
-  int get durationSeconds => throw _privateConstructorUsedError;
-  String get roomId => throw _privateConstructorUsedError;
-  DateTime? get startedAt => throw _privateConstructorUsedError;
+  String get sessionType => throw _privateConstructorUsedError;
+  String get targetLanguage => throw _privateConstructorUsedError;
+  String get topic => throw _privateConstructorUsedError;
+  int get durationMinutes => throw _privateConstructorUsedError;
+  int get xpEarned => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+  String? get liveKitRoomName => throw _privateConstructorUsedError;
+  String? get recordingUrl => throw _privateConstructorUsedError;
+  String? get transcript => throw _privateConstructorUsedError;
+  DateTime get startedAt => throw _privateConstructorUsedError;
   DateTime? get endedAt => throw _privateConstructorUsedError;
-  int get averageLatencyMs => throw _privateConstructorUsedError;
-  int get overallScore => throw _privateConstructorUsedError;
-  String get transcriptText => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this VoiceSession to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,14 +57,19 @@ abstract class $VoiceSessionCopyWith<$Res> {
   $Res call({
     String id,
     String userId,
-    String provider,
-    int durationSeconds,
-    String roomId,
-    DateTime? startedAt,
+    String sessionType,
+    String targetLanguage,
+    String topic,
+    int durationMinutes,
+    int xpEarned,
+    String status,
+    String? liveKitRoomName,
+    String? recordingUrl,
+    String? transcript,
+    DateTime startedAt,
     DateTime? endedAt,
-    int averageLatencyMs,
-    int overallScore,
-    String transcriptText,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -80,14 +90,19 @@ class _$VoiceSessionCopyWithImpl<$Res, $Val extends VoiceSession>
   $Res call({
     Object? id = null,
     Object? userId = null,
-    Object? provider = null,
-    Object? durationSeconds = null,
-    Object? roomId = null,
-    Object? startedAt = freezed,
+    Object? sessionType = null,
+    Object? targetLanguage = null,
+    Object? topic = null,
+    Object? durationMinutes = null,
+    Object? xpEarned = null,
+    Object? status = null,
+    Object? liveKitRoomName = freezed,
+    Object? recordingUrl = freezed,
+    Object? transcript = freezed,
+    Object? startedAt = null,
     Object? endedAt = freezed,
-    Object? averageLatencyMs = null,
-    Object? overallScore = null,
-    Object? transcriptText = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -99,38 +114,58 @@ class _$VoiceSessionCopyWithImpl<$Res, $Val extends VoiceSession>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String,
-            provider: null == provider
-                ? _value.provider
-                : provider // ignore: cast_nullable_to_non_nullable
+            sessionType: null == sessionType
+                ? _value.sessionType
+                : sessionType // ignore: cast_nullable_to_non_nullable
                       as String,
-            durationSeconds: null == durationSeconds
-                ? _value.durationSeconds
-                : durationSeconds // ignore: cast_nullable_to_non_nullable
+            targetLanguage: null == targetLanguage
+                ? _value.targetLanguage
+                : targetLanguage // ignore: cast_nullable_to_non_nullable
+                      as String,
+            topic: null == topic
+                ? _value.topic
+                : topic // ignore: cast_nullable_to_non_nullable
+                      as String,
+            durationMinutes: null == durationMinutes
+                ? _value.durationMinutes
+                : durationMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
-            roomId: null == roomId
-                ? _value.roomId
-                : roomId // ignore: cast_nullable_to_non_nullable
+            xpEarned: null == xpEarned
+                ? _value.xpEarned
+                : xpEarned // ignore: cast_nullable_to_non_nullable
+                      as int,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
                       as String,
-            startedAt: freezed == startedAt
+            liveKitRoomName: freezed == liveKitRoomName
+                ? _value.liveKitRoomName
+                : liveKitRoomName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            recordingUrl: freezed == recordingUrl
+                ? _value.recordingUrl
+                : recordingUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            transcript: freezed == transcript
+                ? _value.transcript
+                : transcript // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            startedAt: null == startedAt
                 ? _value.startedAt
                 : startedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
+                      as DateTime,
             endedAt: freezed == endedAt
                 ? _value.endedAt
                 : endedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            averageLatencyMs: null == averageLatencyMs
-                ? _value.averageLatencyMs
-                : averageLatencyMs // ignore: cast_nullable_to_non_nullable
-                      as int,
-            overallScore: null == overallScore
-                ? _value.overallScore
-                : overallScore // ignore: cast_nullable_to_non_nullable
-                      as int,
-            transcriptText: null == transcriptText
-                ? _value.transcriptText
-                : transcriptText // ignore: cast_nullable_to_non_nullable
-                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -149,14 +184,19 @@ abstract class _$$VoiceSessionImplCopyWith<$Res>
   $Res call({
     String id,
     String userId,
-    String provider,
-    int durationSeconds,
-    String roomId,
-    DateTime? startedAt,
+    String sessionType,
+    String targetLanguage,
+    String topic,
+    int durationMinutes,
+    int xpEarned,
+    String status,
+    String? liveKitRoomName,
+    String? recordingUrl,
+    String? transcript,
+    DateTime startedAt,
     DateTime? endedAt,
-    int averageLatencyMs,
-    int overallScore,
-    String transcriptText,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -176,14 +216,19 @@ class __$$VoiceSessionImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? userId = null,
-    Object? provider = null,
-    Object? durationSeconds = null,
-    Object? roomId = null,
-    Object? startedAt = freezed,
+    Object? sessionType = null,
+    Object? targetLanguage = null,
+    Object? topic = null,
+    Object? durationMinutes = null,
+    Object? xpEarned = null,
+    Object? status = null,
+    Object? liveKitRoomName = freezed,
+    Object? recordingUrl = freezed,
+    Object? transcript = freezed,
+    Object? startedAt = null,
     Object? endedAt = freezed,
-    Object? averageLatencyMs = null,
-    Object? overallScore = null,
-    Object? transcriptText = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _$VoiceSessionImpl(
@@ -195,38 +240,58 @@ class __$$VoiceSessionImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String,
-        provider: null == provider
-            ? _value.provider
-            : provider // ignore: cast_nullable_to_non_nullable
+        sessionType: null == sessionType
+            ? _value.sessionType
+            : sessionType // ignore: cast_nullable_to_non_nullable
                   as String,
-        durationSeconds: null == durationSeconds
-            ? _value.durationSeconds
-            : durationSeconds // ignore: cast_nullable_to_non_nullable
+        targetLanguage: null == targetLanguage
+            ? _value.targetLanguage
+            : targetLanguage // ignore: cast_nullable_to_non_nullable
+                  as String,
+        topic: null == topic
+            ? _value.topic
+            : topic // ignore: cast_nullable_to_non_nullable
+                  as String,
+        durationMinutes: null == durationMinutes
+            ? _value.durationMinutes
+            : durationMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
-        roomId: null == roomId
-            ? _value.roomId
-            : roomId // ignore: cast_nullable_to_non_nullable
+        xpEarned: null == xpEarned
+            ? _value.xpEarned
+            : xpEarned // ignore: cast_nullable_to_non_nullable
+                  as int,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
                   as String,
-        startedAt: freezed == startedAt
+        liveKitRoomName: freezed == liveKitRoomName
+            ? _value.liveKitRoomName
+            : liveKitRoomName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        recordingUrl: freezed == recordingUrl
+            ? _value.recordingUrl
+            : recordingUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        transcript: freezed == transcript
+            ? _value.transcript
+            : transcript // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        startedAt: null == startedAt
             ? _value.startedAt
             : startedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
+                  as DateTime,
         endedAt: freezed == endedAt
             ? _value.endedAt
             : endedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        averageLatencyMs: null == averageLatencyMs
-            ? _value.averageLatencyMs
-            : averageLatencyMs // ignore: cast_nullable_to_non_nullable
-                  as int,
-        overallScore: null == overallScore
-            ? _value.overallScore
-            : overallScore // ignore: cast_nullable_to_non_nullable
-                  as int,
-        transcriptText: null == transcriptText
-            ? _value.transcriptText
-            : transcriptText // ignore: cast_nullable_to_non_nullable
-                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -238,14 +303,19 @@ class _$VoiceSessionImpl implements _VoiceSession {
   const _$VoiceSessionImpl({
     required this.id,
     required this.userId,
-    this.provider = '',
-    this.durationSeconds = 0,
-    this.roomId = '',
-    this.startedAt,
+    required this.sessionType,
+    required this.targetLanguage,
+    required this.topic,
+    required this.durationMinutes,
+    required this.xpEarned,
+    required this.status,
+    this.liveKitRoomName,
+    this.recordingUrl,
+    this.transcript,
+    required this.startedAt,
     this.endedAt,
-    this.averageLatencyMs = 0,
-    this.overallScore = 0,
-    this.transcriptText = '',
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory _$VoiceSessionImpl.fromJson(Map<String, dynamic> json) =>
@@ -256,31 +326,35 @@ class _$VoiceSessionImpl implements _VoiceSession {
   @override
   final String userId;
   @override
-  @JsonKey()
-  final String provider;
+  final String sessionType;
   @override
-  @JsonKey()
-  final int durationSeconds;
+  final String targetLanguage;
   @override
-  @JsonKey()
-  final String roomId;
+  final String topic;
   @override
-  final DateTime? startedAt;
+  final int durationMinutes;
+  @override
+  final int xpEarned;
+  @override
+  final String status;
+  @override
+  final String? liveKitRoomName;
+  @override
+  final String? recordingUrl;
+  @override
+  final String? transcript;
+  @override
+  final DateTime startedAt;
   @override
   final DateTime? endedAt;
   @override
-  @JsonKey()
-  final int averageLatencyMs;
+  final DateTime createdAt;
   @override
-  @JsonKey()
-  final int overallScore;
-  @override
-  @JsonKey()
-  final String transcriptText;
+  final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'VoiceSession(id: $id, userId: $userId, provider: $provider, durationSeconds: $durationSeconds, roomId: $roomId, startedAt: $startedAt, endedAt: $endedAt, averageLatencyMs: $averageLatencyMs, overallScore: $overallScore, transcriptText: $transcriptText)';
+    return 'VoiceSession(id: $id, userId: $userId, sessionType: $sessionType, targetLanguage: $targetLanguage, topic: $topic, durationMinutes: $durationMinutes, xpEarned: $xpEarned, status: $status, liveKitRoomName: $liveKitRoomName, recordingUrl: $recordingUrl, transcript: $transcript, startedAt: $startedAt, endedAt: $endedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -290,20 +364,29 @@ class _$VoiceSessionImpl implements _VoiceSession {
             other is _$VoiceSessionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.provider, provider) ||
-                other.provider == provider) &&
-            (identical(other.durationSeconds, durationSeconds) ||
-                other.durationSeconds == durationSeconds) &&
-            (identical(other.roomId, roomId) || other.roomId == roomId) &&
+            (identical(other.sessionType, sessionType) ||
+                other.sessionType == sessionType) &&
+            (identical(other.targetLanguage, targetLanguage) ||
+                other.targetLanguage == targetLanguage) &&
+            (identical(other.topic, topic) || other.topic == topic) &&
+            (identical(other.durationMinutes, durationMinutes) ||
+                other.durationMinutes == durationMinutes) &&
+            (identical(other.xpEarned, xpEarned) ||
+                other.xpEarned == xpEarned) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.liveKitRoomName, liveKitRoomName) ||
+                other.liveKitRoomName == liveKitRoomName) &&
+            (identical(other.recordingUrl, recordingUrl) ||
+                other.recordingUrl == recordingUrl) &&
+            (identical(other.transcript, transcript) ||
+                other.transcript == transcript) &&
             (identical(other.startedAt, startedAt) ||
                 other.startedAt == startedAt) &&
             (identical(other.endedAt, endedAt) || other.endedAt == endedAt) &&
-            (identical(other.averageLatencyMs, averageLatencyMs) ||
-                other.averageLatencyMs == averageLatencyMs) &&
-            (identical(other.overallScore, overallScore) ||
-                other.overallScore == overallScore) &&
-            (identical(other.transcriptText, transcriptText) ||
-                other.transcriptText == transcriptText));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -312,14 +395,19 @@ class _$VoiceSessionImpl implements _VoiceSession {
     runtimeType,
     id,
     userId,
-    provider,
-    durationSeconds,
-    roomId,
+    sessionType,
+    targetLanguage,
+    topic,
+    durationMinutes,
+    xpEarned,
+    status,
+    liveKitRoomName,
+    recordingUrl,
+    transcript,
     startedAt,
     endedAt,
-    averageLatencyMs,
-    overallScore,
-    transcriptText,
+    createdAt,
+    updatedAt,
   );
 
   /// Create a copy of VoiceSession
@@ -340,14 +428,19 @@ abstract class _VoiceSession implements VoiceSession {
   const factory _VoiceSession({
     required final String id,
     required final String userId,
-    final String provider,
-    final int durationSeconds,
-    final String roomId,
-    final DateTime? startedAt,
+    required final String sessionType,
+    required final String targetLanguage,
+    required final String topic,
+    required final int durationMinutes,
+    required final int xpEarned,
+    required final String status,
+    final String? liveKitRoomName,
+    final String? recordingUrl,
+    final String? transcript,
+    required final DateTime startedAt,
     final DateTime? endedAt,
-    final int averageLatencyMs,
-    final int overallScore,
-    final String transcriptText,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
   }) = _$VoiceSessionImpl;
 
   factory _VoiceSession.fromJson(Map<String, dynamic> json) =
@@ -358,21 +451,31 @@ abstract class _VoiceSession implements VoiceSession {
   @override
   String get userId;
   @override
-  String get provider;
+  String get sessionType;
   @override
-  int get durationSeconds;
+  String get targetLanguage;
   @override
-  String get roomId;
+  String get topic;
   @override
-  DateTime? get startedAt;
+  int get durationMinutes;
+  @override
+  int get xpEarned;
+  @override
+  String get status;
+  @override
+  String? get liveKitRoomName;
+  @override
+  String? get recordingUrl;
+  @override
+  String? get transcript;
+  @override
+  DateTime get startedAt;
   @override
   DateTime? get endedAt;
   @override
-  int get averageLatencyMs;
+  DateTime get createdAt;
   @override
-  int get overallScore;
-  @override
-  String get transcriptText;
+  DateTime get updatedAt;
 
   /// Create a copy of VoiceSession
   /// with the given fields replaced by the non-null parameter values.
@@ -388,17 +491,16 @@ PronunciationScore _$PronunciationScoreFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PronunciationScore {
-  int get fluencyScore => throw _privateConstructorUsedError;
-  int get grammarScore => throw _privateConstructorUsedError;
-  int get vocabularyScore => throw _privateConstructorUsedError;
-  int get pronunciationScore => throw _privateConstructorUsedError;
-  int get overallScore => throw _privateConstructorUsedError;
-  String get feedback => throw _privateConstructorUsedError;
-  List<String> get strengths => throw _privateConstructorUsedError;
-  List<String> get issues => throw _privateConstructorUsedError;
-  List<String> get practiceWords => throw _privateConstructorUsedError;
-  String get shadowingExercise => throw _privateConstructorUsedError;
-  String get estimatedProficiency => throw _privateConstructorUsedError;
+  String get sessionId => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
+  double get overallScore => throw _privateConstructorUsedError;
+  double get fluency => throw _privateConstructorUsedError;
+  double get clarity => throw _privateConstructorUsedError;
+  double get stress => throw _privateConstructorUsedError;
+  double get intonation => throw _privateConstructorUsedError;
+  double get confidence => throw _privateConstructorUsedError;
+  List<WordScore> get wordScores => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this PronunciationScore to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -418,17 +520,16 @@ abstract class $PronunciationScoreCopyWith<$Res> {
   ) = _$PronunciationScoreCopyWithImpl<$Res, PronunciationScore>;
   @useResult
   $Res call({
-    int fluencyScore,
-    int grammarScore,
-    int vocabularyScore,
-    int pronunciationScore,
-    int overallScore,
-    String feedback,
-    List<String> strengths,
-    List<String> issues,
-    List<String> practiceWords,
-    String shadowingExercise,
-    String estimatedProficiency,
+    String sessionId,
+    String userId,
+    double overallScore,
+    double fluency,
+    double clarity,
+    double stress,
+    double intonation,
+    double confidence,
+    List<WordScore> wordScores,
+    DateTime createdAt,
   });
 }
 
@@ -447,64 +548,59 @@ class _$PronunciationScoreCopyWithImpl<$Res, $Val extends PronunciationScore>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fluencyScore = null,
-    Object? grammarScore = null,
-    Object? vocabularyScore = null,
-    Object? pronunciationScore = null,
+    Object? sessionId = null,
+    Object? userId = null,
     Object? overallScore = null,
-    Object? feedback = null,
-    Object? strengths = null,
-    Object? issues = null,
-    Object? practiceWords = null,
-    Object? shadowingExercise = null,
-    Object? estimatedProficiency = null,
+    Object? fluency = null,
+    Object? clarity = null,
+    Object? stress = null,
+    Object? intonation = null,
+    Object? confidence = null,
+    Object? wordScores = null,
+    Object? createdAt = null,
   }) {
     return _then(
       _value.copyWith(
-            fluencyScore: null == fluencyScore
-                ? _value.fluencyScore
-                : fluencyScore // ignore: cast_nullable_to_non_nullable
-                      as int,
-            grammarScore: null == grammarScore
-                ? _value.grammarScore
-                : grammarScore // ignore: cast_nullable_to_non_nullable
-                      as int,
-            vocabularyScore: null == vocabularyScore
-                ? _value.vocabularyScore
-                : vocabularyScore // ignore: cast_nullable_to_non_nullable
-                      as int,
-            pronunciationScore: null == pronunciationScore
-                ? _value.pronunciationScore
-                : pronunciationScore // ignore: cast_nullable_to_non_nullable
-                      as int,
+            sessionId: null == sessionId
+                ? _value.sessionId
+                : sessionId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String,
             overallScore: null == overallScore
                 ? _value.overallScore
                 : overallScore // ignore: cast_nullable_to_non_nullable
-                      as int,
-            feedback: null == feedback
-                ? _value.feedback
-                : feedback // ignore: cast_nullable_to_non_nullable
-                      as String,
-            strengths: null == strengths
-                ? _value.strengths
-                : strengths // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            issues: null == issues
-                ? _value.issues
-                : issues // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            practiceWords: null == practiceWords
-                ? _value.practiceWords
-                : practiceWords // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            shadowingExercise: null == shadowingExercise
-                ? _value.shadowingExercise
-                : shadowingExercise // ignore: cast_nullable_to_non_nullable
-                      as String,
-            estimatedProficiency: null == estimatedProficiency
-                ? _value.estimatedProficiency
-                : estimatedProficiency // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as double,
+            fluency: null == fluency
+                ? _value.fluency
+                : fluency // ignore: cast_nullable_to_non_nullable
+                      as double,
+            clarity: null == clarity
+                ? _value.clarity
+                : clarity // ignore: cast_nullable_to_non_nullable
+                      as double,
+            stress: null == stress
+                ? _value.stress
+                : stress // ignore: cast_nullable_to_non_nullable
+                      as double,
+            intonation: null == intonation
+                ? _value.intonation
+                : intonation // ignore: cast_nullable_to_non_nullable
+                      as double,
+            confidence: null == confidence
+                ? _value.confidence
+                : confidence // ignore: cast_nullable_to_non_nullable
+                      as double,
+            wordScores: null == wordScores
+                ? _value.wordScores
+                : wordScores // ignore: cast_nullable_to_non_nullable
+                      as List<WordScore>,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -521,17 +617,16 @@ abstract class _$$PronunciationScoreImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int fluencyScore,
-    int grammarScore,
-    int vocabularyScore,
-    int pronunciationScore,
-    int overallScore,
-    String feedback,
-    List<String> strengths,
-    List<String> issues,
-    List<String> practiceWords,
-    String shadowingExercise,
-    String estimatedProficiency,
+    String sessionId,
+    String userId,
+    double overallScore,
+    double fluency,
+    double clarity,
+    double stress,
+    double intonation,
+    double confidence,
+    List<WordScore> wordScores,
+    DateTime createdAt,
   });
 }
 
@@ -549,64 +644,59 @@ class __$$PronunciationScoreImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fluencyScore = null,
-    Object? grammarScore = null,
-    Object? vocabularyScore = null,
-    Object? pronunciationScore = null,
+    Object? sessionId = null,
+    Object? userId = null,
     Object? overallScore = null,
-    Object? feedback = null,
-    Object? strengths = null,
-    Object? issues = null,
-    Object? practiceWords = null,
-    Object? shadowingExercise = null,
-    Object? estimatedProficiency = null,
+    Object? fluency = null,
+    Object? clarity = null,
+    Object? stress = null,
+    Object? intonation = null,
+    Object? confidence = null,
+    Object? wordScores = null,
+    Object? createdAt = null,
   }) {
     return _then(
       _$PronunciationScoreImpl(
-        fluencyScore: null == fluencyScore
-            ? _value.fluencyScore
-            : fluencyScore // ignore: cast_nullable_to_non_nullable
-                  as int,
-        grammarScore: null == grammarScore
-            ? _value.grammarScore
-            : grammarScore // ignore: cast_nullable_to_non_nullable
-                  as int,
-        vocabularyScore: null == vocabularyScore
-            ? _value.vocabularyScore
-            : vocabularyScore // ignore: cast_nullable_to_non_nullable
-                  as int,
-        pronunciationScore: null == pronunciationScore
-            ? _value.pronunciationScore
-            : pronunciationScore // ignore: cast_nullable_to_non_nullable
-                  as int,
+        sessionId: null == sessionId
+            ? _value.sessionId
+            : sessionId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
         overallScore: null == overallScore
             ? _value.overallScore
             : overallScore // ignore: cast_nullable_to_non_nullable
-                  as int,
-        feedback: null == feedback
-            ? _value.feedback
-            : feedback // ignore: cast_nullable_to_non_nullable
-                  as String,
-        strengths: null == strengths
-            ? _value._strengths
-            : strengths // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        issues: null == issues
-            ? _value._issues
-            : issues // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        practiceWords: null == practiceWords
-            ? _value._practiceWords
-            : practiceWords // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        shadowingExercise: null == shadowingExercise
-            ? _value.shadowingExercise
-            : shadowingExercise // ignore: cast_nullable_to_non_nullable
-                  as String,
-        estimatedProficiency: null == estimatedProficiency
-            ? _value.estimatedProficiency
-            : estimatedProficiency // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as double,
+        fluency: null == fluency
+            ? _value.fluency
+            : fluency // ignore: cast_nullable_to_non_nullable
+                  as double,
+        clarity: null == clarity
+            ? _value.clarity
+            : clarity // ignore: cast_nullable_to_non_nullable
+                  as double,
+        stress: null == stress
+            ? _value.stress
+            : stress // ignore: cast_nullable_to_non_nullable
+                  as double,
+        intonation: null == intonation
+            ? _value.intonation
+            : intonation // ignore: cast_nullable_to_non_nullable
+                  as double,
+        confidence: null == confidence
+            ? _value.confidence
+            : confidence // ignore: cast_nullable_to_non_nullable
+                  as double,
+        wordScores: null == wordScores
+            ? _value._wordScores
+            : wordScores // ignore: cast_nullable_to_non_nullable
+                  as List<WordScore>,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -616,79 +706,51 @@ class __$$PronunciationScoreImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PronunciationScoreImpl implements _PronunciationScore {
   const _$PronunciationScoreImpl({
-    this.fluencyScore = 0,
-    this.grammarScore = 0,
-    this.vocabularyScore = 0,
-    this.pronunciationScore = 0,
-    this.overallScore = 0,
-    this.feedback = '',
-    final List<String> strengths = const [],
-    final List<String> issues = const [],
-    final List<String> practiceWords = const [],
-    this.shadowingExercise = '',
-    this.estimatedProficiency = '',
-  }) : _strengths = strengths,
-       _issues = issues,
-       _practiceWords = practiceWords;
+    required this.sessionId,
+    required this.userId,
+    required this.overallScore,
+    required this.fluency,
+    required this.clarity,
+    required this.stress,
+    required this.intonation,
+    required this.confidence,
+    required final List<WordScore> wordScores,
+    required this.createdAt,
+  }) : _wordScores = wordScores;
 
   factory _$PronunciationScoreImpl.fromJson(Map<String, dynamic> json) =>
       _$$PronunciationScoreImplFromJson(json);
 
   @override
-  @JsonKey()
-  final int fluencyScore;
+  final String sessionId;
   @override
-  @JsonKey()
-  final int grammarScore;
+  final String userId;
   @override
-  @JsonKey()
-  final int vocabularyScore;
+  final double overallScore;
   @override
-  @JsonKey()
-  final int pronunciationScore;
+  final double fluency;
   @override
-  @JsonKey()
-  final int overallScore;
+  final double clarity;
   @override
-  @JsonKey()
-  final String feedback;
-  final List<String> _strengths;
+  final double stress;
   @override
-  @JsonKey()
-  List<String> get strengths {
-    if (_strengths is EqualUnmodifiableListView) return _strengths;
+  final double intonation;
+  @override
+  final double confidence;
+  final List<WordScore> _wordScores;
+  @override
+  List<WordScore> get wordScores {
+    if (_wordScores is EqualUnmodifiableListView) return _wordScores;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_strengths);
-  }
-
-  final List<String> _issues;
-  @override
-  @JsonKey()
-  List<String> get issues {
-    if (_issues is EqualUnmodifiableListView) return _issues;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_issues);
-  }
-
-  final List<String> _practiceWords;
-  @override
-  @JsonKey()
-  List<String> get practiceWords {
-    if (_practiceWords is EqualUnmodifiableListView) return _practiceWords;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_practiceWords);
+    return EqualUnmodifiableListView(_wordScores);
   }
 
   @override
-  @JsonKey()
-  final String shadowingExercise;
-  @override
-  @JsonKey()
-  final String estimatedProficiency;
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'PronunciationScore(fluencyScore: $fluencyScore, grammarScore: $grammarScore, vocabularyScore: $vocabularyScore, pronunciationScore: $pronunciationScore, overallScore: $overallScore, feedback: $feedback, strengths: $strengths, issues: $issues, practiceWords: $practiceWords, shadowingExercise: $shadowingExercise, estimatedProficiency: $estimatedProficiency)';
+    return 'PronunciationScore(sessionId: $sessionId, userId: $userId, overallScore: $overallScore, fluency: $fluency, clarity: $clarity, stress: $stress, intonation: $intonation, confidence: $confidence, wordScores: $wordScores, createdAt: $createdAt)';
   }
 
   @override
@@ -696,48 +758,40 @@ class _$PronunciationScoreImpl implements _PronunciationScore {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PronunciationScoreImpl &&
-            (identical(other.fluencyScore, fluencyScore) ||
-                other.fluencyScore == fluencyScore) &&
-            (identical(other.grammarScore, grammarScore) ||
-                other.grammarScore == grammarScore) &&
-            (identical(other.vocabularyScore, vocabularyScore) ||
-                other.vocabularyScore == vocabularyScore) &&
-            (identical(other.pronunciationScore, pronunciationScore) ||
-                other.pronunciationScore == pronunciationScore) &&
+            (identical(other.sessionId, sessionId) ||
+                other.sessionId == sessionId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.overallScore, overallScore) ||
                 other.overallScore == overallScore) &&
-            (identical(other.feedback, feedback) ||
-                other.feedback == feedback) &&
+            (identical(other.fluency, fluency) || other.fluency == fluency) &&
+            (identical(other.clarity, clarity) || other.clarity == clarity) &&
+            (identical(other.stress, stress) || other.stress == stress) &&
+            (identical(other.intonation, intonation) ||
+                other.intonation == intonation) &&
+            (identical(other.confidence, confidence) ||
+                other.confidence == confidence) &&
             const DeepCollectionEquality().equals(
-              other._strengths,
-              _strengths,
+              other._wordScores,
+              _wordScores,
             ) &&
-            const DeepCollectionEquality().equals(other._issues, _issues) &&
-            const DeepCollectionEquality().equals(
-              other._practiceWords,
-              _practiceWords,
-            ) &&
-            (identical(other.shadowingExercise, shadowingExercise) ||
-                other.shadowingExercise == shadowingExercise) &&
-            (identical(other.estimatedProficiency, estimatedProficiency) ||
-                other.estimatedProficiency == estimatedProficiency));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    fluencyScore,
-    grammarScore,
-    vocabularyScore,
-    pronunciationScore,
+    sessionId,
+    userId,
     overallScore,
-    feedback,
-    const DeepCollectionEquality().hash(_strengths),
-    const DeepCollectionEquality().hash(_issues),
-    const DeepCollectionEquality().hash(_practiceWords),
-    shadowingExercise,
-    estimatedProficiency,
+    fluency,
+    clarity,
+    stress,
+    intonation,
+    confidence,
+    const DeepCollectionEquality().hash(_wordScores),
+    createdAt,
   );
 
   /// Create a copy of PronunciationScore
@@ -759,49 +813,239 @@ class _$PronunciationScoreImpl implements _PronunciationScore {
 
 abstract class _PronunciationScore implements PronunciationScore {
   const factory _PronunciationScore({
-    final int fluencyScore,
-    final int grammarScore,
-    final int vocabularyScore,
-    final int pronunciationScore,
-    final int overallScore,
-    final String feedback,
-    final List<String> strengths,
-    final List<String> issues,
-    final List<String> practiceWords,
-    final String shadowingExercise,
-    final String estimatedProficiency,
+    required final String sessionId,
+    required final String userId,
+    required final double overallScore,
+    required final double fluency,
+    required final double clarity,
+    required final double stress,
+    required final double intonation,
+    required final double confidence,
+    required final List<WordScore> wordScores,
+    required final DateTime createdAt,
   }) = _$PronunciationScoreImpl;
 
   factory _PronunciationScore.fromJson(Map<String, dynamic> json) =
       _$PronunciationScoreImpl.fromJson;
 
   @override
-  int get fluencyScore;
+  String get sessionId;
   @override
-  int get grammarScore;
+  String get userId;
   @override
-  int get vocabularyScore;
+  double get overallScore;
   @override
-  int get pronunciationScore;
+  double get fluency;
   @override
-  int get overallScore;
+  double get clarity;
   @override
-  String get feedback;
+  double get stress;
   @override
-  List<String> get strengths;
+  double get intonation;
   @override
-  List<String> get issues;
+  double get confidence;
   @override
-  List<String> get practiceWords;
+  List<WordScore> get wordScores;
   @override
-  String get shadowingExercise;
-  @override
-  String get estimatedProficiency;
+  DateTime get createdAt;
 
   /// Create a copy of PronunciationScore
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PronunciationScoreImplCopyWith<_$PronunciationScoreImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+WordScore _$WordScoreFromJson(Map<String, dynamic> json) {
+  return _WordScore.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WordScore {
+  String get word => throw _privateConstructorUsedError;
+  double get score => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+
+  /// Serializes this WordScore to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of WordScore
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $WordScoreCopyWith<WordScore> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WordScoreCopyWith<$Res> {
+  factory $WordScoreCopyWith(WordScore value, $Res Function(WordScore) then) =
+      _$WordScoreCopyWithImpl<$Res, WordScore>;
+  @useResult
+  $Res call({String word, double score, String status});
+}
+
+/// @nodoc
+class _$WordScoreCopyWithImpl<$Res, $Val extends WordScore>
+    implements $WordScoreCopyWith<$Res> {
+  _$WordScoreCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of WordScore
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? word = null,
+    Object? score = null,
+    Object? status = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            word: null == word
+                ? _value.word
+                : word // ignore: cast_nullable_to_non_nullable
+                      as String,
+            score: null == score
+                ? _value.score
+                : score // ignore: cast_nullable_to_non_nullable
+                      as double,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$WordScoreImplCopyWith<$Res>
+    implements $WordScoreCopyWith<$Res> {
+  factory _$$WordScoreImplCopyWith(
+    _$WordScoreImpl value,
+    $Res Function(_$WordScoreImpl) then,
+  ) = __$$WordScoreImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String word, double score, String status});
+}
+
+/// @nodoc
+class __$$WordScoreImplCopyWithImpl<$Res>
+    extends _$WordScoreCopyWithImpl<$Res, _$WordScoreImpl>
+    implements _$$WordScoreImplCopyWith<$Res> {
+  __$$WordScoreImplCopyWithImpl(
+    _$WordScoreImpl _value,
+    $Res Function(_$WordScoreImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of WordScore
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? word = null,
+    Object? score = null,
+    Object? status = null,
+  }) {
+    return _then(
+      _$WordScoreImpl(
+        word: null == word
+            ? _value.word
+            : word // ignore: cast_nullable_to_non_nullable
+                  as String,
+        score: null == score
+            ? _value.score
+            : score // ignore: cast_nullable_to_non_nullable
+                  as double,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$WordScoreImpl implements _WordScore {
+  const _$WordScoreImpl({
+    required this.word,
+    required this.score,
+    required this.status,
+  });
+
+  factory _$WordScoreImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WordScoreImplFromJson(json);
+
+  @override
+  final String word;
+  @override
+  final double score;
+  @override
+  final String status;
+
+  @override
+  String toString() {
+    return 'WordScore(word: $word, score: $score, status: $status)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WordScoreImpl &&
+            (identical(other.word, word) || other.word == word) &&
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.status, status) || other.status == status));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, word, score, status);
+
+  /// Create a copy of WordScore
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WordScoreImplCopyWith<_$WordScoreImpl> get copyWith =>
+      __$$WordScoreImplCopyWithImpl<_$WordScoreImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WordScoreImplToJson(this);
+  }
+}
+
+abstract class _WordScore implements WordScore {
+  const factory _WordScore({
+    required final String word,
+    required final double score,
+    required final String status,
+  }) = _$WordScoreImpl;
+
+  factory _WordScore.fromJson(Map<String, dynamic> json) =
+      _$WordScoreImpl.fromJson;
+
+  @override
+  String get word;
+  @override
+  double get score;
+  @override
+  String get status;
+
+  /// Create a copy of WordScore
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$WordScoreImplCopyWith<_$WordScoreImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

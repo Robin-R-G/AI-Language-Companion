@@ -5,7 +5,7 @@ abstract class MockExamRepository {
   Future<Result<List<MockExam>>> getExams({String? examType, String? section});
   Future<Result<MockExam>> getExamById(String id);
   Future<Result<MockExam>> startExam(String examId);
-  Future<Result<ExamQuestion>> submitAnswer(
+  Future<Result<MockExamQuestion>> submitAnswer(
     String examId,
     String questionId,
     String answer,

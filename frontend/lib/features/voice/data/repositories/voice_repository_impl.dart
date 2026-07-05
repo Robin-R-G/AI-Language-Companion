@@ -19,7 +19,7 @@ class VoiceRepositoryImpl implements VoiceRepository {
     try {
       final response = await _dio.post(
         '/voice-session',
-        data: {'language': language, if (persona != null) 'persona': persona},
+        data: {'language': language, 'persona': ?persona},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
@@ -68,7 +68,7 @@ class VoiceRepositoryImpl implements VoiceRepository {
         '/speaking-evaluate',
         data: {
           'transcript': transcriptText,
-          if (targetLanguage != null) 'target_language': targetLanguage,
+          'target_language': ?targetLanguage,
         },
       );
       final data = response.data;

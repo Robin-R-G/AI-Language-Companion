@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
-import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
-import '../../../../core/widgets/shimmer_loading.dart';
 
 /// Lesson Detail screen showing quiz questions and exercises.
 class LessonDetailPage extends StatefulWidget {

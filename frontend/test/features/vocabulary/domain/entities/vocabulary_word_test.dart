@@ -8,28 +8,24 @@ void main() {
         'id': 'vocab_001',
         'word': 'Ephemeral',
         'meaning': 'Lasting for a very short time.',
-        'meaningMalayalam': 'ശാശ്വതമല്ലാത്ത',
         'pronunciation': '/ɪˈfɛmərəl/',
         'examples': ['The ephemeral beauty of cherry blossoms.'],
         'cefrLevel': 'C1',
-        'masteryLevel': 3,
-        'reviewCount': 5,
-        'nextReview': '2026-07-10T08:00:00Z',
-        'lastReviewed': '2026-07-04T08:00:00Z',
+        'partOfSpeech': 'adjective',
+        'targetLanguage': 'en',
+        'nativeLanguage': 'ml',
       };
 
       final word = VocabularyWord.fromJson(json);
       expect(word.id, equals('vocab_001'));
       expect(word.word, equals('Ephemeral'));
       expect(word.meaning, equals('Lasting for a very short time.'));
-      expect(word.meaningMalayalam, equals('ശാശ്വതമല്ലാത്ത'));
       expect(word.pronunciation, equals('/ɪˈfɛmərəl/'));
       expect(word.examples.length, equals(1));
       expect(word.cefrLevel, equals('C1'));
-      expect(word.masteryLevel, equals(3));
-      expect(word.reviewCount, equals(5));
-      expect(word.nextReview, isNotNull);
-      expect(word.lastReviewed, isNotNull);
+      expect(word.partOfSpeech, equals('adjective'));
+      expect(word.targetLanguage, equals('en'));
+      expect(word.nativeLanguage, equals('ml'));
     });
 
     test('fromJson with minimal fields', () {
@@ -43,14 +39,12 @@ void main() {
       expect(word.id, equals('vocab_002'));
       expect(word.word, equals('Test'));
       expect(word.meaning, equals('A test word.'));
-      expect(word.meaningMalayalam, equals(''));
       expect(word.pronunciation, equals(''));
       expect(word.examples, isEmpty);
       expect(word.cefrLevel, equals(''));
-      expect(word.masteryLevel, equals(0));
-      expect(word.reviewCount, equals(0));
-      expect(word.nextReview, isNull);
-      expect(word.lastReviewed, isNull);
+      expect(word.partOfSpeech, equals(''));
+      expect(word.targetLanguage, equals(''));
+      expect(word.nativeLanguage, equals(''));
     });
 
     test('serialization roundtrip', () {
@@ -58,8 +52,16 @@ void main() {
         id: 'vocab_003',
         word: 'Ubiquitous',
         meaning: 'Present everywhere.',
+        pronunciation: '',
+        examples: [],
         cefrLevel: 'C1',
-        masteryLevel: 4,
+        partOfSpeech: '',
+        targetLanguage: 'en',
+        nativeLanguage: 'ml',
+        audioUrl: null,
+        imageUrl: null,
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
       );
 
       final json = original.toJson();
@@ -69,18 +71,32 @@ void main() {
       expect(restored.word, equals(original.word));
       expect(restored.meaning, equals(original.meaning));
       expect(restored.cefrLevel, equals(original.cefrLevel));
-      expect(restored.masteryLevel, equals(original.masteryLevel));
+      expect(restored.partOfSpeech, equals(original.partOfSpeech));
+      expect(restored.targetLanguage, equals(original.targetLanguage));
+      expect(restored.nativeLanguage, equals(original.nativeLanguage));
     });
 
     test('creates with factory constructor', () {
-      const word = VocabularyWord(
+      final now = DateTime(2026);
+      final word = VocabularyWord(
         id: 'test',
         word: 'Hello',
         meaning: 'A greeting',
+        pronunciation: '',
+        examples: [],
+        cefrLevel: '',
+        partOfSpeech: '',
+        targetLanguage: 'en',
+        nativeLanguage: 'ml',
+        audioUrl: null,
+        imageUrl: null,
+        createdAt: now,
+        updatedAt: now,
       );
 
       expect(word.id, equals('test'));
       expect(word.word, equals('Hello'));
+      expect(word.meaning, equals('A greeting'));
     });
   });
 }

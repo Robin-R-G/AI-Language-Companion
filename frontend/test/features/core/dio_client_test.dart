@@ -4,7 +4,7 @@ import 'package:ai_language_coach/core/constants/app_constants.dart';
 void main() {
   group('DioClient Configuration', () {
     test('base URL should be correctly configured', () {
-      final expectedBaseUrl =
+      const expectedBaseUrl =
           AppConstants.supabaseUrl + AppConstants.apiBaseUrl;
 
       expect(expectedBaseUrl, isNotEmpty);
@@ -40,7 +40,7 @@ void main() {
 
     test('authorization header format', () {
       const token = 'test_token_123';
-      final authHeader = 'Bearer $token';
+      const authHeader = 'Bearer $token';
 
       expect(authHeader, startsWith('Bearer '));
       expect(authHeader, contains(token));

@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/providers/repository_providers.dart';
-import '../../domain/entities/user.dart';
 
 part 'auth_providers.g.dart';
 

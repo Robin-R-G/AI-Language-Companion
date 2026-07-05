@@ -1,0 +1,21 @@
+{
+  "name": "ai-language-coach-agents",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types"
+  },
+  "dependencies": {
+    "agents": "latest",
+    "@cloudflare/ai-chat": "latest",
+    "ai": "latest",
+    "@ai-sdk/react": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "latest",
+    "typescript": "^5.4.0",
+    "@cloudflare/workers-types": "^4.0.0"
+  }
+}

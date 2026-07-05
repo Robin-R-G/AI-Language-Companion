@@ -197,7 +197,6 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
                     ),
                     leading: Radio<int>(
                       value: (q['options'] as List).indexOf(option),
-                      groupValue: null,
                       onChanged: (val) {},
                     ),
                     title: Text(

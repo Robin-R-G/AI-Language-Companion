@@ -5,17 +5,13 @@ import 'package:ai_language_coach/features/writing/presentation/pages/writing_pa
 void main() {
   group('WritingPage', () {
     testWidgets('renders writing page with title', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: WritingPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: WritingPage()));
 
       expect(find.text('Writing Practice'), findsOneWidget);
     });
 
     testWidgets('renders scaffold', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: WritingPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: WritingPage()));
 
       expect(find.byType(Scaffold), findsOneWidget);
     });

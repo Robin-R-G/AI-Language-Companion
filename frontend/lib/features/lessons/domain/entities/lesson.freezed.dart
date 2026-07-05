@@ -23,15 +23,16 @@ Lesson _$LessonFromJson(Map<String, dynamic> json) {
 mixin _$Lesson {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
-  String get category => throw _privateConstructorUsedError;
-  String get difficulty => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
+  String get language => throw _privateConstructorUsedError;
+  String get level => throw _privateConstructorUsedError;
+  int get order => throw _privateConstructorUsedError;
+  int get xpReward => throw _privateConstructorUsedError;
   int get estimatedMinutes => throw _privateConstructorUsedError;
-  String get content => throw _privateConstructorUsedError;
-  List<LessonQuiz> get quizzes => throw _privateConstructorUsedError;
-  int get earnedXp => throw _privateConstructorUsedError;
-  double get completionPercentage => throw _privateConstructorUsedError;
-  DateTime? get startedAt => throw _privateConstructorUsedError;
-  DateTime? get completedAt => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
+  bool get isLocked => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Lesson to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,15 +51,16 @@ abstract class $LessonCopyWith<$Res> {
   $Res call({
     String id,
     String title,
-    String category,
-    String difficulty,
+    String description,
+    String language,
+    String level,
+    int order,
+    int xpReward,
     int estimatedMinutes,
-    String content,
-    List<LessonQuiz> quizzes,
-    int earnedXp,
-    double completionPercentage,
-    DateTime? startedAt,
-    DateTime? completedAt,
+    List<String> tags,
+    bool isLocked,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -79,15 +81,16 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? category = null,
-    Object? difficulty = null,
+    Object? description = null,
+    Object? language = null,
+    Object? level = null,
+    Object? order = null,
+    Object? xpReward = null,
     Object? estimatedMinutes = null,
-    Object? content = null,
-    Object? quizzes = null,
-    Object? earnedXp = null,
-    Object? completionPercentage = null,
-    Object? startedAt = freezed,
-    Object? completedAt = freezed,
+    Object? tags = null,
+    Object? isLocked = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -99,42 +102,46 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
                       as String,
-            category: null == category
-                ? _value.category
-                : category // ignore: cast_nullable_to_non_nullable
+            description: null == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
                       as String,
-            difficulty: null == difficulty
-                ? _value.difficulty
-                : difficulty // ignore: cast_nullable_to_non_nullable
+            language: null == language
+                ? _value.language
+                : language // ignore: cast_nullable_to_non_nullable
                       as String,
+            level: null == level
+                ? _value.level
+                : level // ignore: cast_nullable_to_non_nullable
+                      as String,
+            order: null == order
+                ? _value.order
+                : order // ignore: cast_nullable_to_non_nullable
+                      as int,
+            xpReward: null == xpReward
+                ? _value.xpReward
+                : xpReward // ignore: cast_nullable_to_non_nullable
+                      as int,
             estimatedMinutes: null == estimatedMinutes
                 ? _value.estimatedMinutes
                 : estimatedMinutes // ignore: cast_nullable_to_non_nullable
                       as int,
-            content: null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                      as String,
-            quizzes: null == quizzes
-                ? _value.quizzes
-                : quizzes // ignore: cast_nullable_to_non_nullable
-                      as List<LessonQuiz>,
-            earnedXp: null == earnedXp
-                ? _value.earnedXp
-                : earnedXp // ignore: cast_nullable_to_non_nullable
-                      as int,
-            completionPercentage: null == completionPercentage
-                ? _value.completionPercentage
-                : completionPercentage // ignore: cast_nullable_to_non_nullable
-                      as double,
-            startedAt: freezed == startedAt
-                ? _value.startedAt
-                : startedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            completedAt: freezed == completedAt
-                ? _value.completedAt
-                : completedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
+            tags: null == tags
+                ? _value.tags
+                : tags // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            isLocked: null == isLocked
+                ? _value.isLocked
+                : isLocked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -152,15 +159,16 @@ abstract class _$$LessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
   $Res call({
     String id,
     String title,
-    String category,
-    String difficulty,
+    String description,
+    String language,
+    String level,
+    int order,
+    int xpReward,
     int estimatedMinutes,
-    String content,
-    List<LessonQuiz> quizzes,
-    int earnedXp,
-    double completionPercentage,
-    DateTime? startedAt,
-    DateTime? completedAt,
+    List<String> tags,
+    bool isLocked,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -180,15 +188,16 @@ class __$$LessonImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
-    Object? category = null,
-    Object? difficulty = null,
+    Object? description = null,
+    Object? language = null,
+    Object? level = null,
+    Object? order = null,
+    Object? xpReward = null,
     Object? estimatedMinutes = null,
-    Object? content = null,
-    Object? quizzes = null,
-    Object? earnedXp = null,
-    Object? completionPercentage = null,
-    Object? startedAt = freezed,
-    Object? completedAt = freezed,
+    Object? tags = null,
+    Object? isLocked = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _$LessonImpl(
@@ -200,42 +209,46 @@ class __$$LessonImplCopyWithImpl<$Res>
             ? _value.title
             : title // ignore: cast_nullable_to_non_nullable
                   as String,
-        category: null == category
-            ? _value.category
-            : category // ignore: cast_nullable_to_non_nullable
+        description: null == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
                   as String,
-        difficulty: null == difficulty
-            ? _value.difficulty
-            : difficulty // ignore: cast_nullable_to_non_nullable
+        language: null == language
+            ? _value.language
+            : language // ignore: cast_nullable_to_non_nullable
                   as String,
+        level: null == level
+            ? _value.level
+            : level // ignore: cast_nullable_to_non_nullable
+                  as String,
+        order: null == order
+            ? _value.order
+            : order // ignore: cast_nullable_to_non_nullable
+                  as int,
+        xpReward: null == xpReward
+            ? _value.xpReward
+            : xpReward // ignore: cast_nullable_to_non_nullable
+                  as int,
         estimatedMinutes: null == estimatedMinutes
             ? _value.estimatedMinutes
             : estimatedMinutes // ignore: cast_nullable_to_non_nullable
                   as int,
-        content: null == content
-            ? _value.content
-            : content // ignore: cast_nullable_to_non_nullable
-                  as String,
-        quizzes: null == quizzes
-            ? _value._quizzes
-            : quizzes // ignore: cast_nullable_to_non_nullable
-                  as List<LessonQuiz>,
-        earnedXp: null == earnedXp
-            ? _value.earnedXp
-            : earnedXp // ignore: cast_nullable_to_non_nullable
-                  as int,
-        completionPercentage: null == completionPercentage
-            ? _value.completionPercentage
-            : completionPercentage // ignore: cast_nullable_to_non_nullable
-                  as double,
-        startedAt: freezed == startedAt
-            ? _value.startedAt
-            : startedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        completedAt: freezed == completedAt
-            ? _value.completedAt
-            : completedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
+        tags: null == tags
+            ? _value._tags
+            : tags // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        isLocked: null == isLocked
+            ? _value.isLocked
+            : isLocked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -247,16 +260,17 @@ class _$LessonImpl implements _Lesson {
   const _$LessonImpl({
     required this.id,
     required this.title,
-    required this.category,
-    required this.difficulty,
-    this.estimatedMinutes = 15,
-    this.content = '',
-    final List<LessonQuiz> quizzes = const [],
-    this.earnedXp = 0,
-    this.completionPercentage = 0.0,
-    this.startedAt,
-    this.completedAt,
-  }) : _quizzes = quizzes;
+    required this.description,
+    required this.language,
+    required this.level,
+    required this.order,
+    required this.xpReward,
+    required this.estimatedMinutes,
+    required final List<String> tags,
+    required this.isLocked,
+    required this.createdAt,
+    required this.updatedAt,
+  }) : _tags = tags;
 
   factory _$LessonImpl.fromJson(Map<String, dynamic> json) =>
       _$$LessonImplFromJson(json);
@@ -266,38 +280,35 @@ class _$LessonImpl implements _Lesson {
   @override
   final String title;
   @override
-  final String category;
+  final String description;
   @override
-  final String difficulty;
+  final String language;
   @override
-  @JsonKey()
+  final String level;
+  @override
+  final int order;
+  @override
+  final int xpReward;
+  @override
   final int estimatedMinutes;
+  final List<String> _tags;
   @override
-  @JsonKey()
-  final String content;
-  final List<LessonQuiz> _quizzes;
-  @override
-  @JsonKey()
-  List<LessonQuiz> get quizzes {
-    if (_quizzes is EqualUnmodifiableListView) return _quizzes;
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_quizzes);
+    return EqualUnmodifiableListView(_tags);
   }
 
   @override
-  @JsonKey()
-  final int earnedXp;
+  final bool isLocked;
   @override
-  @JsonKey()
-  final double completionPercentage;
+  final DateTime createdAt;
   @override
-  final DateTime? startedAt;
-  @override
-  final DateTime? completedAt;
+  final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'Lesson(id: $id, title: $title, category: $category, difficulty: $difficulty, estimatedMinutes: $estimatedMinutes, content: $content, quizzes: $quizzes, earnedXp: $earnedXp, completionPercentage: $completionPercentage, startedAt: $startedAt, completedAt: $completedAt)';
+    return 'Lesson(id: $id, title: $title, description: $description, language: $language, level: $level, order: $order, xpReward: $xpReward, estimatedMinutes: $estimatedMinutes, tags: $tags, isLocked: $isLocked, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -307,22 +318,23 @@ class _$LessonImpl implements _Lesson {
             other is _$LessonImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
-            (identical(other.category, category) ||
-                other.category == category) &&
-            (identical(other.difficulty, difficulty) ||
-                other.difficulty == difficulty) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.language, language) ||
+                other.language == language) &&
+            (identical(other.level, level) || other.level == level) &&
+            (identical(other.order, order) || other.order == order) &&
+            (identical(other.xpReward, xpReward) ||
+                other.xpReward == xpReward) &&
             (identical(other.estimatedMinutes, estimatedMinutes) ||
                 other.estimatedMinutes == estimatedMinutes) &&
-            (identical(other.content, content) || other.content == content) &&
-            const DeepCollectionEquality().equals(other._quizzes, _quizzes) &&
-            (identical(other.earnedXp, earnedXp) ||
-                other.earnedXp == earnedXp) &&
-            (identical(other.completionPercentage, completionPercentage) ||
-                other.completionPercentage == completionPercentage) &&
-            (identical(other.startedAt, startedAt) ||
-                other.startedAt == startedAt) &&
-            (identical(other.completedAt, completedAt) ||
-                other.completedAt == completedAt));
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -331,15 +343,16 @@ class _$LessonImpl implements _Lesson {
     runtimeType,
     id,
     title,
-    category,
-    difficulty,
+    description,
+    language,
+    level,
+    order,
+    xpReward,
     estimatedMinutes,
-    content,
-    const DeepCollectionEquality().hash(_quizzes),
-    earnedXp,
-    completionPercentage,
-    startedAt,
-    completedAt,
+    const DeepCollectionEquality().hash(_tags),
+    isLocked,
+    createdAt,
+    updatedAt,
   );
 
   /// Create a copy of Lesson
@@ -360,15 +373,16 @@ abstract class _Lesson implements Lesson {
   const factory _Lesson({
     required final String id,
     required final String title,
-    required final String category,
-    required final String difficulty,
-    final int estimatedMinutes,
-    final String content,
-    final List<LessonQuiz> quizzes,
-    final int earnedXp,
-    final double completionPercentage,
-    final DateTime? startedAt,
-    final DateTime? completedAt,
+    required final String description,
+    required final String language,
+    required final String level,
+    required final int order,
+    required final int xpReward,
+    required final int estimatedMinutes,
+    required final List<String> tags,
+    required final bool isLocked,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
   }) = _$LessonImpl;
 
   factory _Lesson.fromJson(Map<String, dynamic> json) = _$LessonImpl.fromJson;
@@ -378,23 +392,25 @@ abstract class _Lesson implements Lesson {
   @override
   String get title;
   @override
-  String get category;
+  String get description;
   @override
-  String get difficulty;
+  String get language;
+  @override
+  String get level;
+  @override
+  int get order;
+  @override
+  int get xpReward;
   @override
   int get estimatedMinutes;
   @override
-  String get content;
+  List<String> get tags;
   @override
-  List<LessonQuiz> get quizzes;
+  bool get isLocked;
   @override
-  int get earnedXp;
+  DateTime get createdAt;
   @override
-  double get completionPercentage;
-  @override
-  DateTime? get startedAt;
-  @override
-  DateTime? get completedAt;
+  DateTime get updatedAt;
 
   /// Create a copy of Lesson
   /// with the given fields replaced by the non-null parameter values.
@@ -404,87 +420,108 @@ abstract class _Lesson implements Lesson {
       throw _privateConstructorUsedError;
 }
 
-LessonQuiz _$LessonQuizFromJson(Map<String, dynamic> json) {
-  return _LessonQuiz.fromJson(json);
+LessonProgress _$LessonProgressFromJson(Map<String, dynamic> json) {
+  return _LessonProgress.fromJson(json);
 }
 
 /// @nodoc
-mixin _$LessonQuiz {
-  String get questionId => throw _privateConstructorUsedError;
-  String get question => throw _privateConstructorUsedError;
-  List<String> get options => throw _privateConstructorUsedError;
-  int get correctOptionIndex => throw _privateConstructorUsedError;
-  String get explanation => throw _privateConstructorUsedError;
+mixin _$LessonProgress {
+  String get userId => throw _privateConstructorUsedError;
+  String get lessonId => throw _privateConstructorUsedError;
+  bool get isCompleted => throw _privateConstructorUsedError;
+  int get score => throw _privateConstructorUsedError;
+  int get attempts => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
+  DateTime get startedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
 
-  /// Serializes this LessonQuiz to a JSON map.
+  /// Serializes this LessonProgress to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of LessonQuiz
+  /// Create a copy of LessonProgress
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $LessonQuizCopyWith<LessonQuiz> get copyWith =>
+  $LessonProgressCopyWith<LessonProgress> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $LessonQuizCopyWith<$Res> {
-  factory $LessonQuizCopyWith(
-    LessonQuiz value,
-    $Res Function(LessonQuiz) then,
-  ) = _$LessonQuizCopyWithImpl<$Res, LessonQuiz>;
+abstract class $LessonProgressCopyWith<$Res> {
+  factory $LessonProgressCopyWith(
+    LessonProgress value,
+    $Res Function(LessonProgress) then,
+  ) = _$LessonProgressCopyWithImpl<$Res, LessonProgress>;
   @useResult
   $Res call({
-    String questionId,
-    String question,
-    List<String> options,
-    int correctOptionIndex,
-    String explanation,
+    String userId,
+    String lessonId,
+    bool isCompleted,
+    int score,
+    int attempts,
+    DateTime? completedAt,
+    DateTime startedAt,
+    DateTime updatedAt,
   });
 }
 
 /// @nodoc
-class _$LessonQuizCopyWithImpl<$Res, $Val extends LessonQuiz>
-    implements $LessonQuizCopyWith<$Res> {
-  _$LessonQuizCopyWithImpl(this._value, this._then);
+class _$LessonProgressCopyWithImpl<$Res, $Val extends LessonProgress>
+    implements $LessonProgressCopyWith<$Res> {
+  _$LessonProgressCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of LessonQuiz
+  /// Create a copy of LessonProgress
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? questionId = null,
-    Object? question = null,
-    Object? options = null,
-    Object? correctOptionIndex = null,
-    Object? explanation = null,
+    Object? userId = null,
+    Object? lessonId = null,
+    Object? isCompleted = null,
+    Object? score = null,
+    Object? attempts = null,
+    Object? completedAt = freezed,
+    Object? startedAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _value.copyWith(
-            questionId: null == questionId
-                ? _value.questionId
-                : questionId // ignore: cast_nullable_to_non_nullable
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
                       as String,
-            question: null == question
-                ? _value.question
-                : question // ignore: cast_nullable_to_non_nullable
+            lessonId: null == lessonId
+                ? _value.lessonId
+                : lessonId // ignore: cast_nullable_to_non_nullable
                       as String,
-            options: null == options
-                ? _value.options
-                : options // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            correctOptionIndex: null == correctOptionIndex
-                ? _value.correctOptionIndex
-                : correctOptionIndex // ignore: cast_nullable_to_non_nullable
+            isCompleted: null == isCompleted
+                ? _value.isCompleted
+                : isCompleted // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            score: null == score
+                ? _value.score
+                : score // ignore: cast_nullable_to_non_nullable
                       as int,
-            explanation: null == explanation
-                ? _value.explanation
-                : explanation // ignore: cast_nullable_to_non_nullable
-                      as String,
+            attempts: null == attempts
+                ? _value.attempts
+                : attempts // ignore: cast_nullable_to_non_nullable
+                      as int,
+            completedAt: freezed == completedAt
+                ? _value.completedAt
+                : completedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            startedAt: null == startedAt
+                ? _value.startedAt
+                : startedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -492,65 +529,83 @@ class _$LessonQuizCopyWithImpl<$Res, $Val extends LessonQuiz>
 }
 
 /// @nodoc
-abstract class _$$LessonQuizImplCopyWith<$Res>
-    implements $LessonQuizCopyWith<$Res> {
-  factory _$$LessonQuizImplCopyWith(
-    _$LessonQuizImpl value,
-    $Res Function(_$LessonQuizImpl) then,
-  ) = __$$LessonQuizImplCopyWithImpl<$Res>;
+abstract class _$$LessonProgressImplCopyWith<$Res>
+    implements $LessonProgressCopyWith<$Res> {
+  factory _$$LessonProgressImplCopyWith(
+    _$LessonProgressImpl value,
+    $Res Function(_$LessonProgressImpl) then,
+  ) = __$$LessonProgressImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
-    String questionId,
-    String question,
-    List<String> options,
-    int correctOptionIndex,
-    String explanation,
+    String userId,
+    String lessonId,
+    bool isCompleted,
+    int score,
+    int attempts,
+    DateTime? completedAt,
+    DateTime startedAt,
+    DateTime updatedAt,
   });
 }
 
 /// @nodoc
-class __$$LessonQuizImplCopyWithImpl<$Res>
-    extends _$LessonQuizCopyWithImpl<$Res, _$LessonQuizImpl>
-    implements _$$LessonQuizImplCopyWith<$Res> {
-  __$$LessonQuizImplCopyWithImpl(
-    _$LessonQuizImpl _value,
-    $Res Function(_$LessonQuizImpl) _then,
+class __$$LessonProgressImplCopyWithImpl<$Res>
+    extends _$LessonProgressCopyWithImpl<$Res, _$LessonProgressImpl>
+    implements _$$LessonProgressImplCopyWith<$Res> {
+  __$$LessonProgressImplCopyWithImpl(
+    _$LessonProgressImpl _value,
+    $Res Function(_$LessonProgressImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of LessonQuiz
+  /// Create a copy of LessonProgress
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? questionId = null,
-    Object? question = null,
-    Object? options = null,
-    Object? correctOptionIndex = null,
-    Object? explanation = null,
+    Object? userId = null,
+    Object? lessonId = null,
+    Object? isCompleted = null,
+    Object? score = null,
+    Object? attempts = null,
+    Object? completedAt = freezed,
+    Object? startedAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
-      _$LessonQuizImpl(
-        questionId: null == questionId
-            ? _value.questionId
-            : questionId // ignore: cast_nullable_to_non_nullable
+      _$LessonProgressImpl(
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
                   as String,
-        question: null == question
-            ? _value.question
-            : question // ignore: cast_nullable_to_non_nullable
+        lessonId: null == lessonId
+            ? _value.lessonId
+            : lessonId // ignore: cast_nullable_to_non_nullable
                   as String,
-        options: null == options
-            ? _value._options
-            : options // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        correctOptionIndex: null == correctOptionIndex
-            ? _value.correctOptionIndex
-            : correctOptionIndex // ignore: cast_nullable_to_non_nullable
+        isCompleted: null == isCompleted
+            ? _value.isCompleted
+            : isCompleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        score: null == score
+            ? _value.score
+            : score // ignore: cast_nullable_to_non_nullable
                   as int,
-        explanation: null == explanation
-            ? _value.explanation
-            : explanation // ignore: cast_nullable_to_non_nullable
-                  as String,
+        attempts: null == attempts
+            ? _value.attempts
+            : attempts // ignore: cast_nullable_to_non_nullable
+                  as int,
+        completedAt: freezed == completedAt
+            ? _value.completedAt
+            : completedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        startedAt: null == startedAt
+            ? _value.startedAt
+            : startedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -558,109 +613,131 @@ class __$$LessonQuizImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$LessonQuizImpl implements _LessonQuiz {
-  const _$LessonQuizImpl({
-    required this.questionId,
-    required this.question,
-    required final List<String> options,
-    required this.correctOptionIndex,
-    this.explanation = '',
-  }) : _options = options;
+class _$LessonProgressImpl implements _LessonProgress {
+  const _$LessonProgressImpl({
+    required this.userId,
+    required this.lessonId,
+    required this.isCompleted,
+    required this.score,
+    required this.attempts,
+    required this.completedAt,
+    required this.startedAt,
+    required this.updatedAt,
+  });
 
-  factory _$LessonQuizImpl.fromJson(Map<String, dynamic> json) =>
-      _$$LessonQuizImplFromJson(json);
-
-  @override
-  final String questionId;
-  @override
-  final String question;
-  final List<String> _options;
-  @override
-  List<String> get options {
-    if (_options is EqualUnmodifiableListView) return _options;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_options);
-  }
+  factory _$LessonProgressImpl.fromJson(Map<String, dynamic> json) =>
+      _$$LessonProgressImplFromJson(json);
 
   @override
-  final int correctOptionIndex;
+  final String userId;
   @override
-  @JsonKey()
-  final String explanation;
+  final String lessonId;
+  @override
+  final bool isCompleted;
+  @override
+  final int score;
+  @override
+  final int attempts;
+  @override
+  final DateTime? completedAt;
+  @override
+  final DateTime startedAt;
+  @override
+  final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'LessonQuiz(questionId: $questionId, question: $question, options: $options, correctOptionIndex: $correctOptionIndex, explanation: $explanation)';
+    return 'LessonProgress(userId: $userId, lessonId: $lessonId, isCompleted: $isCompleted, score: $score, attempts: $attempts, completedAt: $completedAt, startedAt: $startedAt, updatedAt: $updatedAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LessonQuizImpl &&
-            (identical(other.questionId, questionId) ||
-                other.questionId == questionId) &&
-            (identical(other.question, question) ||
-                other.question == question) &&
-            const DeepCollectionEquality().equals(other._options, _options) &&
-            (identical(other.correctOptionIndex, correctOptionIndex) ||
-                other.correctOptionIndex == correctOptionIndex) &&
-            (identical(other.explanation, explanation) ||
-                other.explanation == explanation));
+            other is _$LessonProgressImpl &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.lessonId, lessonId) ||
+                other.lessonId == lessonId) &&
+            (identical(other.isCompleted, isCompleted) ||
+                other.isCompleted == isCompleted) &&
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.attempts, attempts) ||
+                other.attempts == attempts) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt) &&
+            (identical(other.startedAt, startedAt) ||
+                other.startedAt == startedAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    questionId,
-    question,
-    const DeepCollectionEquality().hash(_options),
-    correctOptionIndex,
-    explanation,
+    userId,
+    lessonId,
+    isCompleted,
+    score,
+    attempts,
+    completedAt,
+    startedAt,
+    updatedAt,
   );
 
-  /// Create a copy of LessonQuiz
+  /// Create a copy of LessonProgress
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$LessonQuizImplCopyWith<_$LessonQuizImpl> get copyWith =>
-      __$$LessonQuizImplCopyWithImpl<_$LessonQuizImpl>(this, _$identity);
+  _$$LessonProgressImplCopyWith<_$LessonProgressImpl> get copyWith =>
+      __$$LessonProgressImplCopyWithImpl<_$LessonProgressImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LessonQuizImplToJson(this);
+    return _$$LessonProgressImplToJson(this);
   }
 }
 
-abstract class _LessonQuiz implements LessonQuiz {
-  const factory _LessonQuiz({
-    required final String questionId,
-    required final String question,
-    required final List<String> options,
-    required final int correctOptionIndex,
-    final String explanation,
-  }) = _$LessonQuizImpl;
+abstract class _LessonProgress implements LessonProgress {
+  const factory _LessonProgress({
+    required final String userId,
+    required final String lessonId,
+    required final bool isCompleted,
+    required final int score,
+    required final int attempts,
+    required final DateTime? completedAt,
+    required final DateTime startedAt,
+    required final DateTime updatedAt,
+  }) = _$LessonProgressImpl;
 
-  factory _LessonQuiz.fromJson(Map<String, dynamic> json) =
-      _$LessonQuizImpl.fromJson;
+  factory _LessonProgress.fromJson(Map<String, dynamic> json) =
+      _$LessonProgressImpl.fromJson;
 
   @override
-  String get questionId;
+  String get userId;
   @override
-  String get question;
+  String get lessonId;
   @override
-  List<String> get options;
+  bool get isCompleted;
   @override
-  int get correctOptionIndex;
+  int get score;
   @override
-  String get explanation;
+  int get attempts;
+  @override
+  DateTime? get completedAt;
+  @override
+  DateTime get startedAt;
+  @override
+  DateTime get updatedAt;
 
-  /// Create a copy of LessonQuiz
+  /// Create a copy of LessonProgress
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LessonQuizImplCopyWith<_$LessonQuizImpl> get copyWith =>
+  _$$LessonProgressImplCopyWith<_$LessonProgressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

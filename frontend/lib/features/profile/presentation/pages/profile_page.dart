@@ -22,7 +22,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         title: const Text('Profile'),
         actions: [
           IconButton(
-            onPressed: () => context.push(RouteNames.settings),
+            onPressed: () {
+              // TODO: Navigate to settings
+            },
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
@@ -161,7 +163,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Widget _buildStatsCards() {
-    return Row(
+    return const Row(
       children: [
         _StatCard(
           label: 'XP',
@@ -169,14 +171,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           icon: Icons.star,
           color: AppColors.warning,
         ),
-        const SizedBox(width: AppSpacing.sm),
+        SizedBox(width: AppSpacing.sm),
         _StatCard(
           label: 'Streak',
           value: '5 days',
           icon: Icons.local_fire_department,
           color: AppColors.error,
         ),
-        const SizedBox(width: AppSpacing.sm),
+        SizedBox(width: AppSpacing.sm),
         _StatCard(
           label: 'Words',
           value: '128',
@@ -194,20 +196,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _SettingsTile(
             icon: Icons.person_outline,
             title: 'Edit Profile',
-            onTap: () => context.push(RouteNames.editProfile),
+            onTap: () {
+              // TODO: Edit profile
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.language,
             title: 'Languages',
             subtitle: 'English, Malayalam',
-            onTap: () => context.push(RouteNames.settings),
+            onTap: () {
+              // TODO: Language settings
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
-            onTap: () => context.push(RouteNames.notifications),
+            onTap: () {
+              // TODO: Notification settings
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -224,7 +232,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 );
               },
             ),
-            onTap: null,
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -237,7 +244,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 vertical: AppSpacing.xs,
               ),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [AppColors.warning, AppColors.primary500],
                 ),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -251,43 +258,47 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
-            onTap: () => context.push(RouteNames.subscription),
+            onTap: () {
+              // TODO: Show subscription page
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.help_outline,
             title: 'Help & Support',
-            onTap: () => context.push(RouteNames.settings),
+            onTap: () {
+              // TODO: Help page
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.description_outlined,
             title: 'Terms of Service',
-            onTap: () => context.push(RouteNames.settings),
+            onTap: () {
+              // TODO: Terms page
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
-            onTap: () => context.push(RouteNames.settings),
+            onTap: () {
+              // TODO: Privacy page
+            },
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.logout,
             title: 'Logout',
             textColor: AppColors.error,
-            onTap: () {
-              _showLogoutDialog();
-            },
+            onTap: _showLogoutDialog,
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.delete_outline,
             title: 'Delete Account',
             textColor: AppColors.error,
-            onTap: () {
-              _showDeleteAccountDialog();
-            },
+            onTap: _showDeleteAccountDialog,
           ),
         ],
       ),

@@ -84,7 +84,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   const SizedBox(height: AppSpacing.xs),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.local_fire_department,
                         size: 18,
                         color: AppColors.warning,
@@ -104,9 +104,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             IconButton(
               onPressed: () => context.push(RouteNames.notifications),
-              icon: Badge(
-                label: const Text('3'),
-                child: const Icon(Icons.notifications_outlined),
+              icon: const Badge(
+                label: Text('3'),
+                child: Icon(Icons.notifications_outlined),
               ),
             ),
           ],
@@ -247,7 +247,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           crossAxisCount: 3,
           mainAxisSpacing: AppSpacing.sm,
           crossAxisSpacing: AppSpacing.sm,
-          childAspectRatio: 1,
           children: [
             _QuickActionCard(
               icon: Icons.book,
@@ -369,9 +368,9 @@ class _QuickActionCardState extends State<_QuickActionCard> {
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   widget.label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],

@@ -5,17 +5,13 @@ import 'package:ai_language_coach/features/profile/presentation/pages/edit_profi
 void main() {
   group('EditProfilePage', () {
     testWidgets('renders edit profile page with title', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: EditProfilePage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: EditProfilePage()));
 
       expect(find.text('Edit Profile'), findsOneWidget);
     });
 
     testWidgets('renders form fields', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: EditProfilePage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: EditProfilePage()));
 
       expect(find.byType(Scaffold), findsOneWidget);
     });

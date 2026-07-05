@@ -22,7 +22,7 @@ class AILanguageCoachApp extends ConsumerWidget {
         themeMode: themeMode,
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
-      error: (_, __) => MaterialApp(
+      error: (_, _) => MaterialApp(
         title: 'AI Language Coach',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,

@@ -19,10 +19,7 @@ class LessonRepositoryImpl implements LessonRepository {
     try {
       final response = await _dio.get(
         '/lesson-engine',
-        queryParameters: {
-          if (category != null) 'category': category,
-          if (difficulty != null) 'difficulty': difficulty,
-        },
+        queryParameters: {'category': ?category, 'difficulty': ?difficulty},
       );
       final data = response.data;
       if (data is List) {

@@ -17,16 +17,20 @@ void main() {
 
   group('Voice Session Tests', () {
     test('should start a voice session', () async {
-      when(() => mockVoiceRepository.startSession(
-            language: any(named: 'language'),
-            persona: any(named: 'persona'),
-          )).thenAnswer(
-        (_) async => Result.success(VoiceSession(
-          id: 'vs_001',
-          userId: 'user_001',
-          roomId: 'room_001',
-          startedAt: DateTime.now(),
-        )),
+      when(
+        () => mockVoiceRepository.startSession(
+          language: any(named: 'language'),
+          persona: any(named: 'persona'),
+        ),
+      ).thenAnswer(
+        (_) async => Result.success(
+          VoiceSession(
+            id: 'vs_001',
+            userId: 'user_001',
+            roomId: 'room_001',
+            startedAt: DateTime.now(),
+          ),
+        ),
       );
 
       final result = await mockVoiceRepository.startSession(
@@ -39,11 +43,13 @@ void main() {
 
     test('should end a voice session', () async {
       when(() => mockVoiceRepository.endSession(any())).thenAnswer(
-        (_) async => Result.success(VoiceSession(
-          id: 'vs_001',
-          userId: 'user_001',
-          endedAt: DateTime.now(),
-        )),
+        (_) async => Result.success(
+          VoiceSession(
+            id: 'vs_001',
+            userId: 'user_001',
+            endedAt: DateTime.now(),
+          ),
+        ),
       );
 
       final result = await mockVoiceRepository.endSession('vs_001');
@@ -52,23 +58,27 @@ void main() {
     });
 
     test('should evaluate speaking', () async {
-      when(() => mockVoiceRepository.evaluateSpeaking(
-            any(),
-            targetLanguage: any(named: 'targetLanguage'),
-          )).thenAnswer(
-        (_) async => Result.success(PronunciationScore(
-          fluencyScore: 82,
-          grammarScore: 75,
-          vocabularyScore: 80,
-          pronunciationScore: 70,
-          overallScore: 78,
-          feedback: 'Good job!',
-          strengths: ['Natural rhythm'],
-          issues: ['Needs more practice'],
-          practiceWords: ['think', 'three'],
-          shadowingExercise: 'The weather is nice today.',
-          estimatedProficiency: 'B1',
-        )),
+      when(
+        () => mockVoiceRepository.evaluateSpeaking(
+          any(),
+          targetLanguage: any(named: 'targetLanguage'),
+        ),
+      ).thenAnswer(
+        (_) async => const Result.success(
+          PronunciationScore(
+            fluencyScore: 82,
+            grammarScore: 75,
+            vocabularyScore: 80,
+            pronunciationScore: 70,
+            overallScore: 78,
+            feedback: 'Good job!',
+            strengths: ['Natural rhythm'],
+            issues: ['Needs more practice'],
+            practiceWords: ['think', 'three'],
+            shadowingExercise: 'The weather is nice today.',
+            estimatedProficiency: 'B1',
+          ),
+        ),
       );
 
       final result = await mockVoiceRepository.evaluateSpeaking(
@@ -82,28 +92,30 @@ void main() {
     });
 
     test('should get voice sessions history', () async {
-      when(() => mockVoiceRepository.getSessions(limit: any(named: 'limit')))
-          .thenAnswer(
-        (_) async => Result.success([
+      when(
+        () => mockVoiceRepository.getSessions(limit: any(named: 'limit')),
+      ).thenAnswer(
+        (_) async => const Result.success([
           VoiceSession(id: 'vs_001', userId: 'user_001', durationSeconds: 300),
           VoiceSession(id: 'vs_002', userId: 'user_001', durationSeconds: 600),
         ]),
       );
 
-      final result = await mockVoiceRepository.getSessions(limit: 20);
+      final result = await mockVoiceRepository.getSessions();
 
       expect(result.isSuccess, isTrue);
       expect(result.value.length, 2);
     });
 
     test('should handle start session failure', () async {
-      when(() => mockVoiceRepository.startSession(
-            language: any(named: 'language'),
-            persona: any(named: 'persona'),
-          )).thenAnswer(
-        (_) async => const Result.error(
-          VoiceServiceFailure('Failed to connect'),
+      when(
+        () => mockVoiceRepository.startSession(
+          language: any(named: 'language'),
+          persona: any(named: 'persona'),
         ),
+      ).thenAnswer(
+        (_) async =>
+            const Result.error(VoiceServiceFailure('Failed to connect')),
       );
 
       final result = await mockVoiceRepository.startSession(
@@ -115,18 +127,17 @@ void main() {
     });
 
     test('should handle evaluate speaking failure', () async {
-      when(() => mockVoiceRepository.evaluateSpeaking(
-            any(),
-            targetLanguage: any(named: 'targetLanguage'),
-          )).thenAnswer(
-        (_) async => const Result.error(
-          VoiceServiceFailure('AI evaluation failed'),
+      when(
+        () => mockVoiceRepository.evaluateSpeaking(
+          any(),
+          targetLanguage: any(named: 'targetLanguage'),
         ),
+      ).thenAnswer(
+        (_) async =>
+            const Result.error(VoiceServiceFailure('AI evaluation failed')),
       );
 
-      final result = await mockVoiceRepository.evaluateSpeaking(
-        'Hello world',
-      );
+      final result = await mockVoiceRepository.evaluateSpeaking('Hello world');
 
       expect(result.isFailure, isTrue);
     });
@@ -134,7 +145,7 @@ void main() {
 
   group('Pronunciation Score Validation', () {
     test('scores should be within valid range (0-100)', () {
-      final score = PronunciationScore(
+      const score = PronunciationScore(
         fluencyScore: 85,
         grammarScore: 90,
         vocabularyScore: 75,
@@ -156,10 +167,10 @@ void main() {
     });
 
     test('overall score should be average of component scores', () {
-      final fluency = 80;
-      final grammar = 70;
-      final vocabulary = 90;
-      final pronunciation = 60;
+      const fluency = 80;
+      const grammar = 70;
+      const vocabulary = 90;
+      const pronunciation = 60;
       final expectedOverall =
           ((fluency + grammar + vocabulary + pronunciation) / 4).round();
 
@@ -169,11 +180,9 @@ void main() {
         vocabularyScore: vocabulary,
         pronunciationScore: pronunciation,
         overallScore: expectedOverall,
-        feedback: '',
         strengths: [],
         issues: [],
         practiceWords: [],
-        shadowingExercise: '',
         estimatedProficiency: 'B1',
       );
 
@@ -195,8 +204,8 @@ void main() {
     });
 
     test('session duration should be calculable', () {
-      final start = DateTime(2026, 7, 1, 10, 0, 0);
-      final end = DateTime(2026, 7, 1, 10, 5, 0);
+      final start = DateTime(2026, 7, 1, 10, 0);
+      final end = DateTime(2026, 7, 1, 10, 5);
       final duration = end.difference(start);
 
       expect(duration.inSeconds, 300);

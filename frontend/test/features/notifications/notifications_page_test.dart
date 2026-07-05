@@ -5,17 +5,13 @@ import 'package:ai_language_coach/features/notifications/presentation/pages/noti
 void main() {
   group('NotificationsPage', () {
     testWidgets('renders notifications page with title', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: NotificationsPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: NotificationsPage()));
 
       expect(find.text('Notifications'), findsOneWidget);
     });
 
     testWidgets('shows empty state when no notifications', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: NotificationsPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: NotificationsPage()));
 
       expect(find.byType(Scaffold), findsOneWidget);
     });

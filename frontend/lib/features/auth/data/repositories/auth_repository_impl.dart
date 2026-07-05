@@ -19,7 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (response.user == null) {
         return const Result.error(AuthFailure('Sign up returned no user'));
       }
-      return Result.success(_mapSupabaseUser(response.user!));
+      return Result.success(_mapSupabaseUser(response.user));
     } catch (e) {
       return Result.error(AuthFailure(e.toString()));
     }
@@ -35,7 +35,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (response.user == null) {
         return const Result.error(AuthFailure('Sign in returned no user'));
       }
-      return Result.success(_mapSupabaseUser(response.user!));
+      return Result.success(_mapSupabaseUser(response.user));
     } catch (e) {
       return Result.error(AuthFailure(e.toString()));
     }

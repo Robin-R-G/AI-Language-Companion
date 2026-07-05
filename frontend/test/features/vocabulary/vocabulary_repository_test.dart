@@ -67,7 +67,7 @@ void main() {
     test('handles DioException', () async {
       when(() => mockDio.get(any())).thenThrow(
         DioException(
-          requestOptions: RequestOptions(path: ''),
+          requestOptions: RequestOptions(),
           message: 'Failed to fetch',
         ),
       );

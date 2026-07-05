@@ -11,22 +11,18 @@ _$VocabularyWordImpl _$$VocabularyWordImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       word: json['word'] as String,
       meaning: json['meaning'] as String,
-      meaningMalayalam: json['meaningMalayalam'] as String? ?? '',
-      pronunciation: json['pronunciation'] as String? ?? '',
-      examples:
-          (json['examples'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      cefrLevel: json['cefrLevel'] as String? ?? '',
-      masteryLevel: (json['masteryLevel'] as num?)?.toInt() ?? 0,
-      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
-      nextReview: json['nextReview'] == null
-          ? null
-          : DateTime.parse(json['nextReview'] as String),
-      lastReviewed: json['lastReviewed'] == null
-          ? null
-          : DateTime.parse(json['lastReviewed'] as String),
+      pronunciation: json['pronunciation'] as String,
+      examples: (json['examples'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      cefrLevel: json['cefrLevel'] as String,
+      partOfSpeech: json['partOfSpeech'] as String,
+      targetLanguage: json['targetLanguage'] as String,
+      nativeLanguage: json['nativeLanguage'] as String,
+      audioUrl: json['audioUrl'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$$VocabularyWordImplToJson(
@@ -35,12 +31,40 @@ Map<String, dynamic> _$$VocabularyWordImplToJson(
   'id': instance.id,
   'word': instance.word,
   'meaning': instance.meaning,
-  'meaningMalayalam': instance.meaningMalayalam,
   'pronunciation': instance.pronunciation,
   'examples': instance.examples,
   'cefrLevel': instance.cefrLevel,
+  'partOfSpeech': instance.partOfSpeech,
+  'targetLanguage': instance.targetLanguage,
+  'nativeLanguage': instance.nativeLanguage,
+  'audioUrl': instance.audioUrl,
+  'imageUrl': instance.imageUrl,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'updatedAt': instance.updatedAt.toIso8601String(),
+};
+
+_$VocabularyProgressImpl _$$VocabularyProgressImplFromJson(
+  Map<String, dynamic> json,
+) => _$VocabularyProgressImpl(
+  userId: json['userId'] as String,
+  vocabularyId: json['vocabularyId'] as String,
+  masteryLevel: (json['masteryLevel'] as num).toInt(),
+  reviewCount: (json['reviewCount'] as num).toInt(),
+  nextReview: DateTime.parse(json['nextReview'] as String),
+  lastReviewed: DateTime.parse(json['lastReviewed'] as String),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
+);
+
+Map<String, dynamic> _$$VocabularyProgressImplToJson(
+  _$VocabularyProgressImpl instance,
+) => <String, dynamic>{
+  'userId': instance.userId,
+  'vocabularyId': instance.vocabularyId,
   'masteryLevel': instance.masteryLevel,
   'reviewCount': instance.reviewCount,
-  'nextReview': instance.nextReview?.toIso8601String(),
-  'lastReviewed': instance.lastReviewed?.toIso8601String(),
+  'nextReview': instance.nextReview.toIso8601String(),
+  'lastReviewed': instance.lastReviewed.toIso8601String(),
+  'createdAt': instance.createdAt.toIso8601String(),
+  'updatedAt': instance.updatedAt.toIso8601String(),
 };

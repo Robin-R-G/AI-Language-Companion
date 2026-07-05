@@ -20,17 +20,29 @@ void main() {
       when(() => response.data).thenReturn([
         {
           'id': 'a1',
+          'userId': 'user1',
+          'badgeId': 'badge1',
           'title': 'First!',
           'description': 'Desc',
-          'icon': 'star',
+          'iconName': 'star',
+          'xpReward': 100,
           'category': 'milestone',
+          'tier': 'bronze',
+          'unlockedAt': '2024-06-01T00:00:00.000',
+          'createdAt': '2024-06-01T00:00:00.000',
         },
         {
           'id': 'a2',
+          'userId': 'user1',
+          'badgeId': 'badge2',
           'title': 'Streak 7',
           'description': '7 days',
-          'icon': 'fire',
+          'iconName': 'fire',
+          'xpReward': 200,
           'category': 'streak',
+          'tier': 'silver',
+          'unlockedAt': '2024-06-02T00:00:00.000',
+          'createdAt': '2024-06-02T00:00:00.000',
         },
       ]);
       when(() => mockDio.get(any())).thenAnswer((_) async => response);
@@ -65,11 +77,16 @@ void main() {
       final response = MockResponse();
       when(() => response.data).thenReturn({
         'id': 'a1',
+        'userId': 'user1',
+        'badgeId': 'badge1',
         'title': 'Unlocked!',
         'description': 'Desc',
-        'icon': 'star',
+        'iconName': 'star',
+        'xpReward': 100,
         'category': 'milestone',
-        'isUnlocked': true,
+        'tier': 'bronze',
+        'unlockedAt': '2024-06-01T00:00:00.000',
+        'createdAt': '2024-06-01T00:00:00.000',
       });
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
@@ -77,7 +94,7 @@ void main() {
 
       final result = await repository.checkAndAward('a1');
       expect(result.isSuccess, true);
-      expect(result.value.isUnlocked, true);
+      expect(result.value.unlockedAt, DateTime.parse('2024-06-01T00:00:00.000'));
     });
 
     test('handles DioException', () async {

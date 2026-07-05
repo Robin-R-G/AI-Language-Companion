@@ -125,7 +125,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       size: 16,
                       color: AppColors.success,
@@ -323,7 +323,11 @@ class _PlanCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AppSpacing.xs),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, size: 16, color: AppColors.success),
+                  const Icon(
+                    Icons.check_circle,
+                    size: 16,
+                    color: AppColors.success,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(child: Text(f, style: theme.textTheme.bodyMedium)),
                 ],

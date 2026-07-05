@@ -28,17 +28,7 @@ class DailyVocabulary extends _$DailyVocabulary {
     final repo = ref.read(vocabularyRepositoryProvider);
     await repo.updateMastery(wordId, masteryScore);
 
-    state = [
-      for (final w in state)
-        if (w.id == wordId)
-          w.copyWith(
-            masteryLevel: masteryScore,
-            reviewCount: w.reviewCount + 1,
-            lastReviewed: DateTime.now(),
-          )
-        else
-          w,
-    ];
+    state = [for (final w in state) w];
   }
 }
 

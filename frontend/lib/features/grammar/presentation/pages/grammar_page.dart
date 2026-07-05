@@ -211,25 +211,25 @@ class _GrammarPageState extends State<GrammarPage>
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        _RuleTile(
+        const _RuleTile(
           icon: Icons.timelapse,
           title: 'Tenses',
           subtitle: 'Past, Present, Future',
           count: 12,
         ),
-        _RuleTile(
+        const _RuleTile(
           icon: Icons.person,
           title: 'Subject-Verb Agreement',
           subtitle: 'Singular and Plural subjects',
           count: 8,
         ),
-        _RuleTile(
+        const _RuleTile(
           icon: Icons.article,
           title: 'Articles & Determiners',
           subtitle: 'a, an, the usage',
           count: 6,
         ),
-        _RuleTile(
+        const _RuleTile(
           icon: Icons.compare_arrows,
           title: 'Prepositions',
           subtitle: 'in, on, at, by',

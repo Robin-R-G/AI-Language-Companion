@@ -17,9 +17,9 @@ void main() {
   group('VoiceRepositoryImpl', () {
     test('startSession returns session on success', () async {
       final response = MockResponse();
-      when(() => response.data).thenReturn({
-        'id': 'vs_1', 'userId': 'u1', 'provider': 'livekit',
-      });
+      when(
+        () => response.data,
+      ).thenReturn({'id': 'vs_1', 'userId': 'u1', 'provider': 'livekit'});
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
       ).thenAnswer((_) async => response);
@@ -47,9 +47,9 @@ void main() {
 
     test('endSession returns session on success', () async {
       final response = MockResponse();
-      when(() => response.data).thenReturn({
-        'id': 'vs_1', 'userId': 'u1', 'durationSeconds': 120,
-      });
+      when(
+        () => response.data,
+      ).thenReturn({'id': 'vs_1', 'userId': 'u1', 'durationSeconds': 120});
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
       ).thenAnswer((_) async => response);
@@ -61,7 +61,9 @@ void main() {
     test('evaluateSpeaking returns score on success', () async {
       final response = MockResponse();
       when(() => response.data).thenReturn({
-        'fluencyScore': 80, 'grammarScore': 75, 'overallScore': 78,
+        'fluencyScore': 80,
+        'grammarScore': 75,
+        'overallScore': 78,
       });
       when(
         () => mockDio.post(any(), data: any(named: 'data')),
@@ -75,7 +77,8 @@ void main() {
       final response = MockResponse();
       when(() => response.data).thenReturn([]);
       when(
-        () => mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
+        () =>
+            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenAnswer((_) async => response);
 
       final result = await repository.getSessions();
@@ -94,12 +97,12 @@ void main() {
     });
 
     test('handles DioException', () async {
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenThrow(DioException(
-        requestOptions: RequestOptions(path: ''),
-        message: 'Voice service error',
-      ));
+      when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Voice service error',
+        ),
+      );
 
       final result = await repository.startSession(language: 'en');
       expect(result.isFailure, true);

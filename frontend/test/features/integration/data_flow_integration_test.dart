@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ai_language_coach/core/errors/failure.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
 import 'package:ai_language_coach/features/auth/domain/entities/user.dart';
-import '../test_utils/mock_api_responses.dart';
+import '../../test_utils/mock_api_responses.dart';
 
 void main() {
   group('Data Flow Integration - Entity Serialization', () {
@@ -11,20 +12,25 @@ void main() {
       final user = AppUser(
         id: json['id'] as String,
         email: json['email'] as String? ?? '',
-        displayName: json['full_name'] as String? ?? '',
+        fullName: json['full_name'] as String?,
         nativeLanguage: json['native_language'] as String? ?? '',
         targetLanguage: json['target_language'] as String? ?? 'en',
-        proficiencyLevel: json['proficiency_level'] as String? ?? 'A1',
-        targetExam: json['target_exam'] as String? ?? 'general',
-        isPremium: json['is_premium'] as bool? ?? false,
-        subscriptionPlan: json['subscription_plan'] as String? ?? 'free',
+        proficiencyLevel: json['proficiency_level'] as String?,
+        targetExam: json['target_exam'] as String?,
+        onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
+        xp: json['xp'] as int? ?? 0,
+        level: json['level'] as int? ?? 0,
+        streak: json['streak'] as int? ?? 0,
+        longestStreak: json['longest_streak'] as int? ?? 0,
+        lastActiveAt: DateTime.parse(json['updated_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String),
+        updatedAt: DateTime.parse(json['updated_at'] as String),
       );
 
       expect(user.id, 'user_123');
       expect(user.email, 'rahul@example.com');
-      expect(user.displayName, 'Rahul Nair');
+      expect(user.fullName, 'Rahul Nair');
       expect(user.proficiencyLevel, 'B1');
-      expect(user.isPremium, false);
     });
 
     test('voice session data flow', () {
@@ -111,7 +117,7 @@ void main() {
       expect(data['type'], isNotEmpty);
       expect(data['score'], isA<num>());
       expect(data['max_score'], isA<num>());
-      expect(data['score'], lessThanOrEqualTo(data['max_score']));
+      expect(data['score'], lessThanOrEqualTo(data['max_score'] as num));
     });
   });
 
@@ -134,7 +140,7 @@ void main() {
 
     test('Result.error propagation through layers', () async {
       Future<Result<int>> repositoryLayer() async {
-        return const Result.error(DatabaseFailure('Connection lost'));
+        return Result.error(DatabaseFailure('Connection lost'));
       }
 
       Future<Result<String>> serviceLayer() async {
@@ -150,7 +156,7 @@ void main() {
 
     test('Result fold handles both cases', () {
       final successResult = const Result.success(100);
-      final errorResult = const Result.error(NetworkFailure('Timeout'));
+      final errorResult = Result.error(NetworkFailure('Timeout'));
 
       final successValue = successResult.fold(
         (failure) => -1,
@@ -166,7 +172,7 @@ void main() {
     });
 
     test('Result getOrElse returns default on error', () {
-      final result = const Result.error(UnknownFailure('fail'));
+      final result = Result.error(UnknownFailure('fail'));
 
       final value = result.getOrElse(() => 42);
 
@@ -174,7 +180,7 @@ void main() {
     });
 
     test('Result getOrNull returns null on error', () {
-      final result = const Result.error(UnknownFailure('fail'));
+      final result = Result.error(UnknownFailure('fail'));
 
       final value = result.getOrNull();
 

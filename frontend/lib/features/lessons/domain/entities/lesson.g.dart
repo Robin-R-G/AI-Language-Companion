@@ -9,57 +9,57 @@ part of 'lesson.dart';
 _$LessonImpl _$$LessonImplFromJson(Map<String, dynamic> json) => _$LessonImpl(
   id: json['id'] as String,
   title: json['title'] as String,
-  category: json['category'] as String,
-  difficulty: json['difficulty'] as String,
-  estimatedMinutes: (json['estimatedMinutes'] as num?)?.toInt() ?? 15,
-  content: json['content'] as String? ?? '',
-  quizzes:
-      (json['quizzes'] as List<dynamic>?)
-          ?.map((e) => LessonQuiz.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  earnedXp: (json['earnedXp'] as num?)?.toInt() ?? 0,
-  completionPercentage:
-      (json['completionPercentage'] as num?)?.toDouble() ?? 0.0,
-  startedAt: json['startedAt'] == null
-      ? null
-      : DateTime.parse(json['startedAt'] as String),
-  completedAt: json['completedAt'] == null
-      ? null
-      : DateTime.parse(json['completedAt'] as String),
+  description: json['description'] as String,
+  language: json['language'] as String,
+  level: json['level'] as String,
+  order: (json['order'] as num).toInt(),
+  xpReward: (json['xpReward'] as num).toInt(),
+  estimatedMinutes: (json['estimatedMinutes'] as num).toInt(),
+  tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+  isLocked: json['isLocked'] as bool,
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$$LessonImplToJson(_$LessonImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'category': instance.category,
-      'difficulty': instance.difficulty,
+      'description': instance.description,
+      'language': instance.language,
+      'level': instance.level,
+      'order': instance.order,
+      'xpReward': instance.xpReward,
       'estimatedMinutes': instance.estimatedMinutes,
-      'content': instance.content,
-      'quizzes': instance.quizzes,
-      'earnedXp': instance.earnedXp,
-      'completionPercentage': instance.completionPercentage,
-      'startedAt': instance.startedAt?.toIso8601String(),
-      'completedAt': instance.completedAt?.toIso8601String(),
+      'tags': instance.tags,
+      'isLocked': instance.isLocked,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
     };
 
-_$LessonQuizImpl _$$LessonQuizImplFromJson(Map<String, dynamic> json) =>
-    _$LessonQuizImpl(
-      questionId: json['questionId'] as String,
-      question: json['question'] as String,
-      options: (json['options'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      correctOptionIndex: (json['correctOptionIndex'] as num).toInt(),
-      explanation: json['explanation'] as String? ?? '',
+_$LessonProgressImpl _$$LessonProgressImplFromJson(Map<String, dynamic> json) =>
+    _$LessonProgressImpl(
+      userId: json['userId'] as String,
+      lessonId: json['lessonId'] as String,
+      isCompleted: json['isCompleted'] as bool,
+      score: (json['score'] as num).toInt(),
+      attempts: (json['attempts'] as num).toInt(),
+      completedAt: json['completedAt'] == null
+          ? null
+          : DateTime.parse(json['completedAt'] as String),
+      startedAt: DateTime.parse(json['startedAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
 
-Map<String, dynamic> _$$LessonQuizImplToJson(_$LessonQuizImpl instance) =>
-    <String, dynamic>{
-      'questionId': instance.questionId,
-      'question': instance.question,
-      'options': instance.options,
-      'correctOptionIndex': instance.correctOptionIndex,
-      'explanation': instance.explanation,
-    };
+Map<String, dynamic> _$$LessonProgressImplToJson(
+  _$LessonProgressImpl instance,
+) => <String, dynamic>{
+  'userId': instance.userId,
+  'lessonId': instance.lessonId,
+  'isCompleted': instance.isCompleted,
+  'score': instance.score,
+  'attempts': instance.attempts,
+  'completedAt': instance.completedAt?.toIso8601String(),
+  'startedAt': instance.startedAt.toIso8601String(),
+  'updatedAt': instance.updatedAt.toIso8601String(),
+};

@@ -5,17 +5,13 @@ import 'package:ai_language_coach/features/settings/presentation/pages/settings_
 void main() {
   group('SettingsPage', () {
     testWidgets('renders settings page with title', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: SettingsPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: SettingsPage()));
 
       expect(find.text('Settings'), findsOneWidget);
     });
 
     testWidgets('renders settings tiles', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: SettingsPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: SettingsPage()));
 
       expect(find.byType(ListView), findsOneWidget);
     });

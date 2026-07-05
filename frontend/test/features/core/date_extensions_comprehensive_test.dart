@@ -53,7 +53,7 @@ void main() {
 
     group('timeString', () {
       test('formats midnight', () {
-        final dt = DateTime(2026, 7, 4, 0, 0);
+        final dt = DateTime(2026, 7, 4, 0);
         expect(dt.timeString, '00:00');
       });
 

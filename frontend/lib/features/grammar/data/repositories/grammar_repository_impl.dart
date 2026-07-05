@@ -19,7 +19,7 @@ class GrammarRepositoryImpl implements GrammarRepository {
     try {
       final response = await _dio.post(
         '/grammar-check',
-        data: {'text': text, if (language != null) 'language': language},
+        data: {'text': text, 'language': ?language},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {

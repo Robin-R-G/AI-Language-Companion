@@ -22,9 +22,7 @@ void main() {
 
     testWidgets('shows active state', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: StreakIndicator(streak: 7, isActive: true)),
-        ),
+        const MaterialApp(home: Scaffold(body: StreakIndicator(streak: 7))),
       );
 
       expect(find.text('7'), findsOneWidget);
@@ -43,9 +41,7 @@ void main() {
 
     testWidgets('has semantic label for accessibility', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: StreakIndicator(streak: 10, isActive: true)),
-        ),
+        const MaterialApp(home: Scaffold(body: StreakIndicator(streak: 10))),
       );
 
       final semantics = tester.getSemantics(find.byType(StreakIndicator));

@@ -15,7 +15,7 @@ void main() {
     final json = {
       'id': 'user_1',
       'email': 'test@test.com',
-      'displayName': 'Test User',
+      'fullName': 'Test User',
       'avatarUrl': 'https://example.com/avatar.png',
       'nativeLanguage': 'Malayalam',
       'targetLanguage': 'en',
@@ -24,31 +24,24 @@ void main() {
       'xp': 100,
       'streak': 5,
       'level': 3,
-      'lessonsCompleted': 10,
-      'voiceSessionsCompleted': 2,
-      'mockExamsCompleted': 1,
+      'longestStreak': 5,
+      'onboardingCompleted': true,
       'lastActiveAt': '2026-07-04T10:00:00.000',
       'createdAt': '2026-06-01T00:00:00.000',
-      'isOnboardingComplete': true,
-      'isPremium': false,
-      'subscriptionPlan': 'free',
-      'preferences': {'theme': 'dark'},
+      'updatedAt': '2026-06-01T00:00:00.000',
     };
 
     test('fromJson creates correct instance', () {
       final user = AppUser.fromJson(json);
       expect(user.id, 'user_1');
       expect(user.email, 'test@test.com');
-      expect(user.displayName, 'Test User');
+      expect(user.fullName, 'Test User');
       expect(user.nativeLanguage, 'Malayalam');
       expect(user.targetLanguage, 'en');
       expect(user.xp, 100);
       expect(user.streak, 5);
       expect(user.level, 3);
-      expect(user.isOnboardingComplete, true);
-      expect(user.isPremium, false);
-      expect(user.subscriptionPlan, 'free');
-      expect(user.preferences, {'theme': 'dark'});
+      expect(user.onboardingCompleted, true);
     });
 
     test('toJson produces correct map', () {
@@ -59,24 +52,70 @@ void main() {
     });
 
     test('uses default values for optional fields', () {
-      final user = AppUser(id: 'u1', email: 'e@e.com');
-      expect(user.displayName, '');
-      expect(user.targetLanguage, 'en');
-      expect(user.proficiencyLevel, 'A1');
-      expect(user.targetExam, 'general');
-      expect(user.xp, 0);
-      expect(user.streak, 0);
-      expect(user.level, 0);
-      expect(user.isOnboardingComplete, false);
-      expect(user.isPremium, false);
-      expect(user.subscriptionPlan, 'free');
-      expect(user.preferences, {});
+      final now = DateTime.now();
+      final user = AppUser(
+        id: 'u1',
+        email: 'e@e.com',
+        nativeLanguage: 'Malayalam',
+        targetLanguage: 'en',
+        onboardingCompleted: false,
+        xp: 0,
+        level: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastActiveAt: now,
+        createdAt: now,
+        updatedAt: now,
+      );
+      expect(user.fullName, isNull);
+      expect(user.proficiencyLevel, isNull);
+      expect(user.targetExam, isNull);
     });
 
     test('equality works correctly', () {
-      final a = AppUser(id: 'u1', email: 'e@e.com');
-      final b = AppUser(id: 'u1', email: 'e@e.com');
-      final c = AppUser(id: 'u2', email: 'e@e.com');
+      final now = DateTime.now();
+      final a = AppUser(
+        id: 'u1',
+        email: 'e@e.com',
+        nativeLanguage: 'Malayalam',
+        targetLanguage: 'en',
+        onboardingCompleted: false,
+        xp: 0,
+        level: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastActiveAt: now,
+        createdAt: now,
+        updatedAt: now,
+      );
+      final b = AppUser(
+        id: 'u1',
+        email: 'e@e.com',
+        nativeLanguage: 'Malayalam',
+        targetLanguage: 'en',
+        onboardingCompleted: false,
+        xp: 0,
+        level: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastActiveAt: now,
+        createdAt: now,
+        updatedAt: now,
+      );
+      final c = AppUser(
+        id: 'u2',
+        email: 'e@e.com',
+        nativeLanguage: 'Malayalam',
+        targetLanguage: 'en',
+        onboardingCompleted: false,
+        xp: 0,
+        level: 0,
+        streak: 0,
+        longestStreak: 0,
+        lastActiveAt: now,
+        createdAt: now,
+        updatedAt: now,
+      );
       expect(a, equals(b));
       expect(a, isNot(equals(c)));
     });
@@ -85,16 +124,16 @@ void main() {
   group('Achievement', () {
     final json = {
       'id': 'ach_1',
+      'userId': 'user_1',
+      'badgeId': 'badge_1',
       'title': 'First Lesson',
       'description': 'Complete your first lesson',
-      'icon': 'school',
-      'category': 'milestone',
-      'requiredValue': 1,
-      'currentProgress': 1,
+      'iconName': 'school',
       'xpReward': 50,
-      'isUnlocked': true,
+      'category': 'milestone',
+      'tier': 'bronze',
       'unlockedAt': '2026-07-04T10:00:00.000',
-      'rarity': 'common',
+      'createdAt': '2026-07-04T10:00:00.000',
     };
 
     test('fromJson creates correct instance', () {
@@ -102,7 +141,6 @@ void main() {
       expect(ach.id, 'ach_1');
       expect(ach.title, 'First Lesson');
       expect(ach.category, 'milestone');
-      expect(ach.isUnlocked, true);
       expect(ach.xpReward, 50);
     });
 
@@ -134,42 +172,48 @@ void main() {
   group('MockExam', () {
     final json = {
       'id': 'exam_1',
+      'userId': 'user_1',
       'examType': 'IELTS',
       'section': 'Reading',
-      'title': 'Reading Test 1',
-      'description': 'Academic reading passage',
       'durationMinutes': 60,
       'totalQuestions': 40,
-      'answeredQuestions': 20,
-      'score': 5.5,
+      'questionsAnswered': 20,
+      'correctAnswers': 15,
+      'estimatedScore': 5.5,
       'status': 'in_progress',
+      'feedback': {'strength': 'reading'},
       'startedAt': '2026-07-04T10:00:00.000',
-      'questions': [],
-      'bandScore': '5.5',
+      'createdAt': '2026-07-04T10:00:00.000',
+      'updatedAt': '2026-07-04T10:00:00.000',
     };
 
     test('fromJson creates correct instance', () {
       final exam = MockExam.fromJson(json);
       expect(exam.id, 'exam_1');
       expect(exam.examType, 'IELTS');
-      expect(exam.score, 5.5);
+      expect(exam.estimatedScore, 5.5);
       expect(exam.status, 'in_progress');
-      expect(exam.questions, isEmpty);
     });
   });
 
-  group('ExamQuestion', () {
-    test('fromJson and defaults', () {
-      final q = ExamQuestion.fromJson({
+  group('MockExamQuestion', () {
+    test('fromJson creates correct instance', () {
+      final q = MockExamQuestion.fromJson({
         'id': 'q_1',
-        'question': 'What is X?',
-        'type': 'multiple_choice',
-        'options': ['A', 'B', 'C', 'D'],
+        'examId': 'exam_1',
+        'questionNumber': 1,
+        'questionType': 'multiple_choice',
+        'prompt': 'What is X?',
+        'options': {'A': 'Option A', 'B': 'Option B', 'C': 'Option C', 'D': 'Option D'},
         'correctAnswer': 'A',
+        'isCorrect': true,
+        'createdAt': '2026-07-04T10:00:00.000',
       });
-      expect(q.isCorrect, false);
-      expect(q.userAnswer, '');
-      expect(q.timeSpentSeconds, 0);
+      expect(q.id, 'q_1');
+      expect(q.questionType, 'multiple_choice');
+      expect(q.correctAnswer, 'A');
+      expect(q.isCorrect, true);
+      expect(q.userAnswer, isNull);
     });
   });
 
@@ -177,25 +221,24 @@ void main() {
     final json = {
       'id': 'sub_1',
       'userId': 'user_1',
-      'plan': 'premium_monthly',
+      'provider': 'stripe',
+      'planId': 'premium_monthly',
+      'planName': 'Premium Monthly',
       'status': 'active',
-      'store': 'app_store',
-      'productId': 'com.coach.premium.monthly',
+      'billingCycle': 'monthly',
+      'amount': 9.99,
+      'currency': 'USD',
       'currentPeriodStart': '2026-07-01T00:00:00.000',
       'currentPeriodEnd': '2026-08-01T00:00:00.000',
       'createdAt': '2026-07-01T00:00:00.000',
-      'isTrial': false,
-      'trialDaysRemaining': 0,
-      'willRenew': true,
-      'features': {'unlimited_chat': true},
+      'updatedAt': '2026-07-01T00:00:00.000',
     };
 
     test('fromJson creates correct instance', () {
       final sub = Subscription.fromJson(json);
-      expect(sub.plan, 'premium_monthly');
+      expect(sub.planId, 'premium_monthly');
       expect(sub.status, 'active');
-      expect(sub.isTrial, false);
-      expect(sub.willRenew, true);
+      expect(sub.amount, 9.99);
     });
   });
 
@@ -283,32 +326,23 @@ void main() {
     final json = {
       'id': 'lesson_1',
       'title': 'Present Perfect',
-      'category': 'grammar',
-      'difficulty': 'B1',
+      'description': 'Learn present perfect tense',
+      'language': 'en',
+      'level': 'B1',
+      'order': 1,
+      'xpReward': 50,
       'estimatedMinutes': 15,
-      'content': 'Lesson content here',
+      'tags': ['grammar'],
+      'isLocked': false,
+      'createdAt': '2026-07-04T10:00:00.000',
+      'updatedAt': '2026-07-04T10:00:00.000',
     };
 
     test('fromJson creates correct instance', () {
       final lesson = Lesson.fromJson(json);
       expect(lesson.id, 'lesson_1');
-      expect(lesson.difficulty, 'B1');
-      expect(lesson.completionPercentage, 0.0);
-      expect(lesson.quizzes, isEmpty);
-    });
-  });
-
-  group('LessonQuiz', () {
-    test('fromJson with options', () {
-      final quiz = LessonQuiz.fromJson({
-        'questionId': 'q_1',
-        'question': 'Choose the correct form:',
-        'options': ['go', 'goes', 'going', 'gone'],
-        'correctOptionIndex': 1,
-        'explanation': 'He goes is correct',
-      });
-      expect(quiz.options.length, 4);
-      expect(quiz.correctOptionIndex, 1);
+      expect(lesson.level, 'B1');
+      expect(lesson.estimatedMinutes, 15);
     });
   });
 
@@ -318,16 +352,20 @@ void main() {
         'id': 'vocab_1',
         'word': 'ephemeral',
         'meaning': 'Lasting for a very short time',
-        'meaningMalayalam': 'ക്ഷണികമായ',
         'pronunciation': '/ɪˈfɛm(ə)rəl/',
         'examples': ['The beauty of cherry blossoms is ephemeral.'],
         'cefrLevel': 'C1',
-        'masteryLevel': 2,
-        'reviewCount': 5,
+        'partOfSpeech': 'adjective',
+        'targetLanguage': 'en',
+        'nativeLanguage': 'ml',
+        'audioUrl': null,
+        'imageUrl': null,
+        'createdAt': '2026-07-04T10:00:00.000',
+        'updatedAt': '2026-07-04T10:00:00.000',
       });
       expect(word.word, 'ephemeral');
       expect(word.cefrLevel, 'C1');
-      expect(word.masteryLevel, 2);
+      expect(word.partOfSpeech, 'adjective');
     });
   });
 
@@ -336,30 +374,39 @@ void main() {
       final session = VoiceSession.fromJson({
         'id': 'vs_1',
         'userId': 'user_1',
-        'provider': 'livekit',
-        'durationSeconds': 120,
-        'roomId': 'room_abc',
+        'sessionType': 'practice',
+        'targetLanguage': 'en',
+        'topic': 'introductions',
+        'durationMinutes': 5,
+        'xpEarned': 10,
+        'status': 'completed',
+        'liveKitRoomName': 'room_abc',
+        'startedAt': '2026-07-04T10:00:00.000',
+        'createdAt': '2026-07-04T10:00:00.000',
+        'updatedAt': '2026-07-04T10:00:00.000',
       });
       expect(session.id, 'vs_1');
-      expect(session.durationSeconds, 120);
+      expect(session.durationMinutes, 5);
     });
   });
 
   group('PronunciationScore', () {
     test('fromJson creates correct instance', () {
       final score = PronunciationScore.fromJson({
-        'fluencyScore': 75,
-        'grammarScore': 80,
-        'vocabularyScore': 70,
-        'pronunciationScore': 85,
-        'overallScore': 78,
-        'feedback': 'Good fluency',
-        'strengths': ['Clear pronunciation'],
-        'issues': ['Pace control'],
-        'estimatedProficiency': 'B2',
+        'sessionId': 'session_1',
+        'userId': 'user_1',
+        'overallScore': 78.0,
+        'fluency': 75.0,
+        'clarity': 80.0,
+        'stress': 70.0,
+        'intonation': 85.0,
+        'confidence': 72.0,
+        'wordScores': [],
+        'createdAt': '2026-07-04T10:00:00.000',
       });
-      expect(score.overallScore, 78);
-      expect(score.estimatedProficiency, 'B2');
+      expect(score.overallScore, 78.0);
+      expect(score.fluency, 75.0);
+      expect(score.clarity, 80.0);
     });
   });
 

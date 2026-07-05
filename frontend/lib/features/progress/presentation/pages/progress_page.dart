@@ -160,8 +160,8 @@ class _ProgressPageState extends State<ProgressPage> {
           const SizedBox(height: AppSpacing.base),
 
           // Stats Row
-          StatRow(
-            stats: const [
+          const StatRow(
+            stats: [
               StatItem(
                 icon: Icons.access_time,
                 value: '12.5h',
@@ -210,7 +210,7 @@ class _ProgressPageState extends State<ProgressPage> {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          ProgressCard(
+          const ProgressCard(
             label: 'Speaking',
             value: '7.5',
             icon: Icons.mic,
@@ -218,7 +218,7 @@ class _ProgressPageState extends State<ProgressPage> {
             trend: '+0.3',
           ),
           const SizedBox(height: AppSpacing.sm),
-          ProgressCard(
+          const ProgressCard(
             label: 'Grammar',
             value: '6.8',
             icon: Icons.auto_fix_high,
@@ -226,7 +226,7 @@ class _ProgressPageState extends State<ProgressPage> {
             trend: '+0.5',
           ),
           const SizedBox(height: AppSpacing.sm),
-          ProgressCard(
+          const ProgressCard(
             label: 'Vocabulary',
             value: '1,240',
             subtitle: 'words learned',
@@ -235,7 +235,7 @@ class _ProgressPageState extends State<ProgressPage> {
             trend: '+120',
           ),
           const SizedBox(height: AppSpacing.sm),
-          ProgressCard(
+          const ProgressCard(
             label: 'Listening',
             value: '7.0',
             icon: Icons.hearing,

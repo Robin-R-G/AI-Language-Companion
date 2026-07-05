@@ -5,17 +5,13 @@ import 'package:ai_language_coach/features/subscription/presentation/pages/subsc
 void main() {
   group('SubscriptionPage', () {
     testWidgets('renders subscription page with title', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: SubscriptionPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: SubscriptionPage()));
 
       expect(find.text('Subscription'), findsOneWidget);
     });
 
     testWidgets('renders pricing cards', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(home: SubscriptionPage()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: SubscriptionPage()));
 
       expect(find.byType(Scaffold), findsOneWidget);
     });

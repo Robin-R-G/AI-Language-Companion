@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       children: [
         // Language Section
-        _SectionTitle(title: 'Language'),
+        const _SectionTitle(title: 'Language'),
         InfoTile(
           icon: Icons.translate,
           title: 'App Language',
@@ -81,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
         const Divider(),
 
         // Notifications Section
-        _SectionTitle(title: 'Notifications'),
+        const _SectionTitle(title: 'Notifications'),
         InfoTile(
           icon: Icons.notifications_outlined,
           title: 'Push Notifications',
@@ -99,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
         const Divider(),
 
         // Account Section
-        _SectionTitle(title: 'Account'),
+        const _SectionTitle(title: 'Account'),
         InfoTile(
           icon: Icons.person_outline,
           title: 'Edit Profile',
@@ -119,7 +119,7 @@ class _SettingsPageState extends State<SettingsPage> {
         const Divider(),
 
         // Support Section
-        _SectionTitle(title: 'Support'),
+        const _SectionTitle(title: 'Support'),
         InfoTile(
           icon: Icons.help_outline,
           title: 'Help & Support',
@@ -144,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
         const Divider(),
 
         // Danger Zone
-        _SectionTitle(title: 'Danger Zone'),
+        const _SectionTitle(title: 'Danger Zone'),
         InfoTile(
           icon: Icons.delete_forever,
           title: 'Delete Account',

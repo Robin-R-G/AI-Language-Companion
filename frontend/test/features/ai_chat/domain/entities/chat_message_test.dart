@@ -62,7 +62,7 @@ void main() {
     });
 
     test('serialization roundtrip', () {
-      final original = ChatMessage(
+      const original = ChatMessage(
         id: 'msg_003',
         role: 'user',
         content: 'Test message',

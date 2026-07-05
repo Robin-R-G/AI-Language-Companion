@@ -4,30 +4,68 @@ part 'user.freezed.dart';
 part 'user.g.dart';
 
 @freezed
-class AppUser with _$AppUser {
+abstract class AppUser with _$AppUser {
   const factory AppUser({
     required String id,
     required String email,
-    @Default('') String displayName,
-    @Default('') String avatarUrl,
-    @Default('') String nativeLanguage,
-    @Default('en') String targetLanguage,
-    @Default('A1') String proficiencyLevel,
-    @Default('general') String targetExam,
-    @Default(0) int xp,
-    @Default(0) int streak,
-    @Default(0) int level,
-    @Default(0) int lessonsCompleted,
-    @Default(0) int voiceSessionsCompleted,
-    @Default(0) int mockExamsCompleted,
-    DateTime? lastActiveAt,
-    DateTime? createdAt,
-    @Default(false) bool isOnboardingComplete,
-    @Default(false) bool isPremium,
-    @Default('free') String subscriptionPlan,
-    @Default({}) Map<String, dynamic> preferences,
+    String? fullName,
+    String? avatarUrl,
+    required String nativeLanguage,
+    required String targetLanguage,
+    String? proficiencyLevel,
+    String? targetExam,
+    String? timezone,
+    required bool onboardingCompleted,
+    required int xp,
+    required int level,
+    required int streak,
+    required int longestStreak,
+    required DateTime lastActiveAt,
+    required DateTime createdAt,
+    required DateTime updatedAt,
   }) = _AppUser;
 
-  factory AppUser.fromJson(Map<String, dynamic> json) =>
-      _$AppUserFromJson(json);
+  factory AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
+}
+
+@freezed
+abstract class UserProfile with _$UserProfile {
+  const factory UserProfile({
+    required String userId,
+    required String email,
+    String? fullName,
+    String? avatarUrl,
+    required String nativeLanguage,
+    required String targetLanguage,
+    String? proficiencyLevel,
+    String? targetExam,
+    String? timezone,
+    required bool onboardingCompleted,
+    required int xp,
+    required int level,
+    required int streak,
+    required int longestStreak,
+    required int dailyGoalMinutes,
+    required DateTime? lastStudyDate,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _UserProfile;
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
+}
+
+@freezed
+abstract class OnboardingData with _$OnboardingData {
+  const factory OnboardingData({
+    required String nativeLanguage,
+    required String targetLanguage,
+    required String proficiencyLevel,
+    String? targetExam,
+    required int dailyGoalMinutes,
+    String? timezone,
+  }) = _OnboardingData;
+
+  factory OnboardingData.fromJson(Map<String, dynamic> json) =>
+      _$OnboardingDataFromJson(json);
 }

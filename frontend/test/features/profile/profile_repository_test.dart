@@ -70,7 +70,7 @@ void main() {
     test('handles DioException on updateProfile', () async {
       when(() => mockDio.put(any(), data: any(named: 'data'))).thenThrow(
         DioException(
-          requestOptions: RequestOptions(path: ''),
+          requestOptions: RequestOptions(),
           message: 'Database error',
         ),
       );
@@ -82,7 +82,7 @@ void main() {
     test('handles DioException on uploadAvatar', () async {
       when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
         DioException(
-          requestOptions: RequestOptions(path: ''),
+          requestOptions: RequestOptions(),
           message: 'Upload failed',
         ),
       );

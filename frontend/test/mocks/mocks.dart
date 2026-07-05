@@ -1,9 +1,7 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:ai_language_coach/core/errors/result.dart';
 import 'package:ai_language_coach/features/achievements/domain/repositories/achievement_repository.dart';
 import 'package:ai_language_coach/features/ai_chat/domain/repositories/chat_repository.dart';
 import 'package:ai_language_coach/features/auth/domain/repositories/auth_repository.dart';

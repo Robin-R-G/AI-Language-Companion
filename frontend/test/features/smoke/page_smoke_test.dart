@@ -6,11 +6,7 @@ class SmokeTestPage extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const SmokeTestPage({
-    super.key,
-    required this.title,
-    required this.child,
-  });
+  const SmokeTestPage({super.key, required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -54,16 +50,17 @@ void main() {
       expect(find.text('Settings'), findsOneWidget);
     });
 
-    testWidgets('page with ListView renders scrollable content', (tester) async {
+    testWidgets('page with ListView renders scrollable content', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildTestableWidget(
           SmokeTestPage(
             title: 'List Page',
             child: ListView.builder(
               itemCount: 20,
-              itemBuilder: (context, index) => ListTile(
-                title: Text('Item $index'),
-              ),
+              itemBuilder: (context, index) =>
+                  ListTile(title: Text('Item $index')),
             ),
           ),
         ),
@@ -81,16 +78,11 @@ void main() {
             title: 'Form Page',
             child: Column(
               children: [
-                TextField(
-                  decoration: const InputDecoration(labelText: 'Name'),
+                const TextField(decoration: InputDecoration(labelText: 'Name')),
+                const TextField(
+                  decoration: InputDecoration(labelText: 'Email'),
                 ),
-                TextField(
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Submit'),
-                ),
+                ElevatedButton(onPressed: () {}, child: const Text('Submit')),
               ],
             ),
           ),
@@ -150,9 +142,8 @@ void main() {
                 crossAxisCount: 2,
               ),
               itemCount: 6,
-              itemBuilder: (context, index) => Card(
-                child: Center(child: Text('Grid $index')),
-              ),
+              itemBuilder: (context, index) =>
+                  Card(child: Center(child: Text('Grid $index'))),
             ),
           ),
         ),

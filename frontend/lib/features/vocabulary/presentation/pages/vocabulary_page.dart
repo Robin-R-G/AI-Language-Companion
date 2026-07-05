@@ -242,10 +242,10 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            if (card.meaningMalayalam.isNotEmpty) ...[
+            if (card.meaning.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(
-                card.meaningMalayalam,
+                card.meaning,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(
                     context,
@@ -345,14 +345,7 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
-                    'Mastery: ${card.masteryLevel}/5',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'Reviews: ${card.reviewCount}',
+                    'CEFR: ${card.cefrLevel}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: Colors.white.withOpacity(0.8),
                     ),

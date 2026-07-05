@@ -85,7 +85,7 @@ class MockExamRepositoryImpl implements MockExamRepository {
   }
 
   @override
-  Future<Result<ExamQuestion>> submitAnswer(
+  Future<Result<MockExamQuestion>> submitAnswer(
     String examId,
     String questionId,
     String answer,
@@ -97,7 +97,7 @@ class MockExamRepositoryImpl implements MockExamRepository {
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {
-        return Result.success(ExamQuestion.fromJson(data));
+        return Result.success(MockExamQuestion.fromJson(data));
       }
       return const Result.error(ServerFailure('Invalid response format'));
     } on DioException catch (e) {

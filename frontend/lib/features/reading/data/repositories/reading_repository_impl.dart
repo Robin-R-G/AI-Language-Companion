@@ -12,23 +12,30 @@ class ReadingRepositoryImpl implements ReadingRepository {
     : _dio = dio ?? dioClient?.client ?? DioClient().client;
 
   @override
-  Future<Result<List<ReadingPassage>>> getPassages({String? difficulty, int limit = 20}) async {
+  Future<Result<List<ReadingPassage>>> getPassages({
+    String? difficulty,
+    int limit = 20,
+  }) async {
     try {
       final response = await _dio.get(
         '/reading',
-        queryParameters: {'limit': limit, if (difficulty != null) 'difficulty': difficulty},
+        queryParameters: {'limit': limit, 'difficulty': ?difficulty},
       );
       final data = response.data;
       if (data is List) {
         return Result.success(
-          data.map((e) => ReadingPassage.fromJson(e as Map<String, dynamic>)).toList(),
+          data
+              .map((e) => ReadingPassage.fromJson(e as Map<String, dynamic>))
+              .toList(),
         );
       }
       return const Result.error(DatabaseFailure('Invalid response format'));
     } on DioException catch (e) {
       return Result.error(
-        DatabaseFailure(e.message ?? 'Failed to fetch passages',
-            code: e.response?.statusCode?.toString()),
+        DatabaseFailure(
+          e.message ?? 'Failed to fetch passages',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
     }
   }
@@ -44,8 +51,10 @@ class ReadingRepositoryImpl implements ReadingRepository {
       return const Result.error(DatabaseFailure('Invalid response format'));
     } on DioException catch (e) {
       return Result.error(
-        DatabaseFailure(e.message ?? 'Failed to fetch passage',
-            code: e.response?.statusCode?.toString()),
+        DatabaseFailure(
+          e.message ?? 'Failed to fetch passage',
+          code: e.response?.statusCode?.toString(),
+        ),
       );
     }
   }

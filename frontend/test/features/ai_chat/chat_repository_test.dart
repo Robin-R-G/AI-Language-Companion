@@ -49,7 +49,7 @@ void main() {
             mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenThrow(
         DioException(
-          requestOptions: RequestOptions(path: ''),
+          requestOptions: RequestOptions(),
           message: 'Network error',
         ),
       );

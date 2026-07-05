@@ -14,20 +14,26 @@ void main() {
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(100),
-          reason: 'Creating 10K Result.success took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(100),
+        reason: 'Creating 10K Result.success took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('Result.error creation should be fast', () {
       final sw = Stopwatch()..start();
 
       for (var i = 0; i < 10000; i++) {
-        Result.error(const UnknownFailure('test'));
+        const Result.error(UnknownFailure('test'));
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(100),
-          reason: 'Creating 10K Result.error took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(100),
+        reason: 'Creating 10K Result.error took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('Result.fold should be fast', () {
@@ -35,28 +41,25 @@ void main() {
         10000,
         (i) => i.isEven
             ? Result.success(i)
-            : Result.error(const UnknownFailure('test')),
+            : const Result.error(UnknownFailure('test')),
       );
 
       final sw = Stopwatch()..start();
 
       for (final result in results) {
-        result.fold(
-          (_) => null,
-          (v) => v,
-        );
+        result.fold((_) => null, (v) => v);
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(100),
-          reason: 'Folding 10K results took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(100),
+        reason: 'Folding 10K results took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('Result.map should be fast', () {
-      final results = List.generate(
-        10000,
-        (i) => Result.success(i),
-      );
+      final results = List.generate(10000, Result.success);
 
       final sw = Stopwatch()..start();
 
@@ -65,8 +68,11 @@ void main() {
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(100),
-          reason: 'Mapping 10K results took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(100),
+        reason: 'Mapping 10K results took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('Failure equality should be fast', () {
@@ -82,8 +88,11 @@ void main() {
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(100),
-          reason: 'Comparing 10K failures took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(100),
+        reason: 'Comparing 10K failures took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('String extensions should handle large strings', () {
@@ -118,8 +127,11 @@ void main() {
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(500),
-          reason: 'Formatting 10K dates took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(500),
+        reason: 'Formatting 10K dates took ${sw.elapsedMilliseconds}ms',
+      );
     });
 
     test('Formatters should handle large numbers', () {
@@ -136,30 +148,29 @@ void main() {
     });
 
     test('Validators should handle many inputs', () {
-      final emails = List.generate(
-        10000,
-        (i) => 'user$i@example.com',
-      );
+      final emails = List.generate(10000, (i) => 'user$i@example.com');
 
       final sw = Stopwatch()..start();
-      final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+      final emailRegex = RegExp(
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      );
 
       for (final email in emails) {
         emailRegex.hasMatch(email);
       }
 
       sw.stop();
-      expect(sw.elapsedMilliseconds, lessThan(500),
-          reason: 'Validating 10K emails took ${sw.elapsedMilliseconds}ms');
+      expect(
+        sw.elapsedMilliseconds,
+        lessThan(500),
+        reason: 'Validating 10K emails took ${sw.elapsedMilliseconds}ms',
+      );
     });
   });
 
   group('Memory Usage Tests', () {
     test('large list of results should not leak memory', () {
-      var results = List.generate(
-        100000,
-        (i) => Result.success(i),
-      );
+      var results = List.generate(100000, Result.success);
 
       expect(results.length, 100000);
 
@@ -198,9 +209,7 @@ void main() {
     });
 
     test('stream operations should be fast', () async {
-      final stream = Stream.fromIterable(
-        List.generate(1000, (i) => i),
-      );
+      final stream = Stream.fromIterable(List.generate(1000, (i) => i));
 
       final sw = Stopwatch()..start();
 

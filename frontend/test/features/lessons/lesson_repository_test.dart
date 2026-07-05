@@ -104,10 +104,7 @@ void main() {
         () =>
             mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
       ).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(path: ''),
-          message: 'Server error',
-        ),
+        DioException(requestOptions: RequestOptions(), message: 'Server error'),
       );
 
       final result = await repository.getLessons();

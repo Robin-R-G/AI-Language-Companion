@@ -12,12 +12,14 @@ class TestCoverageReporter {
   }
 
   void recordResult(String testName, bool passed, {String? error}) {
-    _results.add(TestResult(
-      name: testName,
-      passed: passed,
-      error: error,
-      timestamp: DateTime.now(),
-    ));
+    _results.add(
+      TestResult(
+        name: testName,
+        passed: passed,
+        error: error,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   void endSuite() {
@@ -37,7 +39,9 @@ class TestCoverageReporter {
     print('║ Passed: $passed');
     print('║ Failed: $failed');
     print('║ Duration: ${_stopwatch.elapsedMilliseconds}ms');
-    print('║ Coverage: ${total > 0 ? (passed / total * 100).toStringAsFixed(1) : 0}%');
+    print(
+      '║ Coverage: ${total > 0 ? (passed / total * 100).toStringAsFixed(1) : 0}%',
+    );
     print('╚══════════════════════════════════════╝');
 
     if (failed > 0) {
@@ -63,7 +67,7 @@ class TestCoverageReporter {
     "passed": $passed,
     "failed": $failed,
     "duration_ms": ${_stopwatch.elapsedMilliseconds},
-    "coverage_percent": ${_results.length > 0 ? (passed / _results.length * 100).toStringAsFixed(1) : 0}
+    "coverage_percent": ${_results.isNotEmpty ? (passed / _results.length * 100).toStringAsFixed(1) : 0}
   },
   "timestamp": "${DateTime.now().toIso8601String()}",
   "results": [${_results.map((r) => r.toJson()).join(',')}]

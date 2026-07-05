@@ -143,7 +143,7 @@ void main() {
     test('handles DioException', () async {
       when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
         DioException(
-          requestOptions: RequestOptions(path: ''),
+          requestOptions: RequestOptions(),
           message: 'Exam service error',
         ),
       );

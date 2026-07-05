@@ -44,7 +44,7 @@ void main() {
           AppButton(
             label: 'Cancel',
             onPressed: () {},
-            variant: ButtonVariant.secondary,
+            isSecondary: true,
           ),
         ),
       );

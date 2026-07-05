@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
-import '../test_utils/fake_services.dart';
-import '../test_utils/mock_api_responses.dart';
-import '../test_utils/test_constants.dart';
+import '../../test_utils/fake_services.dart';
+import '../../test_utils/mock_api_responses.dart';
+import '../../test_utils/test_constants.dart';
 
 void main() {
   late FakeAuthRepository fakeAuth;
@@ -34,7 +34,7 @@ void main() {
 
       final subResult = await fakeSubscription.getCurrentSubscription();
       expect(subResult.isSuccess, isTrue);
-      expect(subResult.value.plan, 'free');
+      expect(subResult.value.planId, 'free');
 
       final accessResult =
           await fakeSubscription.checkFeatureAccess('advanced_analytics');

@@ -27,7 +27,7 @@ void main() {
 
       final result = await repository.getCurrentSubscription();
       expect(result.isSuccess, true);
-      expect(result.value.plan, 'premium');
+      expect(result.value.planId, 'premium');
     });
 
     test('getCurrentSubscription handles invalid format', () async {

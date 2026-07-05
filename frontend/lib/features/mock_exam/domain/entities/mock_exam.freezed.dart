@@ -22,19 +22,20 @@ MockExam _$MockExamFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$MockExam {
   String get id => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get examType => throw _privateConstructorUsedError;
   String get section => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
   int get durationMinutes => throw _privateConstructorUsedError;
   int get totalQuestions => throw _privateConstructorUsedError;
-  int get answeredQuestions => throw _privateConstructorUsedError;
-  double get score => throw _privateConstructorUsedError;
+  int get questionsAnswered => throw _privateConstructorUsedError;
+  int get correctAnswers => throw _privateConstructorUsedError;
+  double get estimatedScore => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
-  DateTime? get startedAt => throw _privateConstructorUsedError;
+  Map<String, dynamic> get feedback => throw _privateConstructorUsedError;
+  DateTime get startedAt => throw _privateConstructorUsedError;
   DateTime? get completedAt => throw _privateConstructorUsedError;
-  List<ExamQuestion> get questions => throw _privateConstructorUsedError;
-  String get bandScore => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this MockExam to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,19 +54,20 @@ abstract class $MockExamCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String userId,
     String examType,
     String section,
-    String title,
-    String description,
     int durationMinutes,
     int totalQuestions,
-    int answeredQuestions,
-    double score,
+    int questionsAnswered,
+    int correctAnswers,
+    double estimatedScore,
     String status,
-    DateTime? startedAt,
+    Map<String, dynamic> feedback,
+    DateTime startedAt,
     DateTime? completedAt,
-    List<ExamQuestion> questions,
-    String bandScore,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -85,25 +87,30 @@ class _$MockExamCopyWithImpl<$Res, $Val extends MockExam>
   @override
   $Res call({
     Object? id = null,
+    Object? userId = null,
     Object? examType = null,
     Object? section = null,
-    Object? title = null,
-    Object? description = null,
     Object? durationMinutes = null,
     Object? totalQuestions = null,
-    Object? answeredQuestions = null,
-    Object? score = null,
+    Object? questionsAnswered = null,
+    Object? correctAnswers = null,
+    Object? estimatedScore = null,
     Object? status = null,
-    Object? startedAt = freezed,
+    Object? feedback = null,
+    Object? startedAt = null,
     Object? completedAt = freezed,
-    Object? questions = null,
-    Object? bandScore = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _value.copyWith(
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
                       as String,
             examType: null == examType
                 ? _value.examType
@@ -113,14 +120,6 @@ class _$MockExamCopyWithImpl<$Res, $Val extends MockExam>
                 ? _value.section
                 : section // ignore: cast_nullable_to_non_nullable
                       as String,
-            title: null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                      as String,
-            description: null == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                      as String,
             durationMinutes: null == durationMinutes
                 ? _value.durationMinutes
                 : durationMinutes // ignore: cast_nullable_to_non_nullable
@@ -129,34 +128,42 @@ class _$MockExamCopyWithImpl<$Res, $Val extends MockExam>
                 ? _value.totalQuestions
                 : totalQuestions // ignore: cast_nullable_to_non_nullable
                       as int,
-            answeredQuestions: null == answeredQuestions
-                ? _value.answeredQuestions
-                : answeredQuestions // ignore: cast_nullable_to_non_nullable
+            questionsAnswered: null == questionsAnswered
+                ? _value.questionsAnswered
+                : questionsAnswered // ignore: cast_nullable_to_non_nullable
                       as int,
-            score: null == score
-                ? _value.score
-                : score // ignore: cast_nullable_to_non_nullable
+            correctAnswers: null == correctAnswers
+                ? _value.correctAnswers
+                : correctAnswers // ignore: cast_nullable_to_non_nullable
+                      as int,
+            estimatedScore: null == estimatedScore
+                ? _value.estimatedScore
+                : estimatedScore // ignore: cast_nullable_to_non_nullable
                       as double,
             status: null == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as String,
-            startedAt: freezed == startedAt
+            feedback: null == feedback
+                ? _value.feedback
+                : feedback // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>,
+            startedAt: null == startedAt
                 ? _value.startedAt
                 : startedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
+                      as DateTime,
             completedAt: freezed == completedAt
                 ? _value.completedAt
                 : completedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            questions: null == questions
-                ? _value.questions
-                : questions // ignore: cast_nullable_to_non_nullable
-                      as List<ExamQuestion>,
-            bandScore: null == bandScore
-                ? _value.bandScore
-                : bandScore // ignore: cast_nullable_to_non_nullable
-                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -174,19 +181,20 @@ abstract class _$$MockExamImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String userId,
     String examType,
     String section,
-    String title,
-    String description,
     int durationMinutes,
     int totalQuestions,
-    int answeredQuestions,
-    double score,
+    int questionsAnswered,
+    int correctAnswers,
+    double estimatedScore,
     String status,
-    DateTime? startedAt,
+    Map<String, dynamic> feedback,
+    DateTime startedAt,
     DateTime? completedAt,
-    List<ExamQuestion> questions,
-    String bandScore,
+    DateTime createdAt,
+    DateTime updatedAt,
   });
 }
 
@@ -205,25 +213,30 @@ class __$$MockExamImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? userId = null,
     Object? examType = null,
     Object? section = null,
-    Object? title = null,
-    Object? description = null,
     Object? durationMinutes = null,
     Object? totalQuestions = null,
-    Object? answeredQuestions = null,
-    Object? score = null,
+    Object? questionsAnswered = null,
+    Object? correctAnswers = null,
+    Object? estimatedScore = null,
     Object? status = null,
-    Object? startedAt = freezed,
+    Object? feedback = null,
+    Object? startedAt = null,
     Object? completedAt = freezed,
-    Object? questions = null,
-    Object? bandScore = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(
       _$MockExamImpl(
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
                   as String,
         examType: null == examType
             ? _value.examType
@@ -233,14 +246,6 @@ class __$$MockExamImplCopyWithImpl<$Res>
             ? _value.section
             : section // ignore: cast_nullable_to_non_nullable
                   as String,
-        title: null == title
-            ? _value.title
-            : title // ignore: cast_nullable_to_non_nullable
-                  as String,
-        description: null == description
-            ? _value.description
-            : description // ignore: cast_nullable_to_non_nullable
-                  as String,
         durationMinutes: null == durationMinutes
             ? _value.durationMinutes
             : durationMinutes // ignore: cast_nullable_to_non_nullable
@@ -249,34 +254,42 @@ class __$$MockExamImplCopyWithImpl<$Res>
             ? _value.totalQuestions
             : totalQuestions // ignore: cast_nullable_to_non_nullable
                   as int,
-        answeredQuestions: null == answeredQuestions
-            ? _value.answeredQuestions
-            : answeredQuestions // ignore: cast_nullable_to_non_nullable
+        questionsAnswered: null == questionsAnswered
+            ? _value.questionsAnswered
+            : questionsAnswered // ignore: cast_nullable_to_non_nullable
                   as int,
-        score: null == score
-            ? _value.score
-            : score // ignore: cast_nullable_to_non_nullable
+        correctAnswers: null == correctAnswers
+            ? _value.correctAnswers
+            : correctAnswers // ignore: cast_nullable_to_non_nullable
+                  as int,
+        estimatedScore: null == estimatedScore
+            ? _value.estimatedScore
+            : estimatedScore // ignore: cast_nullable_to_non_nullable
                   as double,
         status: null == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as String,
-        startedAt: freezed == startedAt
+        feedback: null == feedback
+            ? _value._feedback
+            : feedback // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>,
+        startedAt: null == startedAt
             ? _value.startedAt
             : startedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
+                  as DateTime,
         completedAt: freezed == completedAt
             ? _value.completedAt
             : completedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        questions: null == questions
-            ? _value._questions
-            : questions // ignore: cast_nullable_to_non_nullable
-                  as List<ExamQuestion>,
-        bandScore: null == bandScore
-            ? _value.bandScore
-            : bandScore // ignore: cast_nullable_to_non_nullable
-                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -287,20 +300,21 @@ class __$$MockExamImplCopyWithImpl<$Res>
 class _$MockExamImpl implements _MockExam {
   const _$MockExamImpl({
     required this.id,
+    required this.userId,
     required this.examType,
     required this.section,
-    required this.title,
-    this.description = '',
-    this.durationMinutes = 0,
-    this.totalQuestions = 0,
-    this.answeredQuestions = 0,
-    this.score = 0.0,
-    this.status = 'not_started',
-    this.startedAt,
+    required this.durationMinutes,
+    required this.totalQuestions,
+    required this.questionsAnswered,
+    required this.correctAnswers,
+    required this.estimatedScore,
+    required this.status,
+    required final Map<String, dynamic> feedback,
+    required this.startedAt,
     this.completedAt,
-    final List<ExamQuestion> questions = const [],
-    this.bandScore = '',
-  }) : _questions = questions;
+    required this.createdAt,
+    required this.updatedAt,
+  }) : _feedback = feedback;
 
   factory _$MockExamImpl.fromJson(Map<String, dynamic> json) =>
       _$$MockExamImplFromJson(json);
@@ -308,49 +322,43 @@ class _$MockExamImpl implements _MockExam {
   @override
   final String id;
   @override
+  final String userId;
+  @override
   final String examType;
   @override
   final String section;
   @override
-  final String title;
-  @override
-  @JsonKey()
-  final String description;
-  @override
-  @JsonKey()
   final int durationMinutes;
   @override
-  @JsonKey()
   final int totalQuestions;
   @override
-  @JsonKey()
-  final int answeredQuestions;
+  final int questionsAnswered;
   @override
-  @JsonKey()
-  final double score;
+  final int correctAnswers;
   @override
-  @JsonKey()
+  final double estimatedScore;
+  @override
   final String status;
+  final Map<String, dynamic> _feedback;
   @override
-  final DateTime? startedAt;
-  @override
-  final DateTime? completedAt;
-  final List<ExamQuestion> _questions;
-  @override
-  @JsonKey()
-  List<ExamQuestion> get questions {
-    if (_questions is EqualUnmodifiableListView) return _questions;
+  Map<String, dynamic> get feedback {
+    if (_feedback is EqualUnmodifiableMapView) return _feedback;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_questions);
+    return EqualUnmodifiableMapView(_feedback);
   }
 
   @override
-  @JsonKey()
-  final String bandScore;
+  final DateTime startedAt;
+  @override
+  final DateTime? completedAt;
+  @override
+  final DateTime createdAt;
+  @override
+  final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'MockExam(id: $id, examType: $examType, section: $section, title: $title, description: $description, durationMinutes: $durationMinutes, totalQuestions: $totalQuestions, answeredQuestions: $answeredQuestions, score: $score, status: $status, startedAt: $startedAt, completedAt: $completedAt, questions: $questions, bandScore: $bandScore)';
+    return 'MockExam(id: $id, userId: $userId, examType: $examType, section: $section, durationMinutes: $durationMinutes, totalQuestions: $totalQuestions, questionsAnswered: $questionsAnswered, correctAnswers: $correctAnswers, estimatedScore: $estimatedScore, status: $status, feedback: $feedback, startedAt: $startedAt, completedAt: $completedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -359,30 +367,30 @@ class _$MockExamImpl implements _MockExam {
         (other.runtimeType == runtimeType &&
             other is _$MockExamImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.examType, examType) ||
                 other.examType == examType) &&
             (identical(other.section, section) || other.section == section) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
             (identical(other.durationMinutes, durationMinutes) ||
                 other.durationMinutes == durationMinutes) &&
             (identical(other.totalQuestions, totalQuestions) ||
                 other.totalQuestions == totalQuestions) &&
-            (identical(other.answeredQuestions, answeredQuestions) ||
-                other.answeredQuestions == answeredQuestions) &&
-            (identical(other.score, score) || other.score == score) &&
+            (identical(other.questionsAnswered, questionsAnswered) ||
+                other.questionsAnswered == questionsAnswered) &&
+            (identical(other.correctAnswers, correctAnswers) ||
+                other.correctAnswers == correctAnswers) &&
+            (identical(other.estimatedScore, estimatedScore) ||
+                other.estimatedScore == estimatedScore) &&
             (identical(other.status, status) || other.status == status) &&
+            const DeepCollectionEquality().equals(other._feedback, _feedback) &&
             (identical(other.startedAt, startedAt) ||
                 other.startedAt == startedAt) &&
             (identical(other.completedAt, completedAt) ||
                 other.completedAt == completedAt) &&
-            const DeepCollectionEquality().equals(
-              other._questions,
-              _questions,
-            ) &&
-            (identical(other.bandScore, bandScore) ||
-                other.bandScore == bandScore));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -390,19 +398,20 @@ class _$MockExamImpl implements _MockExam {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    userId,
     examType,
     section,
-    title,
-    description,
     durationMinutes,
     totalQuestions,
-    answeredQuestions,
-    score,
+    questionsAnswered,
+    correctAnswers,
+    estimatedScore,
     status,
+    const DeepCollectionEquality().hash(_feedback),
     startedAt,
     completedAt,
-    const DeepCollectionEquality().hash(_questions),
-    bandScore,
+    createdAt,
+    updatedAt,
   );
 
   /// Create a copy of MockExam
@@ -422,19 +431,20 @@ class _$MockExamImpl implements _MockExam {
 abstract class _MockExam implements MockExam {
   const factory _MockExam({
     required final String id,
+    required final String userId,
     required final String examType,
     required final String section,
-    required final String title,
-    final String description,
-    final int durationMinutes,
-    final int totalQuestions,
-    final int answeredQuestions,
-    final double score,
-    final String status,
-    final DateTime? startedAt,
+    required final int durationMinutes,
+    required final int totalQuestions,
+    required final int questionsAnswered,
+    required final int correctAnswers,
+    required final double estimatedScore,
+    required final String status,
+    required final Map<String, dynamic> feedback,
+    required final DateTime startedAt,
     final DateTime? completedAt,
-    final List<ExamQuestion> questions,
-    final String bandScore,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
   }) = _$MockExamImpl;
 
   factory _MockExam.fromJson(Map<String, dynamic> json) =
@@ -443,31 +453,33 @@ abstract class _MockExam implements MockExam {
   @override
   String get id;
   @override
+  String get userId;
+  @override
   String get examType;
   @override
   String get section;
-  @override
-  String get title;
-  @override
-  String get description;
   @override
   int get durationMinutes;
   @override
   int get totalQuestions;
   @override
-  int get answeredQuestions;
+  int get questionsAnswered;
   @override
-  double get score;
+  int get correctAnswers;
+  @override
+  double get estimatedScore;
   @override
   String get status;
   @override
-  DateTime? get startedAt;
+  Map<String, dynamic> get feedback;
+  @override
+  DateTime get startedAt;
   @override
   DateTime? get completedAt;
   @override
-  List<ExamQuestion> get questions;
+  DateTime get createdAt;
   @override
-  String get bandScore;
+  DateTime get updatedAt;
 
   /// Create a copy of MockExam
   /// with the given fields replaced by the non-null parameter values.
@@ -477,76 +489,79 @@ abstract class _MockExam implements MockExam {
       throw _privateConstructorUsedError;
 }
 
-ExamQuestion _$ExamQuestionFromJson(Map<String, dynamic> json) {
-  return _ExamQuestion.fromJson(json);
+MockExamQuestion _$MockExamQuestionFromJson(Map<String, dynamic> json) {
+  return _MockExamQuestion.fromJson(json);
 }
 
 /// @nodoc
-mixin _$ExamQuestion {
+mixin _$MockExamQuestion {
   String get id => throw _privateConstructorUsedError;
-  String get question => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError;
-  List<String> get options => throw _privateConstructorUsedError;
+  String get examId => throw _privateConstructorUsedError;
+  int get questionNumber => throw _privateConstructorUsedError;
+  String get questionType => throw _privateConstructorUsedError;
+  String get prompt => throw _privateConstructorUsedError;
+  Map<String, dynamic> get options => throw _privateConstructorUsedError;
   String get correctAnswer => throw _privateConstructorUsedError;
-  String get userAnswer => throw _privateConstructorUsedError;
+  String? get userAnswer => throw _privateConstructorUsedError;
   bool get isCorrect => throw _privateConstructorUsedError;
-  int get timeSpentSeconds => throw _privateConstructorUsedError;
-  String get explanation => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
 
-  /// Serializes this ExamQuestion to a JSON map.
+  /// Serializes this MockExamQuestion to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of ExamQuestion
+  /// Create a copy of MockExamQuestion
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ExamQuestionCopyWith<ExamQuestion> get copyWith =>
+  $MockExamQuestionCopyWith<MockExamQuestion> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ExamQuestionCopyWith<$Res> {
-  factory $ExamQuestionCopyWith(
-    ExamQuestion value,
-    $Res Function(ExamQuestion) then,
-  ) = _$ExamQuestionCopyWithImpl<$Res, ExamQuestion>;
+abstract class $MockExamQuestionCopyWith<$Res> {
+  factory $MockExamQuestionCopyWith(
+    MockExamQuestion value,
+    $Res Function(MockExamQuestion) then,
+  ) = _$MockExamQuestionCopyWithImpl<$Res, MockExamQuestion>;
   @useResult
   $Res call({
     String id,
-    String question,
-    String type,
-    List<String> options,
+    String examId,
+    int questionNumber,
+    String questionType,
+    String prompt,
+    Map<String, dynamic> options,
     String correctAnswer,
-    String userAnswer,
+    String? userAnswer,
     bool isCorrect,
-    int timeSpentSeconds,
-    String explanation,
+    DateTime createdAt,
   });
 }
 
 /// @nodoc
-class _$ExamQuestionCopyWithImpl<$Res, $Val extends ExamQuestion>
-    implements $ExamQuestionCopyWith<$Res> {
-  _$ExamQuestionCopyWithImpl(this._value, this._then);
+class _$MockExamQuestionCopyWithImpl<$Res, $Val extends MockExamQuestion>
+    implements $MockExamQuestionCopyWith<$Res> {
+  _$MockExamQuestionCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ExamQuestion
+  /// Create a copy of MockExamQuestion
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
-    Object? question = null,
-    Object? type = null,
+    Object? examId = null,
+    Object? questionNumber = null,
+    Object? questionType = null,
+    Object? prompt = null,
     Object? options = null,
     Object? correctAnswer = null,
-    Object? userAnswer = null,
+    Object? userAnswer = freezed,
     Object? isCorrect = null,
-    Object? timeSpentSeconds = null,
-    Object? explanation = null,
+    Object? createdAt = null,
   }) {
     return _then(
       _value.copyWith(
@@ -554,38 +569,42 @@ class _$ExamQuestionCopyWithImpl<$Res, $Val extends ExamQuestion>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            question: null == question
-                ? _value.question
-                : question // ignore: cast_nullable_to_non_nullable
+            examId: null == examId
+                ? _value.examId
+                : examId // ignore: cast_nullable_to_non_nullable
                       as String,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
+            questionNumber: null == questionNumber
+                ? _value.questionNumber
+                : questionNumber // ignore: cast_nullable_to_non_nullable
+                      as int,
+            questionType: null == questionType
+                ? _value.questionType
+                : questionType // ignore: cast_nullable_to_non_nullable
+                      as String,
+            prompt: null == prompt
+                ? _value.prompt
+                : prompt // ignore: cast_nullable_to_non_nullable
                       as String,
             options: null == options
                 ? _value.options
                 : options // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
+                      as Map<String, dynamic>,
             correctAnswer: null == correctAnswer
                 ? _value.correctAnswer
                 : correctAnswer // ignore: cast_nullable_to_non_nullable
                       as String,
-            userAnswer: null == userAnswer
+            userAnswer: freezed == userAnswer
                 ? _value.userAnswer
                 : userAnswer // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             isCorrect: null == isCorrect
                 ? _value.isCorrect
                 : isCorrect // ignore: cast_nullable_to_non_nullable
                       as bool,
-            timeSpentSeconds: null == timeSpentSeconds
-                ? _value.timeSpentSeconds
-                : timeSpentSeconds // ignore: cast_nullable_to_non_nullable
-                      as int,
-            explanation: null == explanation
-                ? _value.explanation
-                : explanation // ignore: cast_nullable_to_non_nullable
-                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
           )
           as $Val,
     );
@@ -593,89 +612,95 @@ class _$ExamQuestionCopyWithImpl<$Res, $Val extends ExamQuestion>
 }
 
 /// @nodoc
-abstract class _$$ExamQuestionImplCopyWith<$Res>
-    implements $ExamQuestionCopyWith<$Res> {
-  factory _$$ExamQuestionImplCopyWith(
-    _$ExamQuestionImpl value,
-    $Res Function(_$ExamQuestionImpl) then,
-  ) = __$$ExamQuestionImplCopyWithImpl<$Res>;
+abstract class _$$MockExamQuestionImplCopyWith<$Res>
+    implements $MockExamQuestionCopyWith<$Res> {
+  factory _$$MockExamQuestionImplCopyWith(
+    _$MockExamQuestionImpl value,
+    $Res Function(_$MockExamQuestionImpl) then,
+  ) = __$$MockExamQuestionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
     String id,
-    String question,
-    String type,
-    List<String> options,
+    String examId,
+    int questionNumber,
+    String questionType,
+    String prompt,
+    Map<String, dynamic> options,
     String correctAnswer,
-    String userAnswer,
+    String? userAnswer,
     bool isCorrect,
-    int timeSpentSeconds,
-    String explanation,
+    DateTime createdAt,
   });
 }
 
 /// @nodoc
-class __$$ExamQuestionImplCopyWithImpl<$Res>
-    extends _$ExamQuestionCopyWithImpl<$Res, _$ExamQuestionImpl>
-    implements _$$ExamQuestionImplCopyWith<$Res> {
-  __$$ExamQuestionImplCopyWithImpl(
-    _$ExamQuestionImpl _value,
-    $Res Function(_$ExamQuestionImpl) _then,
+class __$$MockExamQuestionImplCopyWithImpl<$Res>
+    extends _$MockExamQuestionCopyWithImpl<$Res, _$MockExamQuestionImpl>
+    implements _$$MockExamQuestionImplCopyWith<$Res> {
+  __$$MockExamQuestionImplCopyWithImpl(
+    _$MockExamQuestionImpl _value,
+    $Res Function(_$MockExamQuestionImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of ExamQuestion
+  /// Create a copy of MockExamQuestion
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
-    Object? question = null,
-    Object? type = null,
+    Object? examId = null,
+    Object? questionNumber = null,
+    Object? questionType = null,
+    Object? prompt = null,
     Object? options = null,
     Object? correctAnswer = null,
-    Object? userAnswer = null,
+    Object? userAnswer = freezed,
     Object? isCorrect = null,
-    Object? timeSpentSeconds = null,
-    Object? explanation = null,
+    Object? createdAt = null,
   }) {
     return _then(
-      _$ExamQuestionImpl(
+      _$MockExamQuestionImpl(
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        question: null == question
-            ? _value.question
-            : question // ignore: cast_nullable_to_non_nullable
+        examId: null == examId
+            ? _value.examId
+            : examId // ignore: cast_nullable_to_non_nullable
                   as String,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
+        questionNumber: null == questionNumber
+            ? _value.questionNumber
+            : questionNumber // ignore: cast_nullable_to_non_nullable
+                  as int,
+        questionType: null == questionType
+            ? _value.questionType
+            : questionType // ignore: cast_nullable_to_non_nullable
+                  as String,
+        prompt: null == prompt
+            ? _value.prompt
+            : prompt // ignore: cast_nullable_to_non_nullable
                   as String,
         options: null == options
             ? _value._options
             : options // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
+                  as Map<String, dynamic>,
         correctAnswer: null == correctAnswer
             ? _value.correctAnswer
             : correctAnswer // ignore: cast_nullable_to_non_nullable
                   as String,
-        userAnswer: null == userAnswer
+        userAnswer: freezed == userAnswer
             ? _value.userAnswer
             : userAnswer // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         isCorrect: null == isCorrect
             ? _value.isCorrect
             : isCorrect // ignore: cast_nullable_to_non_nullable
                   as bool,
-        timeSpentSeconds: null == timeSpentSeconds
-            ? _value.timeSpentSeconds
-            : timeSpentSeconds // ignore: cast_nullable_to_non_nullable
-                  as int,
-        explanation: null == explanation
-            ? _value.explanation
-            : explanation // ignore: cast_nullable_to_non_nullable
-                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
       ),
     );
   }
@@ -683,67 +708,67 @@ class __$$ExamQuestionImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ExamQuestionImpl implements _ExamQuestion {
-  const _$ExamQuestionImpl({
+class _$MockExamQuestionImpl implements _MockExamQuestion {
+  const _$MockExamQuestionImpl({
     required this.id,
-    required this.question,
-    required this.type,
-    final List<String> options = const [],
-    this.correctAnswer = '',
-    this.userAnswer = '',
-    this.isCorrect = false,
-    this.timeSpentSeconds = 0,
-    this.explanation = '',
+    required this.examId,
+    required this.questionNumber,
+    required this.questionType,
+    required this.prompt,
+    required final Map<String, dynamic> options,
+    required this.correctAnswer,
+    this.userAnswer,
+    required this.isCorrect,
+    required this.createdAt,
   }) : _options = options;
 
-  factory _$ExamQuestionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ExamQuestionImplFromJson(json);
+  factory _$MockExamQuestionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MockExamQuestionImplFromJson(json);
 
   @override
   final String id;
   @override
-  final String question;
+  final String examId;
   @override
-  final String type;
-  final List<String> _options;
+  final int questionNumber;
   @override
-  @JsonKey()
-  List<String> get options {
-    if (_options is EqualUnmodifiableListView) return _options;
+  final String questionType;
+  @override
+  final String prompt;
+  final Map<String, dynamic> _options;
+  @override
+  Map<String, dynamic> get options {
+    if (_options is EqualUnmodifiableMapView) return _options;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_options);
+    return EqualUnmodifiableMapView(_options);
   }
 
   @override
-  @JsonKey()
   final String correctAnswer;
   @override
-  @JsonKey()
-  final String userAnswer;
+  final String? userAnswer;
   @override
-  @JsonKey()
   final bool isCorrect;
   @override
-  @JsonKey()
-  final int timeSpentSeconds;
-  @override
-  @JsonKey()
-  final String explanation;
+  final DateTime createdAt;
 
   @override
   String toString() {
-    return 'ExamQuestion(id: $id, question: $question, type: $type, options: $options, correctAnswer: $correctAnswer, userAnswer: $userAnswer, isCorrect: $isCorrect, timeSpentSeconds: $timeSpentSeconds, explanation: $explanation)';
+    return 'MockExamQuestion(id: $id, examId: $examId, questionNumber: $questionNumber, questionType: $questionType, prompt: $prompt, options: $options, correctAnswer: $correctAnswer, userAnswer: $userAnswer, isCorrect: $isCorrect, createdAt: $createdAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ExamQuestionImpl &&
+            other is _$MockExamQuestionImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.question, question) ||
-                other.question == question) &&
-            (identical(other.type, type) || other.type == type) &&
+            (identical(other.examId, examId) || other.examId == examId) &&
+            (identical(other.questionNumber, questionNumber) ||
+                other.questionNumber == questionNumber) &&
+            (identical(other.questionType, questionType) ||
+                other.questionType == questionType) &&
+            (identical(other.prompt, prompt) || other.prompt == prompt) &&
             const DeepCollectionEquality().equals(other._options, _options) &&
             (identical(other.correctAnswer, correctAnswer) ||
                 other.correctAnswer == correctAnswer) &&
@@ -751,10 +776,8 @@ class _$ExamQuestionImpl implements _ExamQuestion {
                 other.userAnswer == userAnswer) &&
             (identical(other.isCorrect, isCorrect) ||
                 other.isCorrect == isCorrect) &&
-            (identical(other.timeSpentSeconds, timeSpentSeconds) ||
-                other.timeSpentSeconds == timeSpentSeconds) &&
-            (identical(other.explanation, explanation) ||
-                other.explanation == explanation));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -762,69 +785,313 @@ class _$ExamQuestionImpl implements _ExamQuestion {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    question,
-    type,
+    examId,
+    questionNumber,
+    questionType,
+    prompt,
     const DeepCollectionEquality().hash(_options),
     correctAnswer,
     userAnswer,
     isCorrect,
-    timeSpentSeconds,
-    explanation,
+    createdAt,
   );
 
-  /// Create a copy of ExamQuestion
+  /// Create a copy of MockExamQuestion
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ExamQuestionImplCopyWith<_$ExamQuestionImpl> get copyWith =>
-      __$$ExamQuestionImplCopyWithImpl<_$ExamQuestionImpl>(this, _$identity);
+  _$$MockExamQuestionImplCopyWith<_$MockExamQuestionImpl> get copyWith =>
+      __$$MockExamQuestionImplCopyWithImpl<_$MockExamQuestionImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ExamQuestionImplToJson(this);
+    return _$$MockExamQuestionImplToJson(this);
   }
 }
 
-abstract class _ExamQuestion implements ExamQuestion {
-  const factory _ExamQuestion({
+abstract class _MockExamQuestion implements MockExamQuestion {
+  const factory _MockExamQuestion({
     required final String id,
-    required final String question,
-    required final String type,
-    final List<String> options,
-    final String correctAnswer,
-    final String userAnswer,
-    final bool isCorrect,
-    final int timeSpentSeconds,
-    final String explanation,
-  }) = _$ExamQuestionImpl;
+    required final String examId,
+    required final int questionNumber,
+    required final String questionType,
+    required final String prompt,
+    required final Map<String, dynamic> options,
+    required final String correctAnswer,
+    final String? userAnswer,
+    required final bool isCorrect,
+    required final DateTime createdAt,
+  }) = _$MockExamQuestionImpl;
 
-  factory _ExamQuestion.fromJson(Map<String, dynamic> json) =
-      _$ExamQuestionImpl.fromJson;
+  factory _MockExamQuestion.fromJson(Map<String, dynamic> json) =
+      _$MockExamQuestionImpl.fromJson;
 
   @override
   String get id;
   @override
-  String get question;
+  String get examId;
   @override
-  String get type;
+  int get questionNumber;
   @override
-  List<String> get options;
+  String get questionType;
+  @override
+  String get prompt;
+  @override
+  Map<String, dynamic> get options;
   @override
   String get correctAnswer;
   @override
-  String get userAnswer;
+  String? get userAnswer;
   @override
   bool get isCorrect;
   @override
-  int get timeSpentSeconds;
-  @override
-  String get explanation;
+  DateTime get createdAt;
 
-  /// Create a copy of ExamQuestion
+  /// Create a copy of MockExamQuestion
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ExamQuestionImplCopyWith<_$ExamQuestionImpl> get copyWith =>
+  _$$MockExamQuestionImplCopyWith<_$MockExamQuestionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ExamSectionResult _$ExamSectionResultFromJson(Map<String, dynamic> json) {
+  return _ExamSectionResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ExamSectionResult {
+  String get section => throw _privateConstructorUsedError;
+  double get score => throw _privateConstructorUsedError;
+  String get band => throw _privateConstructorUsedError;
+  Map<String, dynamic> get details => throw _privateConstructorUsedError;
+
+  /// Serializes this ExamSectionResult to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ExamSectionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ExamSectionResultCopyWith<ExamSectionResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ExamSectionResultCopyWith<$Res> {
+  factory $ExamSectionResultCopyWith(
+    ExamSectionResult value,
+    $Res Function(ExamSectionResult) then,
+  ) = _$ExamSectionResultCopyWithImpl<$Res, ExamSectionResult>;
+  @useResult
+  $Res call({
+    String section,
+    double score,
+    String band,
+    Map<String, dynamic> details,
+  });
+}
+
+/// @nodoc
+class _$ExamSectionResultCopyWithImpl<$Res, $Val extends ExamSectionResult>
+    implements $ExamSectionResultCopyWith<$Res> {
+  _$ExamSectionResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ExamSectionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? section = null,
+    Object? score = null,
+    Object? band = null,
+    Object? details = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            section: null == section
+                ? _value.section
+                : section // ignore: cast_nullable_to_non_nullable
+                      as String,
+            score: null == score
+                ? _value.score
+                : score // ignore: cast_nullable_to_non_nullable
+                      as double,
+            band: null == band
+                ? _value.band
+                : band // ignore: cast_nullable_to_non_nullable
+                      as String,
+            details: null == details
+                ? _value.details
+                : details // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$ExamSectionResultImplCopyWith<$Res>
+    implements $ExamSectionResultCopyWith<$Res> {
+  factory _$$ExamSectionResultImplCopyWith(
+    _$ExamSectionResultImpl value,
+    $Res Function(_$ExamSectionResultImpl) then,
+  ) = __$$ExamSectionResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String section,
+    double score,
+    String band,
+    Map<String, dynamic> details,
+  });
+}
+
+/// @nodoc
+class __$$ExamSectionResultImplCopyWithImpl<$Res>
+    extends _$ExamSectionResultCopyWithImpl<$Res, _$ExamSectionResultImpl>
+    implements _$$ExamSectionResultImplCopyWith<$Res> {
+  __$$ExamSectionResultImplCopyWithImpl(
+    _$ExamSectionResultImpl _value,
+    $Res Function(_$ExamSectionResultImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ExamSectionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? section = null,
+    Object? score = null,
+    Object? band = null,
+    Object? details = null,
+  }) {
+    return _then(
+      _$ExamSectionResultImpl(
+        section: null == section
+            ? _value.section
+            : section // ignore: cast_nullable_to_non_nullable
+                  as String,
+        score: null == score
+            ? _value.score
+            : score // ignore: cast_nullable_to_non_nullable
+                  as double,
+        band: null == band
+            ? _value.band
+            : band // ignore: cast_nullable_to_non_nullable
+                  as String,
+        details: null == details
+            ? _value._details
+            : details // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ExamSectionResultImpl implements _ExamSectionResult {
+  const _$ExamSectionResultImpl({
+    required this.section,
+    required this.score,
+    required this.band,
+    required final Map<String, dynamic> details,
+  }) : _details = details;
+
+  factory _$ExamSectionResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ExamSectionResultImplFromJson(json);
+
+  @override
+  final String section;
+  @override
+  final double score;
+  @override
+  final String band;
+  final Map<String, dynamic> _details;
+  @override
+  Map<String, dynamic> get details {
+    if (_details is EqualUnmodifiableMapView) return _details;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_details);
+  }
+
+  @override
+  String toString() {
+    return 'ExamSectionResult(section: $section, score: $score, band: $band, details: $details)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ExamSectionResultImpl &&
+            (identical(other.section, section) || other.section == section) &&
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.band, band) || other.band == band) &&
+            const DeepCollectionEquality().equals(other._details, _details));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    section,
+    score,
+    band,
+    const DeepCollectionEquality().hash(_details),
+  );
+
+  /// Create a copy of ExamSectionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ExamSectionResultImplCopyWith<_$ExamSectionResultImpl> get copyWith =>
+      __$$ExamSectionResultImplCopyWithImpl<_$ExamSectionResultImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ExamSectionResultImplToJson(this);
+  }
+}
+
+abstract class _ExamSectionResult implements ExamSectionResult {
+  const factory _ExamSectionResult({
+    required final String section,
+    required final double score,
+    required final String band,
+    required final Map<String, dynamic> details,
+  }) = _$ExamSectionResultImpl;
+
+  factory _ExamSectionResult.fromJson(Map<String, dynamic> json) =
+      _$ExamSectionResultImpl.fromJson;
+
+  @override
+  String get section;
+  @override
+  double get score;
+  @override
+  String get band;
+  @override
+  Map<String, dynamic> get details;
+
+  /// Create a copy of ExamSectionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ExamSectionResultImplCopyWith<_$ExamSectionResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

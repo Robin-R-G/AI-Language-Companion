@@ -78,7 +78,7 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(
             AppTextField(
-              label: 'Email Address',
+              labelText: 'Email Address',
             ),
           ),
         );
@@ -91,7 +91,7 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(
             AppTextField(
-              label: 'Email',
+              labelText: 'Email',
             ),
           ),
         );
@@ -107,7 +107,7 @@ void main() {
         await tester.pumpWidget(
           buildTestableWidget(
             AppTextField(
-              label: 'Search',
+              labelText: 'Search',
             ),
           ),
         );

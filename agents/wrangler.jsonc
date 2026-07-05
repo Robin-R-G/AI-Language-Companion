@@ -1,0 +1,91 @@
+{
+  "name": "ai-language-coach-agents",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [
+      { "name": "MasterOrchestrator", "class_name": "MasterOrchestrator" },
+      { "name": "UserProfile", "class_name": "UserProfileAgent" },
+      { "name": "Memory", "class_name": "MemoryAgent" },
+      { "name": "CurriculumPlanner", "class_name": "CurriculumPlannerAgent" },
+      { "name": "DifficultyAdjustment", "class_name": "DifficultyAdjustmentAgent" },
+      { "name": "Motivation", "class_name": "MotivationAgent" },
+      { "name": "LearningAnalytics", "class_name": "LearningAnalyticsAgent" },
+      { "name": "LessonGenerator", "class_name": "LessonGeneratorAgent" },
+      { "name": "Vocabulary", "class_name": "VocabularyAgent" },
+      { "name": "Grammar", "class_name": "GrammarAgent" },
+      { "name": "Conversation", "class_name": "ConversationAgent" },
+      { "name": "Pronunciation", "class_name": "PronunciationAgent" },
+      { "name": "WritingCoach", "class_name": "WritingCoachAgent" },
+      { "name": "SpeakingCoach", "class_name": "SpeakingCoachAgent" },
+      { "name": "ReadingCoach", "class_name": "ReadingCoachAgent" },
+      { "name": "ListeningCoach", "class_name": "ListeningCoachAgent" },
+      { "name": "Translation", "class_name": "TranslationAgent" },
+      { "name": "ExamPattern", "class_name": "ExamPatternAgent" },
+      { "name": "Safety", "class_name": "AISafetyAgent" },
+      { "name": "CopyrightReviewer", "class_name": "CopyrightComplianceAgent" },
+      { "name": "PromptOptimizer", "class_name": "PromptOptimizerAgent" },
+      { "name": "QualityReviewer", "class_name": "QualityReviewerAgent" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "MasterOrchestrator",
+        "UserProfileAgent",
+        "MemoryAgent",
+        "CurriculumPlannerAgent",
+        "DifficultyAdjustmentAgent",
+        "MotivationAgent",
+        "LearningAnalyticsAgent"
+      ]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": [
+        "LessonGeneratorAgent",
+        "VocabularyAgent",
+        "GrammarAgent",
+        "ConversationAgent",
+        "PronunciationAgent",
+        "WritingCoachAgent",
+        "SpeakingCoachAgent",
+        "ReadingCoachAgent",
+        "ListeningCoachAgent",
+        "TranslationAgent",
+        "ExamPatternAgent",
+        "AISafetyAgent",
+        "CopyrightComplianceAgent",
+        "PromptOptimizerAgent",
+        "QualityReviewerAgent"
+      ]
+    }
+  ],
+  "rules": [
+    { "type": "Text", "globs": ["**/*.md"], "fallthrough": true }
+  ],
+  "workflows": [
+    {
+      "name": "request-pipeline",
+      "binding": "REQUEST_PIPELINE",
+      "class_name": "RequestPipeline"
+    }
+  ],
+  "ai": { "binding": "AI" },
+  "queues": {
+    "producers": [
+      { "queue": "agent-tasks", "binding": "AGENT_QUEUE" }
+    ]
+  },
+  "kv_namespaces": [
+    { "binding": "CACHE", "id": "cache-id" }
+  ],
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  }
+}
