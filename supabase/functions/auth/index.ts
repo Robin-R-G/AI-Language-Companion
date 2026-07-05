@@ -10,8 +10,10 @@ import {
   badRequest,
   conflict,
   unauthorized,
+  forbidden,
   noContentResponse,
   serverError,
+  rateLimited,
 } from '../shared/errors.ts'
 import {
   validateRequired,
@@ -19,6 +21,18 @@ import {
   validatePassword,
   sanitizeString,
 } from '../shared/validator.ts'
+import {
+  checkRateLimit,
+  checkAccountLockout,
+  recordFailedLogin,
+  clearFailedLogins,
+  getClientIP,
+  AUTH_RATE_LIMIT,
+  LOGIN_RATE_LIMIT,
+  LOGIN_LOCKOUT,
+} from '../shared/rate-limiter.ts'
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getSupabaseClient(authHeader?: string) {
   const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
@@ -32,38 +46,85 @@ function getSupabaseClient(authHeader?: string) {
   return createClient(supabaseUrl, supabaseKey)
 }
 
+function cleanEmail(email: string): string {
+  return sanitizeString(email).toLowerCase().trim()
+}
+
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@')
+  if (!domain) return '***'
+  const masked = local.length > 2
+    ? local[0] + '***' + local[local.length - 1]
+    : '***'
+  return `${masked}@${domain}`
+}
+
+// ─── Rate Limit Middleware ───────────────────────────────────────────────────
+
+function checkAuthRateLimit(ip: string): Response | null {
+  const result = checkRateLimit(`auth:${ip}`, AUTH_RATE_LIMIT)
+  if (!result.allowed) {
+    return rateLimited(`Too many requests. Retry after ${Math.ceil((result.retryAfterMs || 0) / 1000)} seconds.`)
+  }
+  return null
+}
+
+function checkLoginRateLimit(ip: string, email: string): Response | null {
+  const result = checkRateLimit(`login:${ip}:${email}`, LOGIN_RATE_LIMIT)
+  if (!result.allowed) {
+    return rateLimited(`Too many login attempts. Retry after ${Math.ceil((result.retryAfterMs || 0) / 1000)} seconds.`)
+  }
+  return null
+}
+
+// ─── Handlers ───────────────────────────────────────────────────────────────
+
 async function handleRegister(req: Request): Promise<Response> {
   const body = await req.json()
   const { email, password, name } = body
 
+  // 1. Validate required fields
   const validation = validateRequired({ email, password })
   if (!validation.isValid) {
     return badRequest('Validation failed', validation.errors)
   }
 
-  if (!validateEmail(email)) {
-    return badRequest('Invalid email format')
+  // 2. Clean and validate email
+  const cleanEmailValue = cleanEmail(email)
+  if (!validateEmail(cleanEmailValue)) {
+    return badRequest('Invalid email format. Please enter a valid email address.')
   }
 
+  // 3. Validate password strength
   const passwordValidation = validatePassword(password)
   if (!passwordValidation.isValid) {
-    return badRequest('Password validation failed', passwordValidation.errors)
+    return badRequest('Password does not meet security requirements', passwordValidation.errors)
   }
 
+  // 4. Clean name input
+  const cleanName = name ? sanitizeString(name) : ''
+
+  // 5. Register with Supabase (handles password hashing with bcrypt)
   const supabase = getSupabaseClient()
   const { data, error } = await supabase.auth.signUp({
-    email: sanitizeString(email),
+    email: cleanEmailValue,
     password,
     options: {
-      data: { full_name: name ? sanitizeString(name) : '' },
+      data: { full_name: cleanName },
     },
   })
 
+  // 6. Handle errors with generic messages (prevent email enumeration)
   if (error) {
-    if (error.message.includes('already registered')) {
-      return conflict('Email already registered')
+    if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+      // Return success to prevent email enumeration
+      return successResponse(
+        null,
+        'If this email is not already registered, a verification link has been sent.',
+      )
     }
-    return serverError(error.message)
+    console.error('Registration error:', error.message)
+    return serverError('Registration failed. Please try again later.')
   }
 
   return createdResponse(
@@ -89,27 +150,82 @@ async function handleRegister(req: Request): Promise<Response> {
 }
 
 async function handleLogin(req: Request): Promise<Response> {
+  const ip = getClientIP(req)
   const body = await req.json()
   const { email, password } = body
 
+  // ── 1. Validate required fields ──────────────────────────────────────────
   const validation = validateRequired({ email, password })
   if (!validation.isValid) {
-    return badRequest('Validation failed', validation.errors)
+    return badRequest('Email and password are required.')
   }
 
+  // ── 2. Clean and validate email ──────────────────────────────────────────
+  const cleanEmailValue = cleanEmail(email)
+  if (!validateEmail(cleanEmailValue)) {
+    // Use generic message to prevent email enumeration
+    return unauthorized('Invalid email or password.')
+  }
+
+  // ── 3. Check IP-based rate limiting ──────────────────────────────────────
+  const ipRateLimit = checkLoginRateLimit(ip, cleanEmailValue)
+  if (ipRateLimit) return ipRateLimit
+
+  // ── 4. Check account lockout ─────────────────────────────────────────────
+  const lockout = checkAccountLockout(cleanEmailValue, LOGIN_LOCKOUT)
+  if (lockout.locked) {
+    const remainingMinutes = Math.ceil((lockout.remainingMs || 0) / 60000)
+    return forbidden(
+      `Account temporarily locked due to too many failed attempts. Try again in ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}.`
+    )
+  }
+
+  // ── 5. Authenticate with Supabase ────────────────────────────────────────
+  // Supabase handles password verification using bcrypt internally
   const supabase = getSupabaseClient()
   const { data, error } = await supabase.auth.signInWithPassword({
-    email,
+    email: cleanEmailValue,
     password,
   })
 
+  // ── 6. Handle authentication errors ──────────────────────────────────────
   if (error) {
-    if (error.message.includes('Invalid login')) {
-      return unauthorized('Invalid email or password')
+    // Record failed attempt
+    const lockoutResult = recordFailedLogin(cleanEmailValue, LOGIN_LOCKOUT)
+
+    // NEVER reveal whether the email exists or the password was wrong
+    if (error.message.includes('Invalid login') ||
+        error.message.includes('invalid') ||
+        error.message.includes('password') ||
+        error.message.includes('Email not confirmed') ||
+        error.message.includes('email not confirmed')) {
+
+      if (lockoutResult.locked) {
+        const remainingMinutes = Math.ceil(
+          ((lockoutResult.lockedUntilMs || 0) - Date.now()) / 60000
+        )
+        return forbidden(
+          `Account locked due to ${lockoutResult.attempts} failed attempts. Try again in ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}.`
+        )
+      }
+
+      // Generic message - never reveal if email exists or password was wrong
+      const remainingAttempts = LOGIN_LOCKOUT.maxAttempts - lockoutResult.attempts
+      const attemptsMessage = remainingAttempts <= 2
+        ? ` ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining before account lockout.`
+        : ''
+
+      return unauthorized(`Invalid email or password.${attemptsMessage}`)
     }
-    return serverError(error.message)
+
+    console.error('Login error:', error.message)
+    return serverError('Login failed. Please try again later.')
   }
 
+  // ── 7. Clear failed attempts on successful login ─────────────────────────
+  clearFailedLogins(cleanEmailValue)
+
+  // ── 8. Return success ────────────────────────────────────────────────────
   return successResponse(
     {
       user: {
@@ -134,7 +250,7 @@ async function handleRefresh(req: Request): Promise<Response> {
 
   const validation = validateRequired({ refresh_token })
   if (!validation.isValid) {
-    return badRequest('Validation failed', validation.errors)
+    return badRequest('Refresh token is required.')
   }
 
   const supabase = getSupabaseClient()
@@ -143,7 +259,7 @@ async function handleRefresh(req: Request): Promise<Response> {
   })
 
   if (error) {
-    return badRequest('Invalid or expired refresh token')
+    return badRequest('Invalid or expired refresh token.')
   }
 
   return successResponse(
@@ -175,20 +291,35 @@ async function handleLogout(req: Request): Promise<Response> {
 }
 
 async function handleForgotPassword(req: Request): Promise<Response> {
+  const ip = getClientIP(req)
   const body = await req.json()
   const { email } = body
 
-  const validation = validateRequired({ email })
-  if (!validation.isValid) {
-    return badRequest('Validation failed', validation.errors)
+  // Rate limit password reset requests
+  const rateLimit = checkRateLimit(`forgot-pw:${ip}`, {
+    windowMs: 60 * 1000,
+    maxRequests: 3,
+  })
+  if (!rateLimit.allowed) {
+    return rateLimited('Too many password reset requests. Please wait before trying again.')
   }
 
-  if (!validateEmail(email)) {
-    return badRequest('Invalid email format')
+  const validation = validateRequired({ email })
+  if (!validation.isValid) {
+    return badRequest('Email is required.')
+  }
+
+  const cleanEmailValue = cleanEmail(email)
+  if (!validateEmail(cleanEmailValue)) {
+    // Always return success to prevent email enumeration
+    return successResponse(
+      null,
+      'If the email exists, a password reset link has been sent.',
+    )
   }
 
   const supabase = getSupabaseClient()
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(cleanEmailValue, {
     redirectTo: `${Deno.env.get('APP_URL') || 'https://ailanguagecoach.com'}/reset-password`,
   })
 
@@ -196,6 +327,7 @@ async function handleForgotPassword(req: Request): Promise<Response> {
     console.error('Forgot password error:', error)
   }
 
+  // Always return success to prevent email enumeration
   return successResponse(
     null,
     'If the email exists, a password reset link has been sent.',
@@ -208,12 +340,13 @@ async function handleResetPassword(req: Request): Promise<Response> {
 
   const validation = validateRequired({ access_token, new_password })
   if (!validation.isValid) {
-    return badRequest('Validation failed', validation.errors)
+    return badRequest('Token and new password are required.')
   }
 
+  // Validate new password strength
   const passwordValidation = validatePassword(new_password)
   if (!passwordValidation.isValid) {
-    return badRequest('Password validation failed', passwordValidation.errors)
+    return badRequest('New password does not meet security requirements', passwordValidation.errors)
   }
 
   const supabase = getSupabaseClient()
@@ -224,7 +357,7 @@ async function handleResetPassword(req: Request): Promise<Response> {
       refresh_token,
     })
     if (sessionError) {
-      return badRequest('Invalid or expired token')
+      return badRequest('Invalid or expired token.')
     }
   }
 
@@ -233,7 +366,8 @@ async function handleResetPassword(req: Request): Promise<Response> {
   })
 
   if (error) {
-    return serverError(error.message)
+    console.error('Reset password error:', error.message)
+    return serverError('Password reset failed. Please request a new reset link.')
   }
 
   return successResponse(
@@ -248,7 +382,7 @@ async function handleVerifyEmail(req: Request): Promise<Response> {
 
   const validation = validateRequired({ token })
   if (!validation.isValid) {
-    return badRequest('Validation failed', validation.errors)
+    return badRequest('Verification token is required.')
   }
 
   const supabase = getSupabaseClient()
@@ -258,55 +392,55 @@ async function handleVerifyEmail(req: Request): Promise<Response> {
   })
 
   if (error) {
-    return badRequest('Invalid or expired verification token')
+    return badRequest('Invalid or expired verification token.')
   }
 
   return successResponse(null, 'Email verified successfully.')
 }
 
+// ─── Router ─────────────────────────────────────────────────────────────────
+
 Deno.serve(async (req: Request): Promise<Response> => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
+
+  const ip = getClientIP(req)
+
+  // Global rate limit for all auth endpoints
+  const globalRateLimit = checkAuthRateLimit(ip)
+  if (globalRateLimit) return globalRateLimit
 
   const url = new URL(req.url)
   const path = url.pathname.split('/').pop() || ''
 
   try {
+    // Method validation for all endpoints
+    if (req.method !== 'POST') {
+      return badRequest(`Method ${req.method} not allowed. Use POST.`)
+    }
+
     switch (path) {
       case 'register':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleRegister(req)
-
       case 'login':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleLogin(req)
-
       case 'refresh':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleRefresh(req)
-
       case 'logout':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleLogout(req)
-
       case 'forgot-password':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleForgotPassword(req)
-
       case 'reset-password':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleResetPassword(req)
-
       case 'verify-email':
-        if (req.method !== 'POST') return badRequest('Method not allowed')
         return await handleVerifyEmail(req)
-
       default:
         return badRequest(`Unknown auth endpoint: ${path}`)
     }
   } catch (error) {
     console.error('Auth error:', error)
-    return serverError(error instanceof Error ? error.message : 'Internal server error')
+    return serverError('An unexpected error occurred. Please try again later.')
   }
 })
