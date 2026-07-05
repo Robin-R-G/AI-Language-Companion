@@ -2,13 +2,8 @@
 // Dashboard Aggregation Edge Function
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { validateRequest } from '../shared/auth.ts'
-import { successResponse, serverError } from '../shared/errors.ts'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
-}
+import { successResponse, badRequest, serverError } from '../shared/errors.ts'
+import { corsHeaders } from '../shared/cors.ts'
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {

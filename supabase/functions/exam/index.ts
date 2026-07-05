@@ -123,7 +123,7 @@ serve(async (req: Request) => {
 
       // Save mock exam record
       const { data: savedExam } = await supabase
-        .from('mock_exams')
+        .from('exam_attempts')
         .insert({
           user_id: profile?.id,
           exam_type: examType,
@@ -171,7 +171,7 @@ serve(async (req: Request) => {
       // Update mock exam if provided
       if (exam_id) {
         await supabase
-          .from('mock_exams')
+          .from('exam_attempts')
           .update({
             estimated_score: evaluation.score,
             feedback: evaluation,
@@ -194,7 +194,7 @@ serve(async (req: Request) => {
       }
 
       const { data: results, error } = await supabase
-        .from('mock_exams')
+        .from('exam_attempts')
         .select('*')
         .eq('user_id', profile.id)
         .eq('exam_type', examType)
@@ -220,7 +220,7 @@ serve(async (req: Request) => {
       }
 
       const { data: results } = await supabase
-        .from('mock_exams')
+        .from('exam_attempts')
         .select('estimated_score, section, created_at')
         .eq('user_id', profile.id)
         .eq('exam_type', examType)

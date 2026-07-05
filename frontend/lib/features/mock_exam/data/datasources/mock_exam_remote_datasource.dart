@@ -23,7 +23,7 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
   @override
   Future<Result<List<Map<String, dynamic>>>> getExams({String? examType}) async {
     try {
-      var query = _client.from('mock_exams').select();
+      var query = _client.from('exam_attempts').select();
       if (examType != null) {
         query = query.eq('exam_type', examType);
       }
@@ -43,12 +43,11 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
       }
 
       final response = await _client
-          .from('mock_exams')
+          .from('exam_attempts')
           .insert({
             'user_id': userId,
             'exam_type': 'IELTS',
-            'section': 'Speaking',
-            'duration': 60,
+            'status': 'in_progress',
           })
           .select()
           .single();
@@ -66,13 +65,13 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
   }) async {
     try {
       final response = await _client
-          .from('exam_results')
+          .from('exam_scores')
           .insert({
-            'exam_id': attemptId,
-            'estimated_score': 'Band 7.0',
-            'grammar_score': 75,
-            'vocabulary_score': 80,
-            'fluency_score': 70,
+            'attempt_id': attemptId,
+            'section': 'overall',
+            'score': 75,
+            'max_score': 100,
+            'percentage': 75.0,
           })
           .select()
           .single();
@@ -87,10 +86,10 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
   Future<Result<List<Map<String, dynamic>>>> getHistory(String userId) async {
     try {
       final response = await _client
-          .from('mock_exams')
-          .select('*, exam_results(*)')
+          .from('exam_attempts')
+          .select('*, exam_scores(*)')
           .eq('user_id', userId)
-          .order('started_at', ascending: false);
+          .order('created_at', ascending: false);
 
       return Result.success(List<Map<String, dynamic>>.from(response));
     } catch (e) {

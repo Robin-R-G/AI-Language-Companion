@@ -4,12 +4,7 @@ import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { validateRequest } from '../shared/auth.ts'
 import { successResponse, badRequest, serverError } from '../shared/errors.ts'
 import { validateRequired, validateNumber } from '../shared/validator.ts'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
-}
+import { corsHeaders } from '../shared/cors.ts'
 
 function calculateNextReview(masteryScore: number, currentInterval: number = 0): Date {
   const now = new Date()

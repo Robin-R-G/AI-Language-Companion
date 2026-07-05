@@ -47,7 +47,7 @@ serve(async (req: Request) => {
       const level = difficulty || profile?.proficiency_level || 'A1'
 
       const { data: readings, error, count } = await supabase
-        .from('reading_passages')
+        .from('reading_lessons')
         .select('*', { count: 'exact' })
         .eq('difficulty', level)
         .order('created_at', { ascending: false })
@@ -78,7 +78,7 @@ serve(async (req: Request) => {
       const passageId = lastPart
 
       const { data: passage, error } = await supabase
-        .from('reading_passages')
+        .from('reading_lessons')
         .select('*')
         .eq('id', passageId)
         .single()

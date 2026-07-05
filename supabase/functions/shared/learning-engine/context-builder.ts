@@ -83,39 +83,38 @@ export class ContextBuilder {
   private async loadRecentActivity(userId: string): Promise<ActivityRecord[]> {
     const { data } = await this.supabase
       .from('analytics_events')
-      .select('event_type, created_at')
+      .select('event_name, created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(10)
 
     return (data || []).map((item: any) => ({
-      type: item.event_type,
+      type: item.event_name,
       date: item.created_at,
     }))
   }
 
   private async loadVocabularyStats(userId: string): Promise<VocabularyStats> {
-    const { data: vocabulary } = await this.supabase
-      .from('vocabulary')
-      .select('*')
+    const { data: vocabHistory } = await this.supabase
+      .from('vocabulary_history')
+      .select('mastery_level, review_count, next_review, vocabulary(word)')
       .eq('user_id', userId)
 
-    const { data: flashcards } = await this.supabase
-      .from('vocabulary')
-      .select('*')
+    const { data: dueForReview } = await this.supabase
+      .from('vocabulary_history')
+      .select('id')
       .eq('user_id', userId)
       .lte('next_review', new Date().toISOString())
 
-    const cards = vocabulary || []
-    const now = new Date()
+    const cards = vocabHistory || []
 
     return {
       totalLearned: cards.length,
-      dueForReview: (flashcards || []).length,
-      masteredCount: cards.filter((c: any) => c.ease_factor >= 2.5 && c.interval >= 21).length,
+      dueForReview: (dueForReview || []).length,
+      masteredCount: cards.filter((c: any) => c.mastery_level >= 80 && c.review_count >= 5).length,
       strugglingWords: cards
-        .filter((c: any) => c.ease_factor < 1.5)
-        .map((c: any) => c.word)
+        .filter((c: any) => c.mastery_level < 30)
+        .map((c: any) => c.vocabulary?.word || 'unknown')
         .slice(0, 5),
     }
   }
@@ -126,7 +125,7 @@ export class ContextBuilder {
 
     const { data: todaySessions } = await this.supabase
       .from('voice_sessions')
-      .select('duration_minutes')
+      .select('duration')
       .eq('user_id', userId)
       .gte('created_at', today)
 
@@ -134,34 +133,40 @@ export class ContextBuilder {
       .from('lesson_progress')
       .select('id')
       .eq('user_id', userId)
-      .eq('status', 'completed')
+      .not('completed_at', 'is', null)
       .gte('completed_at', weekAgo)
+
+    const { data: goals } = await this.supabase
+      .from('user_goals')
+      .select('daily_goal_minutes')
+      .eq('user_id', userId)
+      .single()
 
     const { data: profile } = await this.supabase
       .from('user_profiles')
-      .select('daily_goal_minutes')
+      .select('id')
       .eq('auth_user_id', userId)
       .single()
 
     const { data: analyticsToday } = await this.supabase
       .from('analytics_events')
-      .select('event_data')
-      .eq('user_id', userId)
+      .select('properties')
+      .eq('user_id', profile?.id || userId)
       .gte('created_at', today)
-      .eq('event_type', 'lesson_completed')
+      .eq('event_name', 'lesson_completed')
 
     const dailyMinutes = (todaySessions || []).reduce(
-      (sum: number, s: any) => sum + (s.duration_minutes || 0),
+      (sum: number, s: any) => sum + (s.duration || 0),
       0
     )
 
     return {
       dailyMinutesToday: dailyMinutes,
-      dailyMinutesGoal: profile?.daily_goal_minutes || 15,
+      dailyMinutesGoal: goals?.daily_goal_minutes || 15,
       weeklyLessonsCompleted: (weekLessons || []).length,
       weeklyGoal: 10,
       xpEarnedToday: (analyticsToday || []).reduce(
-        (sum: number, e: any) => sum + (e.event_data?.xp_earned || 0),
+        (sum: number, e: any) => sum + (e.properties?.xp_earned || 0),
         0
       ),
       xpGoalToday: 50,
@@ -180,7 +185,7 @@ export class ContextBuilder {
       .from('analytics_events')
       .select('created_at')
       .eq('user_id', userId)
-      .eq('event_type', 'session_start')
+      .eq('event_name', 'session_start')
       .order('created_at', { ascending: false })
       .limit(1)
       .single()

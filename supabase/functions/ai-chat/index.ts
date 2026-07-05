@@ -5,7 +5,7 @@ import { validateRequest } from '../shared/auth.ts'
 import { getAIProvider, ChatMessage } from '../shared/ai.ts'
 import { buildPrompt, PromptContext } from '../shared/prompts.ts'
 import { ConversationMemory, extractMemoryInsights } from '../shared/memory.ts'
-import { successResponse, badRequest, serverError, aiProviderError } from '../shared/errors.ts'
+import { successResponse, badRequest, serverError } from '../shared/errors.ts'
 import { validateRequired } from '../shared/validator.ts'
 
 import { corsHeaders } from '../shared/cors.ts'
@@ -174,7 +174,7 @@ serve(async (req: Request) => {
   } catch (error) {
     console.error('AI Chat error:', error)
     if (error.message?.includes('AI providers failed')) {
-      return aiProviderError('AI service temporarily unavailable. Please try again.')
+      return serverError('AI service temporarily unavailable. Please try again.')
     }
     return serverError(error.message || 'Internal server error')
   }

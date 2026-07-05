@@ -105,7 +105,7 @@ serve(async (req: Request) => {
 
       // Save evaluation
       const { data: savedEvaluation, error: saveError } = await supabase
-        .from('writing_evaluations')
+        .from('writing_tasks')
         .insert({
           user_id: userId,
           essay_text,
@@ -141,7 +141,7 @@ serve(async (req: Request) => {
       const limit = parseInt(url.searchParams.get('limit') || '10')
 
       const { data: evaluations, error, count } = await supabase
-        .from('writing_evaluations')
+        .from('writing_tasks')
         .select('*', { count: 'exact' })
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -169,7 +169,7 @@ serve(async (req: Request) => {
       const evaluationId = lastPart
 
       const { data: evaluation, error } = await supabase
-        .from('writing_evaluations')
+        .from('writing_tasks')
         .select('*')
         .eq('id', evaluationId)
         .eq('user_id', userId)

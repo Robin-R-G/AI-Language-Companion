@@ -1,41 +1,55 @@
 // supabase/functions/shared/auth.ts
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
-import { corsHeaders } from './cors.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { unauthorized } from './errors.ts'
 
-export async function validateRequest(req: Request) {
-  // CORS Preflight
+export interface AuthResult {
+  user: { id: string; email?: string }
+  supabaseClient: ReturnType<typeof createClient>
+  error?: Response
+  isPreflight?: boolean
+  response?: Response
+}
+
+export async function validateRequest(req: Request): Promise<AuthResult> {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return { isPreflight: true, response: new Response('ok', { headers: corsHeaders }) }
+    return {
+      user: { id: '' },
+      supabaseClient: null as any,
+      isPreflight: true,
+      response: new Response('ok', { status: 200 }),
+    }
   }
 
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+  if (!authHeader) {
     return {
-      isPreflight: false,
-      error: new Response(
-        JSON.stringify({ success: false, error: { code: 'UNAUTHORIZED', message: 'Missing JWT authorization token' } }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      ),
+      user: { id: '' },
+      supabaseClient: null as any,
+      error: unauthorized('Authorization header required'),
     }
   }
 
-  const token = authHeader.split(' ')[1]
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-    { global: { headers: { Authorization: authHeader } } }
-  )
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+  const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 
-  const { data: { user }, error } = await supabaseClient.auth.getUser(token)
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    global: { headers: { Authorization: authHeader } },
+  })
+
+  const { data: { user }, error } = await supabase.auth.getUser()
+
   if (error || !user) {
     return {
-      isPreflight: false,
-      error: new Response(
-        JSON.stringify({ success: false, error: { code: 'AUTH_FAILED', message: 'Invalid JWT authorization token' } }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      ),
+      user: { id: '' },
+      supabaseClient: supabase,
+      error: unauthorized('Invalid or expired token'),
     }
   }
 
-  return { isPreflight: false, user, supabaseClient }
+  return {
+    user: { id: user.id, email: user.email },
+    supabaseClient: supabase,
+  }
 }

@@ -45,7 +45,7 @@ serve(async (req: Request) => {
         supabase.from('user_progress').select('*').eq('user_id', userId).single(),
         supabase.from('streaks').select('*').eq('user_id', userId).single(),
         supabase.from('vocabulary_history').select('mastery_level, next_review').eq('user_id', profile.id),
-        supabase.from('voice_sessions').select('overall_score, fluency_score, pronunciation_score, created_at').eq('user_id', profile.id),
+        supabase.from('voice_sessions').select('fluency_score, pronunciation_score, created_at').eq('user_id', profile.id),
         supabase.from('lesson_progress').select('*').eq('user_id', profile.id),
       ])
 
@@ -117,7 +117,7 @@ serve(async (req: Request) => {
         .order('completed_at', { ascending: false })
 
       const { data: writingEvals } = await supabase
-        .from('writing_evaluations')
+        .from('writing_tasks')
         .select('estimated_band, grammar_score, vocabulary_score, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -125,7 +125,7 @@ serve(async (req: Request) => {
 
       const { data: voiceSessions } = await supabase
         .from('voice_sessions')
-        .select('overall_score, pronunciation_score, fluency_score, created_at')
+        .select('pronunciation_score, fluency_score, created_at')
         .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(10)

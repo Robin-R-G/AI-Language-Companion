@@ -1,20 +1,17 @@
 // supabase/functions/lessons/index.ts
-// Section 9: Learning APIs
-// GET /lessons, GET /lessons/{id}, POST /lessons/start, POST /lessons/complete
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
+// Lesson endpoints: list, get by id, start, complete
 import { validateRequest } from '../shared/auth.ts'
 import {
   successResponse,
   createdResponse,
   badRequest,
-  validationError,
   notFound,
   serverError,
 } from '../shared/errors.ts'
-import { validateRequired, validateNumber } from '../shared/validator.ts'
 import { corsHeaders } from '../shared/cors.ts'
+import { validateRequired, parsePagination } from '../shared/validator.ts'
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -28,28 +25,22 @@ serve(async (req: Request) => {
     const userId = authResult.user.id
     const url = new URL(req.url)
     const pathParts = url.pathname.split('/').filter(Boolean)
-    const resourceId = pathParts.length > 1 ? pathParts[pathParts.length - 1] : null
+    const segment = pathParts[pathParts.length - 1]
+    const isAction = ['start', 'complete'].includes(segment || '')
 
-    // Check if this is a specific lesson ID or an action endpoint
-    const isAction = ['start', 'complete'].includes(resourceId || '')
-
-    // GET /lessons - List all lessons
+    // GET /lessons - List available lessons
     if (req.method === 'GET' && !isAction) {
-      const page = parseInt(url.searchParams.get('page') || '1')
-      const limit = parseInt(url.searchParams.get('limit') || '20')
-      const category = url.searchParams.get('category')
-      const difficulty = url.searchParams.get('difficulty')
-      const language = url.searchParams.get('language')
+      const { limit, offset } = parsePagination(url.searchParams)
+      const type = url.searchParams.get('type')
+      const level = url.searchParams.get('level')
 
       let query = supabase
         .from('lessons')
         .select('*', { count: 'exact' })
 
-      if (category) query = query.eq('category', category)
-      if (difficulty) query = query.eq('difficulty', difficulty)
-      if (language) query = query.eq('language', language)
+      if (type) query = query.eq('type', type)
+      if (level) query = query.eq('level', level)
 
-      const offset = (page - 1) * limit
       query = query
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
@@ -62,32 +53,26 @@ serve(async (req: Request) => {
       }
 
       const total = count || 0
-      const totalPages = Math.ceil(total / limit)
 
-      return successResponse({
-        lessons: lessons || [],
-        pagination: {
-          page,
-          limit,
-          total,
-          total_pages: totalPages,
-        },
-      }, 'Lessons retrieved successfully.')
+      return successResponse(lessons || [], 'Lessons retrieved successfully.', {
+        total,
+        limit,
+        offset,
+      })
     }
 
     // GET /lessons/{id} - Get lesson by ID
-    if (req.method === 'GET' && resourceId && !isAction) {
+    if (req.method === 'GET' && segment && !isAction) {
       const { data: lesson, error } = await supabase
         .from('lessons')
         .select('*')
-        .eq('id', resourceId)
+        .eq('id', segment)
         .single()
 
       if (error || !lesson) {
         return notFound('Lesson not found')
       }
 
-      // Get user's progress for this lesson
       const { data: profile } = await supabase
         .from('user_profiles')
         .select('id')
@@ -100,29 +85,25 @@ serve(async (req: Request) => {
           .from('lesson_progress')
           .select('*')
           .eq('user_id', profile.id)
-          .eq('lesson_id', resourceId)
+          .eq('lesson_id', segment)
           .single()
 
         progress = progressData || null
       }
 
-      return successResponse({
-        lesson,
-        progress,
-      }, 'Lesson retrieved successfully.')
+      return successResponse({ lesson, progress }, 'Lesson retrieved successfully.')
     }
 
     // POST /lessons/start - Start a lesson
-    if (req.method === 'POST' && resourceId === 'start') {
+    if (req.method === 'POST' && segment === 'start') {
       const body = await req.json()
       const { lesson_id } = body
 
       const validation = validateRequired({ lesson_id })
       if (!validation.isValid) {
-        return validationError('Validation failed', validation.errors)
+        return badRequest('Validation failed', validation.errors)
       }
 
-      // Verify lesson exists
       const { data: lesson, error: lessonError } = await supabase
         .from('lessons')
         .select('id')
@@ -133,7 +114,6 @@ serve(async (req: Request) => {
         return notFound('Lesson not found')
       }
 
-      // Get user profile
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('id')
@@ -144,7 +124,6 @@ serve(async (req: Request) => {
         return notFound('User profile not found')
       }
 
-      // Check if already started
       const { data: existingProgress } = await supabase
         .from('lesson_progress')
         .select('id, completion_percentage')
@@ -154,14 +133,6 @@ serve(async (req: Request) => {
 
       if (existingProgress && existingProgress.completion_percentage === 100) {
         return badRequest('Lesson already completed')
-      }
-
-      // Create or update lesson progress
-      const progressData = {
-        user_id: profile.id,
-        lesson_id,
-        completion_percentage: 0,
-        started_at: new Date().toISOString(),
       }
 
       let progressResult
@@ -175,7 +146,12 @@ serve(async (req: Request) => {
       } else {
         progressResult = await supabase
           .from('lesson_progress')
-          .insert(progressData)
+          .insert({
+            user_id: profile.id,
+            lesson_id,
+            completion_percentage: 0,
+            started_at: new Date().toISOString(),
+          })
           .select('*')
           .single()
       }
@@ -185,28 +161,26 @@ serve(async (req: Request) => {
         return serverError('Failed to start lesson')
       }
 
-      return createdResponse({
-        lesson_id,
-        progress: progressResult.data,
-      }, 'Lesson started successfully.')
+      return createdResponse(
+        { lesson_id, progress: progressResult.data },
+        'Lesson started successfully.',
+      )
     }
 
-    // POST /lessons/complete - Complete a lesson
-    if (req.method === 'POST' && resourceId === 'complete') {
+    // POST /lessons/complete - Complete a lesson with score
+    if (req.method === 'POST' && segment === 'complete') {
       const body = await req.json()
       const { lesson_id, score, mistakes } = body
 
       const validation = validateRequired({ lesson_id, score })
       if (!validation.isValid) {
-        return validationError('Validation failed', validation.errors)
+        return badRequest('Validation failed', validation.errors)
       }
 
-      const scoreValidation = validateNumber(score, 'score', { min: 0, max: 100, integer: true })
-      if (!scoreValidation.isValid) {
-        return validationError('Invalid score', scoreValidation.errors)
+      if (typeof score !== 'number' || score < 0 || score > 100 || !Number.isInteger(score)) {
+        return badRequest('Score must be an integer between 0 and 100.')
       }
 
-      // Get user profile
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('id')
@@ -217,7 +191,6 @@ serve(async (req: Request) => {
         return notFound('User profile not found')
       }
 
-      // Get lesson details for XP reward
       const { data: lesson, error: lessonError } = await supabase
         .from('lessons')
         .select('id, xp_reward')
@@ -228,12 +201,10 @@ serve(async (req: Request) => {
         return notFound('Lesson not found')
       }
 
-      // Calculate XP: base from lesson + bonus for high scores
       const baseXP = lesson.xp_reward || 50
       const bonusMultiplier = score >= 90 ? 1.5 : score >= 70 ? 1.2 : 1.0
       const earnedXP = Math.round(baseXP * bonusMultiplier)
 
-      // Update lesson progress
       const { error: progressError } = await supabase
         .from('lesson_progress')
         .upsert({
@@ -250,7 +221,6 @@ serve(async (req: Request) => {
         return serverError('Failed to save lesson completion')
       }
 
-      // Update user XP and level
       const { data: currentProgress } = await supabase
         .from('user_progress')
         .select('xp, level')
@@ -271,7 +241,6 @@ serve(async (req: Request) => {
           last_study_date: new Date().toISOString().split('T')[0],
         }, { onConflict: 'user_id' })
 
-      // Update streak
       const today = new Date().toISOString().split('T')[0]
       const { data: streakData } = await supabase
         .from('streaks')

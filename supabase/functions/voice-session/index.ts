@@ -2,6 +2,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { corsHeaders } from '../shared/cors.ts'
 import { validateRequest } from '../shared/auth.ts'
+import { successResponse, serverError } from '../shared/errors.ts'
 
 serve(async (req: Request) => {
   const authResult = await validateRequest(req)
@@ -35,22 +36,13 @@ serve(async (req: Request) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: {
-          token,
-          room_id: targetRoom,
-          livekit_url: livekitUrl,
-        }
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return successResponse({
+      token,
+      room_id: targetRoom,
+      livekit_url: livekitUrl,
+    }, 'LiveKit token generated')
 
   } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, error: { code: 'SERVER_ERROR', message: error.message } }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return serverError(error.message || 'Internal server error')
   }
 })
