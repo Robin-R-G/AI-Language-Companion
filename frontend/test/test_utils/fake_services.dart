@@ -7,15 +7,13 @@ import 'package:ai_language_coach/features/subscription/domain/entities/subscrip
 import 'package:ai_language_coach/features/subscription/domain/repositories/subscription_repository.dart';
 import 'package:ai_language_coach/core/services/connectivity_service.dart';
 
-// ─── Fake Auth Repository ─────────────────────────────────────────────────────
-
-class FakeAuthRepository implements AuthRepository {
+// ─── Fake Auth Repository ────────────────�class FakeAuthRepository implements AuthRepository {
   final StreamController<bool> _authController =
       StreamController<bool>.broadcast();
-  AppUser? _user;
+  AuthUser? _user;
   bool _shouldFail = false;
 
-  void setAuthenticated(AppUser user) {
+  void setAuthenticated(AuthUser user) {
     _user = user;
     _authController.add(true);
   }
@@ -28,22 +26,41 @@ class FakeAuthRepository implements AuthRepository {
   void setShouldFail(bool value) => _shouldFail = value;
 
   @override
-  Future<Result<AppUser>> signUp(String email, String password) async {
+  Future<Result<AuthUser>> signUp({
+    required String email,
+    required String password,
+    required String name,
+  }) async {
     if (_shouldFail) {
       return const Result.error(AuthFailure('Sign up failed'));
     }
-    final user = AppUser(id: 'test_id', email: email, displayName: 'Test User');
+    final user = AuthUser(
+      id: 'test_id',
+      email: email,
+      fullName: name,
+      avatarUrl: '',
+      isOnboardingCompleted: true,
+    );
     _user = user;
     _authController.add(true);
     return Result.success(user);
   }
 
   @override
-  Future<Result<AppUser>> signIn(String email, String password) async {
+  Future<Result<AuthUser>> signIn({
+    required String email,
+    required String password,
+  }) async {
     if (_shouldFail) {
       return const Result.error(AuthFailure('Sign in failed'));
     }
-    final user = AppUser(id: 'test_id', email: email, displayName: 'Test User');
+    final user = AuthUser(
+      id: 'test_id',
+      email: email,
+      fullName: 'Test User',
+      avatarUrl: '',
+      isOnboardingCompleted: true,
+    );
     _user = user;
     _authController.add(true);
     return Result.success(user);
@@ -60,9 +77,37 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  AppUser? get currentUser => _user;
+  Future<Result<AuthUser?>> getCurrentUser() async {
+    if (_shouldFail) {
+      return const Result.error(AuthFailure('Get current user failed'));
+    }
+    return Result.success(_user);
+  }
 
   @override
+  Future<Result<bool>> isOnboardingCompleted() async {
+    if (_shouldFail) {
+      return const Result.error(AuthFailure('Failed to check onboarding'));
+    }
+    return Result.success(_user?.isOnboardingCompleted ?? false);
+  }
+
+  @override
+  Future<Result<void>> completeOnboarding() async {
+    if (_shouldFail) {
+      return const Result.error(AuthFailure('Failed to complete onboarding'));
+    }
+    if (_user != null) {
+      _user = _user!.copyWith(isOnboardingCompleted: true);
+    }
+    return const Result.success(null);
+  }
+
+  @override
+  Stream<bool> get authStateChanges => _authController.stream;
+
+  void dispose() => _authController.close();
+}e
   Stream<bool> get authStateChanges => _authController.stream;
 
   void dispose() => _authController.close();
@@ -73,7 +118,7 @@ class FakeAuthRepository implements AuthRepository {
 class FakeConnectivityService implements ConnectivityService {
   final StreamController<bool> _controller = StreamController<bool>.broadcast();
   bool _isConnected = true;
-
+  
   @override
   bool get isConnected => _isConnected;
 
@@ -116,8 +161,17 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
       Subscription(
         id: 'sub_1',
         userId: 'user_1',
-        plan: _currentPlan,
+        provider: 'stripe',
+        planId: _currentPlan,
+        planName: _currentPlan == 'premium' ? 'Premium' : 'Free',
         status: 'active',
+        billingCycle: 'monthly',
+        amount: _currentPlan == 'premium' ? 9.99 : 0.0,
+        currency: 'USD',
+        currentPeriodStart: DateTime.now(),
+        currentPeriodEnd: DateTime.now().add(const Duration(days: 30)),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
     );
   }
@@ -127,25 +181,46 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     if (_shouldFail) {
       return const Result.error(PaymentFailure('Failed'));
     }
-    return const Result.success([
+    return Result.success([
       SubscriptionPlan(
         id: 'free',
         name: 'Free',
         description: 'Basic access with limited features',
-        price: 0,
+        monthlyPrice: 0.0,
+        annualPrice: 0.0,
         currency: 'USD',
-        period: 'monthly',
-        features: ['5 voice mins/day'],
+        features: const ['5 voice mins/day'],
+        dailyVoiceMinutes: 5,
+        dailyLessons: 1,
+        monthlyMockExams: 0,
+        hasPrioritySupport: false,
+        hasAdvancedAnalytics: false,
+        hasOfflineMode: false,
+        isPopular: false,
+        sortOrder: 0,
+        isActive: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
       SubscriptionPlan(
         id: 'premium',
         name: 'Premium',
         description: 'Full access to all features',
-        price: 9.99,
+        monthlyPrice: 9.99,
+        annualPrice: 99.99,
         currency: 'USD',
-        period: 'monthly',
-        features: ['Unlimited voice'],
+        features: const ['Unlimited voice'],
+        dailyVoiceMinutes: 9999,
+        dailyLessons: 9999,
+        monthlyMockExams: 99,
+        hasPrioritySupport: true,
+        hasAdvancedAnalytics: true,
+        hasOfflineMode: true,
         isPopular: true,
+        sortOrder: 1,
+        isActive: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
     ]);
   }
@@ -163,8 +238,17 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
       Subscription(
         id: 'sub_2',
         userId: 'user_1',
-        plan: planId,
+        provider: 'stripe',
+        planId: planId,
+        planName: planId == 'premium' ? 'Premium' : 'Free',
         status: 'active',
+        billingCycle: 'monthly',
+        amount: planId == 'premium' ? 9.99 : 0.0,
+        currency: 'USD',
+        currentPeriodStart: DateTime.now(),
+        currentPeriodEnd: DateTime.now().add(const Duration(days: 30)),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
     );
   }
@@ -178,8 +262,17 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
       Subscription(
         id: 'sub_1',
         userId: 'user_1',
-        plan: _currentPlan,
+        provider: 'stripe',
+        planId: _currentPlan,
+        planName: _currentPlan == 'premium' ? 'Premium' : 'Free',
         status: 'active',
+        billingCycle: 'monthly',
+        amount: _currentPlan == 'premium' ? 9.99 : 0.0,
+        currency: 'USD',
+        currentPeriodStart: DateTime.now(),
+        currentPeriodEnd: DateTime.now().add(const Duration(days: 30)),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
     );
   }

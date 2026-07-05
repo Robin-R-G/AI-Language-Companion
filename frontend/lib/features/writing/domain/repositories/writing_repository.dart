@@ -1,7 +1,7 @@
+// lib/features/writing/domain/repositories/writing_repository.dart
 import '../../../../core/errors/result.dart';
-import '../entities/writing_prompt.dart';
+import '../../data/datasources/writing_remote_datasource.dart';
 
 abstract class WritingRepository {
-  Future<Result<List<WritingPrompt>>> getPrompts({String? difficulty, String? category});
-  Future<Result<WritingSubmission>> submitWriting(String promptId, String content);
+  Future<Result<WritingEvaluation>> evaluateEssay(String essayText);
 }

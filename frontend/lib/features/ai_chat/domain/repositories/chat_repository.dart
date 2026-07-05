@@ -1,17 +1,19 @@
+// lib/features/ai_chat/domain/repositories/chat_repository.dart
 import '../../../../core/errors/result.dart';
-import '../entities/chat_message.dart';
+import '../../../../shared/models/chat_message.dart';
 
 abstract class ChatRepository {
-  Future<Result<List<ChatMessage>>> getMessages(
-    String conversationId, {
-    int limit = 50,
-    int offset = 0,
+  Future<Result<AIConversation>> createConversation({
+    required String title,
+    String? provider,
+    String? model,
   });
-  Future<Result<ChatMessage>> sendMessage(
-    String conversationId,
-    String message, {
+
+  Future<Result<ChatMessage>> sendMessage({
+    required String conversationId,
+    required String message,
     bool stream = false,
   });
-  Future<Result<String>> createConversation(String title);
-  Future<Result<List<Map<String, dynamic>>>> getConversations({int limit = 20});
+
+  Future<Result<List<ChatMessage>>> getMessages(String conversationId);
 }

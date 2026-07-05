@@ -1,64 +1,24 @@
-import 'package:dio/dio.dart';
-import '../../../../core/errors/failure.dart';
+// lib/features/grammar/data/repositories/grammar_repository_impl.dart
 import '../../../../core/errors/result.dart';
-import '../../../../core/network/dio_client.dart';
-import '../../domain/entities/grammar_correction.dart';
+import '../../data/datasources/grammar_remote_datasource.dart';
 import '../../domain/repositories/grammar_repository.dart';
 
 class GrammarRepositoryImpl implements GrammarRepository {
-  final Dio _dio;
+  final GrammarRemoteDataSource _remoteDataSource;
 
-  GrammarRepositoryImpl({DioClient? dioClient, Dio? dio})
-    : _dio = dio ?? dioClient?.client ?? DioClient().client;
+  GrammarRepositoryImpl({GrammarRemoteDataSource? remoteDataSource})
+      : _remoteDataSource = remoteDataSource ?? GrammarRemoteDataSourceImpl();
 
   @override
-  Future<Result<GrammarCorrection>> checkGrammar(
+  Future<Result<GrammarResult>> checkGrammar(
     String text, {
-    String? language,
-  }) async {
-    try {
-      final response = await _dio.post(
-        '/grammar-check',
-        data: {'text': text, 'language': ?language},
-      );
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(GrammarCorrection.fromJson(data));
-      }
-      return const Result.error(AIServiceFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        AIServiceFailure(
-          e.message ?? 'Failed to check grammar',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<List<GrammarCorrection>>> getHistory({int limit = 50}) async {
-    try {
-      final response = await _dio.get(
-        '/grammar-check/history',
-        queryParameters: {'limit': limit},
-      );
-      final data = response.data;
-      if (data is List) {
-        return Result.success(
-          data
-              .map((e) => GrammarCorrection.fromJson(e as Map<String, dynamic>))
-              .toList(),
-        );
-      }
-      return const Result.error(DatabaseFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        DatabaseFailure(
-          e.message ?? 'Failed to fetch grammar history',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
+    String? languageLevel,
+    String? nativeLanguage,
+  }) {
+    return _remoteDataSource.checkGrammar(
+      text,
+      languageLevel: languageLevel,
+      nativeLanguage: nativeLanguage,
+    );
   }
 }

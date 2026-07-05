@@ -1,114 +1,28 @@
-import 'package:dio/dio.dart';
-import '../../../../core/errors/failure.dart';
+// lib/features/voice/data/repositories/voice_repository_impl.dart
 import '../../../../core/errors/result.dart';
-import '../../../../core/network/dio_client.dart';
-import '../../domain/entities/voice_session.dart';
+import '../../../../shared/models/exam.dart';
 import '../../domain/repositories/voice_repository.dart';
+import '../datasources/voice_remote_datasource.dart';
 
 class VoiceRepositoryImpl implements VoiceRepository {
-  final Dio _dio;
+  final VoiceRemoteDataSource _remoteDataSource;
 
-  VoiceRepositoryImpl({DioClient? dioClient, Dio? dio})
-    : _dio = dio ?? dioClient?.client ?? DioClient().client;
+  VoiceRepositoryImpl({VoiceRemoteDataSource? remoteDataSource})
+      : _remoteDataSource = remoteDataSource ?? VoiceRemoteDataSourceImpl();
 
   @override
-  Future<Result<VoiceSession>> startSession({
+  Future<Result<VoiceSessionResult>> startSession({
     required String language,
     String? persona,
-  }) async {
-    try {
-      final response = await _dio.post(
-        '/voice-session',
-        data: {'language': language, 'persona': ?persona},
-      );
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(VoiceSession.fromJson(data));
-      }
-      return const Result.error(VoiceServiceFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        VoiceServiceFailure(
-          e.message ?? 'Failed to start voice session',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
+  }) {
+    return _remoteDataSource.startSession(
+      language: language,
+      persona: persona,
+    );
   }
 
   @override
-  Future<Result<VoiceSession>> endSession(String sessionId) async {
-    try {
-      final response = await _dio.post(
-        '/voice/end',
-        data: {'session_id': sessionId},
-      );
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(VoiceSession.fromJson(data));
-      }
-      return const Result.error(VoiceServiceFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        VoiceServiceFailure(
-          e.message ?? 'Failed to end voice session',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<PronunciationScore>> evaluateSpeaking(
-    String transcriptText, {
-    String? targetLanguage,
-  }) async {
-    try {
-      final response = await _dio.post(
-        '/speaking-evaluate',
-        data: {
-          'transcript': transcriptText,
-          'target_language': ?targetLanguage,
-        },
-      );
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(PronunciationScore.fromJson(data));
-      }
-      return const Result.error(VoiceServiceFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        VoiceServiceFailure(
-          e.message ?? 'Failed to evaluate speaking',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
-  }
-
-  @override
-  Future<Result<List<VoiceSession>>> getSessions({int limit = 20}) async {
-    try {
-      final response = await _dio.get(
-        '/voice-session',
-        queryParameters: {'limit': limit},
-      );
-      final data = response.data;
-      if (data is List) {
-        return Result.success(
-          data
-              .map((e) => VoiceSession.fromJson(e as Map<String, dynamic>))
-              .toList(),
-        );
-      }
-      return const Result.error(VoiceServiceFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        VoiceServiceFailure(
-          e.message ?? 'Failed to fetch voice sessions',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
-    }
+  Future<Result<VoiceSession>> endSession(String sessionId) {
+    return _remoteDataSource.endSession(sessionId);
   }
 }

@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  supabase-db:
+    image: supabase/postgres:15.1.1.78
+    container_name: alcoach-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ai_language_coach}
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token}
+      ANON_KEY: ${ANON_KEY:-your-anon-key}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:-your-service-role-key}
+    volumes:
+      - supabase_data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  supabase-studio:
+    image: supabase/studio:latest
+    container_name: alcoach-studio
+    ports:
+      - "3000:3000"
+    environment:
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: ${ANON_KEY:-your-anon-key}
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:-your-service-role-key}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-kong:
+    image: supabase/kong:2.8.1
+    container_name: alcoach-kong
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_RESOLVER: 127.0.0.11
+      KONG_NGINX_PROXY_PROXY_SET_HEADER: "X-Forwarded-For $proxy_add_x_forwarded_for"
+    volumes:
+      - ./infra/docker/kong.yml:/var/lib/kong/kong.yml:ro
+
+  supabase-meta:
+    image: supabase/postgres-meta:v0.84.2
+    container_name: alcoach-meta
+    environment:
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: ${POSTGRES_DB:-ai_language_coach}
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  realtime:
+    image: supabase/realtime:2.10.1
+    container_name: alcoach-realtime
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-ai_language_coach}
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SLOT_NAME: supabase_realtime_rls
+      TEMPORAL_SLOT: true
+      MAX_REPLICATION_LAG_MB: 1000
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-auth:
+    image: supabase/gotrue:v2.65.1
+    container_name: alcoach-auth
+    ports:
+      - "9999:9999"
+    environment:
+      API_EXTERNAL_URL: http://localhost:9999
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@supabase-db:5432/${POSTGRES_DB:-ai_language_coach}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_SSO_ENABLED: "false"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_SMS_AUTOCONFIRM: "true"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  storage:
+    image: supabase/storage-api:v1.11.13
+    container_name: alcoach-storage
+    ports:
+      - "5000:5000"
+    environment:
+      ANON_KEY: ${ANON_KEY:-your-anon-key}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY:-your-service-role-key}
+      POSTGREST_URL: http://supabase-rest:3000
+      PGRST_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token}
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      IS_MULTITENANT: "false"
+    volumes:
+      - storage_data:/var/lib/storage
+    depends_on:
+      supabase-rest:
+        condition: service_started
+
+  supabase-rest:
+    image: postgrest/postgrest:v12.0.2
+    container_name: alcoach-rest
+    environment:
+      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@supabase-db:5432/${POSTGRES_DB:-ai_language_coach}
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+  supabase-realtime:
+    image: supabase/realtime:2.10.1
+    container_name: alcoach-realtime-server
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-ai_language_coach}
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SLOT_NAME: supabase_realtime
+      TEMPORAL_SLOT: true
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+
+volumes:
+  supabase_data:
+  storage_data:

@@ -1,0 +1,7 @@
+name: ai-language-coach
+services:
+  - database
+  - auth
+  - api
+  - realtime
+  - storage

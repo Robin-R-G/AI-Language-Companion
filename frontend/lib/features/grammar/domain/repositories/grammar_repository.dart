@@ -1,10 +1,10 @@
+// lib/features/grammar/domain/repositories/grammar_repository.dart
 import '../../../../core/errors/result.dart';
-import '../entities/grammar_correction.dart';
+import '../../data/datasources/grammar_remote_datasource.dart';
 
 abstract class GrammarRepository {
-  Future<Result<GrammarCorrection>> checkGrammar(
-    String text, {
-    String? language,
+  Future<Result<GrammarResult>> checkGrammar(String text, {
+    String? languageLevel,
+    String? nativeLanguage,
   });
-  Future<Result<List<GrammarCorrection>>> getHistory({int limit = 50});
 }

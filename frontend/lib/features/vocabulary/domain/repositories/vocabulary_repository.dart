@@ -1,8 +1,13 @@
+// lib/features/vocabulary/domain/repositories/vocabulary_repository.dart
 import '../../../../core/errors/result.dart';
-import '../entities/vocabulary_word.dart';
+import '../../../../shared/models/vocabulary_word.dart';
 
 abstract class VocabularyRepository {
-  Future<Result<List<VocabularyWord>>> getDailyVocabulary();
-  Future<Result<void>> updateMastery(String wordId, int masteryScore);
-  Future<Result<List<VocabularyWord>>> getHistory({int limit = 50});
+  Future<Result<List<VocabularyHistory>>> getDailyVocabulary(String userId);
+  Future<Result<VocabularyHistory>> saveReview({
+    required String userId,
+    required String wordId,
+    required int masteryScore,
+  });
+  Future<Result<List<VocabularyHistory>>> getHistory(String userId);
 }

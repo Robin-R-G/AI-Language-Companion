@@ -25,7 +25,7 @@ final vocabularyRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef VocabularyRepositoryRef = AutoDisposeProviderRef<VocabularyRepository>;
-String _$dailyVocabularyHash() => r'75a4d5158b63c95cd39ea77a5195a980022bfc2c';
+String _$dailyVocabularyHash() => r'58ddbae261a88ee0a071afb7465caf6f2cd9a1e4';
 
 /// See also [DailyVocabulary].
 @ProviderFor(DailyVocabulary)

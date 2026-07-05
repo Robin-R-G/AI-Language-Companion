@@ -1,0 +1,78 @@
+// lib/features/grammar/data/datasources/grammar_remote_datasource.dart
+import 'package:dio/dio.dart';
+import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/result.dart';
+
+class GrammarResult {
+  final bool isCorrect;
+  final String original;
+  final String corrected;
+  final String explanation;
+  final String explanationMalayalam;
+  final String category;
+  final List<String> examples;
+
+  const GrammarResult({
+    required this.isCorrect,
+    required this.original,
+    required this.corrected,
+    required this.explanation,
+    required this.explanationMalayalam,
+    required this.category,
+    required this.examples,
+  });
+
+  factory GrammarResult.fromJson(Map<String, dynamic> json) {
+    return GrammarResult(
+      isCorrect: json['is_correct'] ?? true,
+      original: json['original'] ?? '',
+      corrected: json['corrected'] ?? '',
+      explanation: json['explanation'] ?? '',
+      explanationMalayalam: json['explanation_malayalam'] ?? '',
+      category: json['category'] ?? 'General',
+      examples: List<String>.from(json['examples'] ?? []),
+    );
+  }
+}
+
+abstract class GrammarRemoteDataSource {
+  Future<Result<GrammarResult>> checkGrammar(String text, {
+    String? languageLevel,
+    String? nativeLanguage,
+  });
+}
+
+class GrammarRemoteDataSourceImpl implements GrammarRemoteDataSource {
+  final Dio _dio;
+
+  GrammarRemoteDataSourceImpl({Dio? dio})
+      : _dio = dio ?? Dio();
+
+  @override
+  Future<Result<GrammarResult>> checkGrammar(
+    String text, {
+    String? languageLevel,
+    String? nativeLanguage,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/grammar/check',
+        data: {
+          'text': text,
+          if (languageLevel != null) 'language_level': languageLevel,
+          if (nativeLanguage != null) 'native_language': nativeLanguage,
+        },
+      );
+
+      if (response.data['success'] == true) {
+        return Result.success(GrammarResult.fromJson(response.data['data']));
+      }
+
+      return Result.error(NetworkFailure(response.data['message'] ?? 'Grammar check failed'));
+    } on DioException catch (e) {
+      return Result.error(NetworkFailure('Grammar check failed: ${e.message}'));
+    } catch (e) {
+      return Result.error(NetworkFailure('Grammar check failed: $e'));
+    }
+  }
+}
