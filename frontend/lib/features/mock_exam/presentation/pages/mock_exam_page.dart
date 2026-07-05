@@ -308,7 +308,9 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
                 child: Text(
                   'No exams taken yet',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
                   ),
                 ),
               ),
@@ -322,15 +324,20 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
             child: Column(
               children: exams.take(5).map((exam) {
                 final isLast = exam == exams.last;
+                final examTitle = exam.title ?? exam.examType;
+                final examSubtitle = exam.section ?? '';
                 return Column(
                   children: [
                     ListTile(
                       leading: CircleAvatar(
                         backgroundColor: AppColors.success.withOpacity(0.1),
-                        child: const Icon(Icons.check_circle, color: AppColors.success),
+                        child: const Icon(
+                          Icons.check_circle,
+                          color: AppColors.success,
+                        ),
                       ),
-                      title: Text(exam.title ?? exam.examType),
-                      subtitle: Text(exam.section ?? ''),
+                      title: Text(examTitle),
+                      subtitle: Text(examSubtitle),
                     ),
                     if (!isLast) const Divider(),
                   ],
@@ -511,8 +518,14 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
         ];
       case 'jlpt':
         return [
-          {'code': 'kanji_vocabulary', 'name': 'Language Knowledge (Kanji/Vocabulary)'},
-          {'code': 'grammar_reading', 'name': 'Language Knowledge (Grammar) & Reading'},
+          {
+            'code': 'kanji_vocabulary',
+            'name': 'Language Knowledge (Kanji/Vocabulary)',
+          },
+          {
+            'code': 'grammar_reading',
+            'name': 'Language Knowledge (Grammar) & Reading',
+          },
           {'code': 'listening', 'name': 'Listening'},
         ];
       case 'topik':

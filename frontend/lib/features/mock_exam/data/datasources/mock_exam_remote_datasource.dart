@@ -5,30 +5,32 @@ import '../../../../core/errors/result.dart';
 import '../../../../shared/models/exam.dart';
 
 abstract class MockExamRemoteDataSource {
-  Future<Result<List<Map<String, dynamic>>>> getExams({String? examType});
+  Future<Result<List<MockExam>>> getExams({String? examType});
   Future<Result<MockExam>> startExam(String examId);
   Future<Result<ExamResult>> submitExam({
     required String attemptId,
     required List<Map<String, dynamic>> answers,
   });
-  Future<Result<List<Map<String, dynamic>>>> getHistory(String userId);
+  Future<Result<List<MockExam>>> getHistory(String userId);
 }
 
 class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
   final SupabaseClient _client;
 
   MockExamRemoteDataSourceImpl({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   @override
-  Future<Result<List<Map<String, dynamic>>>> getExams({String? examType}) async {
+  Future<Result<List<MockExam>>> getExams({String? examType}) async {
     try {
       var query = _client.from('exam_attempts').select();
       if (examType != null) {
         query = query.eq('exam_type', examType);
       }
       final response = await query.order('created_at', ascending: false);
-      return Result.success(List<Map<String, dynamic>>.from(response));
+      final list = List<Map<String, dynamic>>.from(response);
+      final models = list.map((e) => MockExam.fromJson(e)).toList();
+      return Result.success(models);
     } catch (e) {
       return Result.error(NetworkFailure('Failed to load exams: $e'));
     }
@@ -83,7 +85,7 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
   }
 
   @override
-  Future<Result<List<Map<String, dynamic>>>> getHistory(String userId) async {
+  Future<Result<List<MockExam>>> getHistory(String userId) async {
     try {
       final response = await _client
           .from('exam_attempts')
@@ -91,7 +93,9 @@ class MockExamRemoteDataSourceImpl implements MockExamRemoteDataSource {
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return Result.success(List<Map<String, dynamic>>.from(response));
+      final list = List<Map<String, dynamic>>.from(response);
+      final models = list.map((e) => MockExam.fromJson(e)).toList();
+      return Result.success(models);
     } catch (e) {
       return Result.error(NetworkFailure('Failed to load history: $e'));
     }

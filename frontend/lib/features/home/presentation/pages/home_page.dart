@@ -6,6 +6,7 @@ import '../../../../app/router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../controllers/home_controller.dart';
+import '../../data/datasources/dashboard_remote_datasource.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -119,8 +120,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   Widget _buildDailyProgress(DashboardData data) {
-    final dailyGoalMinutes = 20;
-    final progressFraction = (data.todayMinutes / dailyGoalMinutes).clamp(0.0, 1.0);
+    const dailyGoalMinutes = 20;
+    final progressFraction = (data.todayMinutes / dailyGoalMinutes).clamp(
+      0.0,
+      1.0,
+    );
     final remainingMinutes = dailyGoalMinutes - data.todayMinutes;
 
     return Card(

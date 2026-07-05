@@ -11,17 +11,22 @@ class AuthState extends _$AuthState {
     return const AsyncValue.data(null);
   }
 
-  void _checkCurrentUser() {
-    final repo = ref.read(authRepositoryProvider);
-    final user = repo.currentUser;
-    if (user != null) {
-      state = AsyncValue.data(user);
-    }
+  Future<void> _checkCurrentUser() async {
+    final repo = ref.read(authRepositoryInstProvider);
+    final result = await repo.getCurrentUser();
+    result.fold(
+      (failure) => const AsyncValue.data(null),
+      (user) {
+        if (user != null) {
+          state = AsyncValue.data(user);
+        }
+      },
+    );
   }
 
   Future<void> signIn(String email, String password) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(authRepositoryProvider);
+    final repo = ref.read(authRepositoryInstProvider);
     final result = await repo.signIn(email, password);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
@@ -31,7 +36,7 @@ class AuthState extends _$AuthState {
 
   Future<void> signUp(String email, String password) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(authRepositoryProvider);
+    final repo = ref.read(authRepositoryInstProvider);
     final result = await repo.signUp(email, password);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
@@ -40,7 +45,7 @@ class AuthState extends _$AuthState {
   }
 
   Future<void> signOut() async {
-    final repo = ref.read(authRepositoryProvider);
+    final repo = ref.read(authRepositoryInstProvider);
     final result = await repo.signOut();
     result.fold((failure) {}, (_) => state = const AsyncValue.data(null));
   }

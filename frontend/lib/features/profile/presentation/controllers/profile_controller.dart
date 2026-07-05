@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/datasources/profile_remote_datasource.dart';
 import '../../data/repositories/profile_repository_impl.dart';
 import '../../../../shared/models/user_profile.dart';
+import '../../domain/repositories/profile_repository.dart';
 
 part 'profile_controller.g.dart';
 
@@ -31,7 +32,8 @@ class ProfileController extends _$ProfileController {
     final result = await repository.getProfile(userId);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (profile) => state = AsyncValue.data(profile),
     );
   }
@@ -44,7 +46,8 @@ class ProfileController extends _$ProfileController {
     final result = await repository.updateProfile(userId, updates);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (profile) => state = AsyncValue.data(profile),
     );
   }
@@ -69,7 +72,8 @@ class ProgressController extends _$ProgressController {
     final result = await repository.getProgress(userId);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (progress) => state = AsyncValue.data(progress),
     );
   }
@@ -94,7 +98,8 @@ class StreakController extends _$StreakController {
     final result = await repository.getStreak(userId);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (streak) => state = AsyncValue.data(streak),
     );
   }

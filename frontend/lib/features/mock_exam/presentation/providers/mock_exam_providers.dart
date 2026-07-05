@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../controllers/mock_exam_controller.dart';
-import '../../domain/entities/mock_exam.dart';
+import '../../../../shared/models/exam.dart';
 
 part 'mock_exam_providers.g.dart';
 
@@ -44,9 +44,6 @@ class ActiveExam extends _$ActiveExam {
       attemptId: attemptId,
       answers: answers,
     );
-    return result.fold(
-      (failure) => null,
-      (examResult) => examResult,
-    );
+    return result.fold((failure) => null, (examResult) => examResult);
   }
 }

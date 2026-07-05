@@ -17,7 +17,7 @@ class BrandTokens {
   static const Color blue200 = Color(0xFFBFDBFE);
   static const Color blue300 = Color(0xFF93C5FD);
   static const Color blue400 = Color(0xFF60A5FA);
-  // blue500 = AppColors.primary500
+  static const Color blue500 = AppColors.primary500;
   static const Color blue600 = Color(0xFF2563EB);
   static const Color blue700 = Color(0xFF1D4ED8);
   static const Color blue800 = Color(0xFF1E40AF);
@@ -29,7 +29,7 @@ class BrandTokens {
   static const Color purple200 = Color(0xFFDDD6FE);
   static const Color purple300 = Color(0xFFC4B5FD);
   static const Color purple400 = Color(0xFFA78BFA);
-  // purple500 = AppColors.secondary
+  static const Color purple500 = AppColors.secondary;
   static const Color purple600 = Color(0xFF7C3AED);
   static const Color purple700 = Color(0xFF6D28D9);
   static const Color purple800 = Color(0xFF5B21B6);
@@ -41,7 +41,7 @@ class BrandTokens {
   static const Color teal200 = Color(0xFF99F6E4);
   static const Color teal300 = Color(0xFF5EEAD4);
   static const Color teal400 = Color(0xFF2DD4BF);
-  // teal500 = AppColors.tertiary
+  static const Color teal500 = AppColors.tertiary;
   static const Color teal600 = Color(0xFF0D9488);
   static const Color teal700 = Color(0xFF0F766E);
   static const Color teal800 = Color(0xFF115E59);
@@ -53,7 +53,7 @@ class BrandTokens {
   static const Color green200 = Color(0xFFBBF7D0);
   static const Color green300 = Color(0xFF86EFAC);
   static const Color green400 = Color(0xFF4ADE80);
-  // green500 = AppColors.success
+  static const Color green500 = AppColors.success;
   static const Color green600 = Color(0xFF16A34A);
   static const Color green700 = Color(0xFF15803D);
   static const Color green800 = Color(0xFF166534);
@@ -65,7 +65,7 @@ class BrandTokens {
   static const Color orange200 = Color(0xFFFED7AA);
   static const Color orange300 = Color(0xFFFDBA74);
   static const Color orange400 = Color(0xFFFB923C);
-  // orange500 = AppColors.warning
+  static const Color orange500 = AppColors.warning;
   static const Color orange600 = Color(0xFFEA580C);
   static const Color orange700 = Color(0xFFC2410C);
   static const Color orange800 = Color(0xFF9A3412);

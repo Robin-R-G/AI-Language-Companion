@@ -26,14 +26,14 @@ final mockExamRepositoryProvider =
 // ignore: unused_element
 typedef MockExamRepositoryRef = AutoDisposeProviderRef<MockExamRepository>;
 String _$mockExamControllerHash() =>
-    r'14919c01fd299217798ec80445171cf1d5dceb09';
+    r'f7260dc82e287e6e10d694fdbbf8a3bc2b9912d2';
 
 /// See also [MockExamController].
 @ProviderFor(MockExamController)
 final mockExamControllerProvider =
     AutoDisposeNotifierProvider<
       MockExamController,
-      AsyncValue<List<Map<String, dynamic>>>
+      AsyncValue<List<MockExam>>
     >.internal(
       MockExamController.new,
       name: r'mockExamControllerProvider',
@@ -44,8 +44,7 @@ final mockExamControllerProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$MockExamController =
-    AutoDisposeNotifier<AsyncValue<List<Map<String, dynamic>>>>;
+typedef _$MockExamController = AutoDisposeNotifier<AsyncValue<List<MockExam>>>;
 String _$examSessionControllerHash() =>
     r'894f839db18f54d29a25a0941ed634038ca66989';
 

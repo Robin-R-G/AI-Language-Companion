@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/datasources/mock_exam_remote_datasource.dart';
 import '../../data/repositories/mock_exam_repository_impl.dart';
 import '../../../../shared/models/exam.dart';
+import '../../domain/repositories/mock_exam_repository.dart';
 
 part 'mock_exam_controller.g.dart';
 
@@ -15,7 +16,7 @@ MockExamRepository mockExamRepository(MockExamRepositoryRef ref) {
 @riverpod
 class MockExamController extends _$MockExamController {
   @override
-  AsyncValue<List<Map<String, dynamic>>> build() {
+  AsyncValue<List<MockExam>> build() {
     return const AsyncValue.data([]);
   }
 
@@ -25,7 +26,8 @@ class MockExamController extends _$MockExamController {
     final result = await repository.getExams(examType: examType);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (exams) => state = AsyncValue.data(exams),
     );
   }
@@ -42,7 +44,8 @@ class MockExamController extends _$MockExamController {
     final result = await repository.getHistory(userId);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (history) => state = AsyncValue.data(history),
     );
   }
@@ -63,7 +66,8 @@ class ExamSessionController extends _$ExamSessionController {
     final result = await repository.startExam(examId);
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) =>
+          state = AsyncValue.error(failure.message, StackTrace.current),
       (exam) {
         _attemptId = exam.id;
         state = AsyncValue.data(exam);
@@ -80,9 +84,6 @@ class ExamSessionController extends _$ExamSessionController {
       answers: answers,
     );
 
-    return result.fold(
-      (failure) => null,
-      (examResult) => examResult,
-    );
+    return result.fold((failure) => null, (examResult) => examResult);
   }
 }

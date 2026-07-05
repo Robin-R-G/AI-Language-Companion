@@ -8,10 +8,10 @@ class MockExamRepositoryImpl implements MockExamRepository {
   final MockExamRemoteDataSource _remoteDataSource;
 
   MockExamRepositoryImpl({MockExamRemoteDataSource? remoteDataSource})
-      : _remoteDataSource = remoteDataSource ?? MockExamRemoteDataSourceImpl();
+    : _remoteDataSource = remoteDataSource ?? MockExamRemoteDataSourceImpl();
 
   @override
-  Future<Result<List<Map<String, dynamic>>>> getExams({String? examType}) {
+  Future<Result<List<MockExam>>> getExams({String? examType}) {
     return _remoteDataSource.getExams(examType: examType);
   }
 
@@ -25,14 +25,11 @@ class MockExamRepositoryImpl implements MockExamRepository {
     required String attemptId,
     required List<Map<String, dynamic>> answers,
   }) {
-    return _remoteDataSource.submitExam(
-      attemptId: attemptId,
-      answers: answers,
-    );
+    return _remoteDataSource.submitExam(attemptId: attemptId, answers: answers);
   }
 
   @override
-  Future<Result<List<Map<String, dynamic>>>> getHistory(String userId) {
+  Future<Result<List<MockExam>>> getHistory(String userId) {
     return _remoteDataSource.getHistory(userId);
   }
 }

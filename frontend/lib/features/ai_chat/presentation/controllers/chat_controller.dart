@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/datasources/chat_remote_datasource.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../../../../shared/models/chat_message.dart';
+import '../../domain/repositories/chat_repository.dart';
 
 part 'chat_controller.g.dart';
 
