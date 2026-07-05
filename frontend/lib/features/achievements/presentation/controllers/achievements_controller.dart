@@ -1,7 +1,6 @@
 // lib/features/achievements/presentation/controllers/achievements_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/errors/failure.dart';
 import '../../../../shared/models/gamification.dart';
 
 part 'achievements_controller.g.dart';
@@ -29,7 +28,7 @@ class AchievementsController extends _$AchievementsController {
           .order('unlocked_at', ascending: false);
 
       final achievements = (response as List)
-          .map((json) => Achievement.fromJson(json))
+          .map((json) => Achievement.fromJson(json as Map<String, dynamic>))
           .toList();
 
       state = AsyncValue.data(achievements);

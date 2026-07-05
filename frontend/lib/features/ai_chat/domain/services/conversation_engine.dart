@@ -1,13 +1,12 @@
 // lib/features/ai_chat/domain/services/conversation_engine.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/ai_router_service.dart';
 
 part 'conversation_engine.g.dart';
 
 class ConversationMessage {
   final String id;
-  final String role; // 'user' or 'assistant'
+  final String role;
   final String content;
   final DateTime timestamp;
   final Map<String, dynamic>? metadata;
@@ -24,7 +23,7 @@ class ConversationMessage {
 class ConversationSession {
   final String id;
   final String userId;
-  final String mode; // 'conversation', 'tutoring', 'exam_prep'
+  final String mode;
   final List<ConversationMessage> messages;
   final DateTime startedAt;
   final Map<String, dynamic>? context;
@@ -46,9 +45,6 @@ class ConversationSession {
 @riverpod
 class ConversationEngine extends _$ConversationEngine {
   ConversationSession? _currentSession;
-  final AIRouterService _aiRouter;
-
-  ConversationEngine(this._aiRouter);
 
   @override
   ConversationSession? build() {
@@ -85,14 +81,15 @@ class ConversationEngine extends _$ConversationEngine {
           .order('created_at', ascending: false)
           .limit(50);
 
-      if (response != null && response.isNotEmpty) {
+      if (response.isNotEmpty) {
         final messages = (response as List).map((msg) {
+          final msgMap = msg as Map<String, dynamic>;
           return ConversationMessage(
-            id: msg['id'],
-            role: msg['role'],
-            content: msg['content'],
-            timestamp: DateTime.parse(msg['created_at']),
-            metadata: msg['metadata'],
+            id: msgMap['id'] as String,
+            role: msgMap['role'] as String,
+            content: msgMap['content'] as String,
+            timestamp: DateTime.parse(msgMap['created_at'] as String),
+            metadata: msgMap['metadata'] as Map<String, dynamic>?,
           );
         }).toList();
 
@@ -131,20 +128,26 @@ class ConversationEngine extends _$ConversationEngine {
     // Save to Supabase
     await _saveMessage(userMessage, conversationId);
 
-    // Get AI response
-    final response = await _aiRouter.chat(
-      userId: _currentSession!.userId,
-      message: content,
-      conversationId: conversationId ?? _currentSession!.id,
-      context: _currentSession!.context,
+    // Get AI response via edge function
+    final response = await Supabase.instance.client.functions.invoke(
+      'agent-orchestrate',
+      body: {
+        'agent_type': 'vocabulary',
+        'input': {
+          'message': content,
+          'conversation_id': conversationId ?? _currentSession!.id,
+        },
+        'context': _currentSession!.context ?? {},
+      },
     );
 
+    final responseData = (response.data as Map<String, dynamic>?) ?? {};
     final assistantMessage = ConversationMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       role: 'assistant',
-      content: response['message'] ?? response['content'] ?? 'I understand.',
+      content: (responseData['message'] as String?) ?? (responseData['content'] as String?) ?? 'I understand.',
       timestamp: DateTime.now(),
-      metadata: response['metadata'],
+      metadata: responseData['metadata'] as Map<String, dynamic>?,
     );
 
     _currentSession!.messages.add(assistantMessage);

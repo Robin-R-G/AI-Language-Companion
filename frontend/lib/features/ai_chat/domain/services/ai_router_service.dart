@@ -54,7 +54,8 @@ class AIRouterService {
       );
 
       if (response.statusCode == 200) {
-        return response.data['data'] ?? response.data;
+        final responseData = response.data as Map<String, dynamic>;
+        return (responseData['data'] as Map<String, dynamic>?) ?? responseData;
       } else {
         throw Exception('AI routing failed: ${response.statusCode}');
       }

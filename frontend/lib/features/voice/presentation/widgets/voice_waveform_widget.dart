@@ -1,7 +1,7 @@
 // lib/features/voice/presentation/widgets/voice_waveform_widget.dart
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../../../shared/theme/app_theme.dart';
+import 'package:ai_language_coach/shared/theme/app_theme.dart';
 
 class VoiceWaveformWidget extends AnimatedWidget {
   final bool isActive;

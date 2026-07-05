@@ -1,0 +1,1608 @@
+openapi: 3.1.0
+info:
+  title: AI Language Coach API
+  description: |
+    Complete API specification for the AI Language Coach platform.
+    An AI-powered, personalized language-learning platform.
+  version: 1.0.0
+  contact:
+    name: AI Language Coach Team
+    email: support@ailanguagecoach.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.ailanguagecoach.com/v1
+    description: Production
+  - url: https://staging-api.ailanguagecoach.com/v1
+    description: Staging
+  - url: http://localhost:8080/api/v1
+    description: Development
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: object
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            total_pages:
+              type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum:
+                - UNAUTHORIZED
+                - AUTH_FAILED
+                - INVALID_REQUEST
+                - VALIDATION_ERROR
+                - NOT_FOUND
+                - CONFLICT
+                - FORBIDDEN
+                - RATE_LIMIT_HIT
+                - PAYMENT_REQUIRED
+                - SERVER_ERROR
+                - SERVICE_UNAVAILABLE
+                - AI_TIMEOUT
+                - AI_PROVIDER_ERROR
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: string
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        auth_user_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        native_language:
+          type: string
+        target_language:
+          type: string
+        proficiency_level:
+          type: string
+          enum: [A1, A2, B1, B2, C1, C2]
+        target_exam:
+          type: string
+        timezone:
+          type: string
+        onboarding_completed:
+          type: boolean
+        xp:
+          type: integer
+        level:
+          type: integer
+        streak:
+          type: integer
+
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        language:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: string
+        estimated_minutes:
+          type: integer
+        xp_reward:
+          type: integer
+
+    VocabularyWord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        word:
+          type: string
+        meaning:
+          type: string
+        pronunciation:
+          type: string
+        examples:
+          type: array
+          items:
+            type: string
+        cefr_level:
+          type: string
+
+    WritingEvaluation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        estimated_band:
+          type: string
+        grammar_score:
+          type: integer
+        vocabulary_score:
+          type: integer
+        organization_score:
+          type: integer
+        clarity_score:
+          type: integer
+        strengths:
+          type: array
+          items:
+            type: string
+        mistakes:
+          type: array
+          items:
+            type: string
+        improved_version:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    VoiceSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        room_id:
+          type: string
+        token:
+          type: string
+        language:
+          type: string
+
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        achievement_name:
+          type: string
+        badge:
+          type: string
+        xp_reward:
+          type: integer
+        unlocked_at:
+          type: string
+          format: date-time
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        plan:
+          type: string
+          enum: [free, pro, premium]
+        status:
+          type: string
+          enum: [active, cancelled, expired]
+        features:
+          type: array
+          items:
+            type: string
+
+paths:
+  # ─── Authentication ────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            type: object
+                          session:
+                            type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout current session
+      responses:
+        '200':
+          description: Logged out successfully
+
+  /auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request password reset email
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Reset email sent (if email exists)
+
+  /auth/reset-password:
+    post:
+      tags: [Authentication]
+      summary: Reset password with token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [access_token, new_password]
+              properties:
+                access_token:
+                  type: string
+                refresh_token:
+                  type: string
+                new_password:
+                  type: string
+                  minLength: 8
+      responses:
+        '200':
+          description: Password reset successful
+
+  /auth/verify-email:
+    post:
+      tags: [Authentication]
+      summary: Verify email address
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                type:
+                  type: string
+                  enum: [signup, magiclink, recovery]
+      responses:
+        '200':
+          description: Email verified
+
+  # ─── User ──────────────────────────────────────────────────────────────────
+  /users/me:
+    get:
+      tags: [User]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Profile retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserProfile'
+    put:
+      tags: [User]
+      summary: Update user profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                native_language:
+                  type: string
+                target_language:
+                  type: string
+                proficiency_level:
+                  type: string
+                  enum: [A1, A2, B1, B2, C1, C2]
+                target_exam:
+                  type: string
+                timezone:
+                  type: string
+                onboarding_completed:
+                  type: boolean
+      responses:
+        '200':
+          description: Profile updated
+    delete:
+      tags: [User]
+      summary: Delete user account
+      responses:
+        '204':
+          description: Account deleted
+
+  /users/avatar:
+    post:
+      tags: [User]
+      summary: Upload user avatar
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [avatar]
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Avatar uploaded
+
+  # ─── Lessons ───────────────────────────────────────────────────────────────
+  /lessons:
+    get:
+      tags: [Learning]
+      summary: List all lessons
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+        - name: language
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lessons retrieved
+
+  /lessons/{id}:
+    get:
+      tags: [Learning]
+      summary: Get lesson by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lesson retrieved
+        '404':
+          description: Lesson not found
+
+  /lessons/start:
+    post:
+      tags: [Learning]
+      summary: Start a lesson
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lesson_id]
+              properties:
+                lesson_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Lesson started
+
+  /lessons/complete:
+    post:
+      tags: [Learning]
+      summary: Complete a lesson
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lesson_id, score]
+              properties:
+                lesson_id:
+                  type: string
+                  format: uuid
+                score:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                mistakes:
+                  type: integer
+      responses:
+        '200':
+          description: Lesson completed
+
+  # ─── Vocabulary ────────────────────────────────────────────────────────────
+  /vocabulary:
+    get:
+      tags: [Vocabulary]
+      summary: List vocabulary words
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: cefr_level
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vocabulary retrieved
+
+  /vocabulary/review:
+    post:
+      tags: [Vocabulary]
+      summary: Review vocabulary (SRS update)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [word_id, mastery_score]
+              properties:
+                word_id:
+                  type: string
+                  format: uuid
+                mastery_score:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '200':
+          description: Review recorded
+
+  /vocabulary/mastered:
+    post:
+      tags: [Vocabulary]
+      summary: Mark word as mastered
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [word_id]
+              properties:
+                word_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Word mastered
+
+  /vocabulary/recommendations:
+    get:
+      tags: [Vocabulary]
+      summary: Get vocabulary recommendations
+      responses:
+        '200':
+          description: Recommendations retrieved
+
+  # ─── Grammar ───────────────────────────────────────────────────────────────
+  /grammar:
+    get:
+      tags: [Grammar]
+      summary: List grammar topics
+      responses:
+        '200':
+          description: Topics retrieved
+
+  /grammar/{topic}:
+    get:
+      tags: [Grammar]
+      summary: Get grammar topic content
+      parameters:
+        - name: topic
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Topic content retrieved
+
+  /grammar/submit:
+    post:
+      tags: [Grammar]
+      summary: Submit grammar exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type: string
+                exercise_id:
+                  type: string
+                answer:
+                  type: string
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Grammar evaluated
+
+  # ─── Reading ───────────────────────────────────────────────────────────────
+  /reading:
+    get:
+      tags: [Reading]
+      summary: List reading exercises
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reading exercises retrieved
+
+  /reading/{id}:
+    get:
+      tags: [Reading]
+      summary: Get reading passage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reading passage retrieved
+
+  /reading/submit:
+    post:
+      tags: [Reading]
+      summary: Submit reading answers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passage_id, answers]
+              properties:
+                passage_id:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Answers evaluated
+
+  # ─── Listening ─────────────────────────────────────────────────────────────
+  /listening:
+    get:
+      tags: [Listening]
+      summary: List listening exercises
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Listening exercises retrieved
+
+  /listening/audio/{id}:
+    get:
+      tags: [Listening]
+      summary: Get audio content
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audio content retrieved
+
+  /listening/submit:
+    post:
+      tags: [Listening]
+      summary: Submit listening answers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [exercise_id, answers]
+              properties:
+                exercise_id:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Answers evaluated
+
+  # ─── Writing ───────────────────────────────────────────────────────────────
+  /writing/evaluate:
+    post:
+      tags: [Writing]
+      summary: Evaluate writing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [essay_text]
+              properties:
+                essay_text:
+                  type: string
+                prompt_id:
+                  type: string
+                exam_type:
+                  type: string
+      responses:
+        '200':
+          description: Writing evaluated
+
+  /writing/history:
+    get:
+      tags: [Writing]
+      summary: Get writing evaluation history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: History retrieved
+
+  /writing/feedback/{id}:
+    get:
+      tags: [Writing]
+      summary: Get specific writing feedback
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Feedback retrieved
+
+  # ─── Speaking ──────────────────────────────────────────────────────────────
+  /speaking/start:
+    post:
+      tags: [Speaking]
+      summary: Start speaking session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type: string
+                mode:
+                  type: string
+      responses:
+        '201':
+          description: Session started
+
+  /speaking/stop:
+    post:
+      tags: [Speaking]
+      summary: Stop speaking session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id:
+                  type: string
+                transcript:
+                  type: string
+      responses:
+        '200':
+          description: Session stopped
+
+  /speaking/evaluate:
+    post:
+      tags: [Speaking]
+      summary: Evaluate speaking performance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transcript]
+              properties:
+                session_id:
+                  type: string
+                transcript:
+                  type: string
+      responses:
+        '200':
+          description: Performance evaluated
+
+  /speaking/history:
+    get:
+      tags: [Speaking]
+      summary: Get speaking session history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: History retrieved
+
+  # ─── AI Tutor ──────────────────────────────────────────────────────────────
+  /ai/chat:
+    post:
+      tags: [AI Tutor]
+      summary: Chat with AI tutor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                conversation_id:
+                  type: string
+      responses:
+        '200':
+          description: AI response generated
+
+  /ai/lesson:
+    post:
+      tags: [AI Tutor]
+      summary: Generate AI lesson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type: string
+                difficulty:
+                  type: string
+      responses:
+        '200':
+          description: Lesson generated
+
+  /ai/grammar:
+    post:
+      tags: [AI Tutor]
+      summary: AI grammar check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: Grammar checked
+
+  /ai/vocabulary:
+    post:
+      tags: [AI Tutor]
+      summary: AI vocabulary help
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [word]
+              properties:
+                word:
+                  type: string
+                context:
+                  type: string
+      responses:
+        '200':
+          description: Vocabulary explained
+
+  /ai/translation:
+    post:
+      tags: [AI Tutor]
+      summary: AI translation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                target_language:
+                  type: string
+      responses:
+        '200':
+          description: Translation generated
+
+  /ai/pronunciation:
+    post:
+      tags: [AI Tutor]
+      summary: AI pronunciation help
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [word]
+              properties:
+                word:
+                  type: string
+                transcript:
+                  type: string
+      responses:
+        '200':
+          description: Pronunciation guidance
+
+  # ─── Voice ─────────────────────────────────────────────────────────────────
+  /voice/session:
+    post:
+      tags: [Voice]
+      summary: Create voice session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                language:
+                  type: string
+                topic:
+                  type: string
+      responses:
+        '200':
+          description: Voice session created
+
+  /voice/end:
+    post:
+      tags: [Voice]
+      summary: End voice session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id:
+                  type: string
+                duration:
+                  type: integer
+                transcript:
+                  type: string
+      responses:
+        '200':
+          description: Voice session ended
+
+  # ─── Exams ─────────────────────────────────────────────────────────────────
+  /exam/{exam}/practice:
+    get:
+      tags: [Exam]
+      summary: Get practice questions
+      parameters:
+        - name: exam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [ielts, toefl, pte, oet, celpip, cambridge, goethe, testdaf, delf, dalf, dele, siele, jlpt, topik, hsk, duolingo]
+        - name: section
+          in: query
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Practice questions generated
+
+  /exam/{exam}/mock:
+    post:
+      tags: [Exam]
+      summary: Start mock exam
+      parameters:
+        - name: exam
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                section:
+                  type: string
+      responses:
+        '200':
+          description: Mock exam generated
+
+  /exam/{exam}/submit:
+    post:
+      tags: [Exam]
+      summary: Submit exam answers
+      parameters:
+        - name: exam
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                exam_id:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: object
+                section:
+                  type: string
+      responses:
+        '200':
+          description: Answers evaluated
+
+  /exam/{exam}/results:
+    get:
+      tags: [Exam]
+      summary: Get exam results
+      parameters:
+        - name: exam
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Results retrieved
+
+  /exam/{exam}/analytics:
+    get:
+      tags: [Exam]
+      summary: Get exam analytics
+      parameters:
+        - name: exam
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Analytics retrieved
+
+  # ─── Assessment ────────────────────────────────────────────────────────────
+  /assessment/start:
+    post:
+      tags: [Assessment]
+      summary: Start assessment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                skills:
+                  type: string
+      responses:
+        '201':
+          description: Assessment started
+
+  /assessment/submit:
+    post:
+      tags: [Assessment]
+      summary: Submit assessment answers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                assessment_id:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Assessment evaluated
+
+  /assessment/results:
+    get:
+      tags: [Assessment]
+      summary: Get latest assessment results
+      responses:
+        '200':
+          description: Results retrieved
+
+  /assessment/history:
+    get:
+      tags: [Assessment]
+      summary: Get assessment history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: History retrieved
+
+  # ─── Analytics ─────────────────────────────────────────────────────────────
+  /analytics/dashboard:
+    get:
+      tags: [Analytics]
+      summary: Get dashboard data
+      responses:
+        '200':
+          description: Dashboard data retrieved
+
+  /analytics/progress:
+    get:
+      tags: [Analytics]
+      summary: Get detailed progress
+      responses:
+        '200':
+          description: Progress data retrieved
+
+  /analytics/streak:
+    get:
+      tags: [Analytics]
+      summary: Get streak data
+      responses:
+        '200':
+          description: Streak data retrieved
+
+  /analytics/recommendations:
+    get:
+      tags: [Analytics]
+      summary: Get AI recommendations
+      responses:
+        '200':
+          description: Recommendations generated
+
+  # ─── Gamification ──────────────────────────────────────────────────────────
+  /xp:
+    get:
+      tags: [Gamification]
+      summary: Get XP and level info
+      responses:
+        '200':
+          description: XP data retrieved
+
+  /badges:
+    get:
+      tags: [Gamification]
+      summary: Get earned badges
+      responses:
+        '200':
+          description: Badges retrieved
+
+  /achievements:
+    get:
+      tags: [Gamification]
+      summary: Get achievements
+      responses:
+        '200':
+          description: Achievements retrieved
+
+  /leaderboard:
+    get:
+      tags: [Gamification]
+      summary: Get leaderboard
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [weekly, monthly, all_time]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Leaderboard retrieved
+
+  # ─── Notifications ─────────────────────────────────────────────────────────
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: List notifications
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Notifications retrieved
+
+  /notifications/read:
+    put:
+      tags: [Notifications]
+      summary: Mark notifications as read
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notification_ids:
+                  type: array
+                  items:
+                    type: string
+                mark_all:
+                  type: boolean
+      responses:
+        '200':
+          description: Notifications updated
+
+  /notifications/{id}:
+    delete:
+      tags: [Notifications]
+      summary: Delete notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Notification deleted
+
+  # ─── Subscription ──────────────────────────────────────────────────────────
+  /subscription:
+    get:
+      tags: [Subscription]
+      summary: Get current subscription
+      responses:
+        '200':
+          description: Subscription retrieved
+
+  /subscription/checkout:
+    post:
+      tags: [Subscription]
+      summary: Create checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan]
+              properties:
+                plan:
+                  type: string
+                  enum: [free, pro, premium]
+      responses:
+        '200':
+          description: Checkout session created
+
+  /subscription/webhook:
+    post:
+      tags: [Subscription]
+      summary: RevenueCat webhook
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+
+  /subscription/cancel:
+    post:
+      tags: [Subscription]
+      summary: Cancel subscription
+      responses:
+        '200':
+          description: Subscription cancelled
+
+  # ─── Files ─────────────────────────────────────────────────────────────────
+  /files/upload:
+    post:
+      tags: [Files]
+      summary: Upload file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                folder:
+                  type: string
+      responses:
+        '200':
+          description: File uploaded
+
+  /files/{id}:
+    get:
+      tags: [Files]
+      summary: Download file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File downloaded
+    delete:
+      tags: [Files]
+      summary: Delete file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: File deleted
+
+  # ─── Admin ─────────────────────────────────────────────────────────────────
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List all users
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Users retrieved
+
+  /admin/content:
+    get:
+      tags: [Admin]
+      summary: List content
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [lessons, vocabulary]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Content retrieved
+
+  /admin/reports:
+    get:
+      tags: [Admin]
+      summary: Get reports
+      responses:
+        '200':
+          description: Reports generated
+
+  /admin/analytics:
+    get:
+      tags: [Admin]
+      summary: Get analytics
+      responses:
+        '200':
+          description: Analytics retrieved
+
+  /admin/logs:
+    get:
+      tags: [Admin]
+      summary: Get system logs
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Logs retrieved
+
+tags:
+  - name: Authentication
+    description: User registration, login, and session management
+  - name: User
+    description: User profile management
+  - name: Learning
+    description: Lessons and learning progress
+  - name: Vocabulary
+    description: Vocabulary learning and SRS
+  - name: Grammar
+    description: Grammar exercises and checking
+  - name: Reading
+    description: Reading comprehension exercises
+  - name: Listening
+    description: Listening comprehension exercises
+  - name: Writing
+    description: Writing evaluation and feedback
+  - name: Speaking
+    description: Speaking practice and evaluation
+  - name: AI Tutor
+    description: AI-powered tutoring features
+  - name: Voice
+    description: Voice session management
+  - name: Exam
+    description: Exam preparation and mock tests
+  - name: Assessment
+    description: Proficiency assessments
+  - name: Analytics
+    description: Learning analytics and progress tracking
+  - name: Gamification
+    description: XP, badges, achievements, and leaderboards
+  - name: Notifications
+    description: User notifications
+  - name: Subscription
+    description: Subscription management
+  - name: Files
+    description: File upload and management
+  - name: Admin
+    description: Administrative endpoints

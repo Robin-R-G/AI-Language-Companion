@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/providers/repository_providers.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/achievement.dart';
 
 part 'achievement_providers.g.dart';
@@ -11,27 +11,26 @@ class AchievementsList extends _$AchievementsList {
 
   Future<void> loadAchievements() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(achievementRepositoryProvider);
-    final result = await repo.getAchievements();
-    result.fold(
-      (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (achievements) => state = AsyncValue.data(achievements),
-    );
-  }
-}
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) {
+      state = const AsyncValue.error('Not authenticated', StackTrace.empty);
+      return;
+    }
 
-@riverpod
-class AchievementsProgress extends _$AchievementsProgress {
-  @override
-  AsyncValue<List<AchievementProgress>> build() => const AsyncValue.data([]);
+    try {
+      final response = await Supabase.instance.client
+          .from('achievements')
+          .select()
+          .eq('user_id', userId)
+          .order('unlocked_at', ascending: false);
 
-  Future<void> loadProgress() async {
-    state = const AsyncValue.loading();
-    final repo = ref.read(achievementRepositoryProvider);
-    final result = await repo.getProgress();
-    result.fold(
-      (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (progress) => state = AsyncValue.data(progress),
-    );
+      final achievements = (response as List)
+          .map((json) => Achievement.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      state = AsyncValue.data(achievements);
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString(), st);
+    }
   }
 }

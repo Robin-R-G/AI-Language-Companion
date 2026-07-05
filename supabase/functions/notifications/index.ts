@@ -1,7 +1,17 @@
 // supabase/functions/notifications/index.ts
+// Section 22: Notification APIs
+// GET /notifications, PUT /notifications/read, DELETE /notifications/{id}
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { validateRequest } from '../shared/auth.ts'
-import { successResponse, badRequest, serverError } from '../shared/errors.ts'
+import {
+  successResponse,
+  noContentResponse,
+  badRequest,
+  validationError,
+  notFound,
+  serverError,
+} from '../shared/errors.ts'
+import { validateRequired } from '../shared/validator.ts'
 import { corsHeaders } from '../shared/cors.ts'
 
 serve(async (req: Request) => {
@@ -13,53 +23,107 @@ serve(async (req: Request) => {
   if (authResult.error) return authResult.error
   if (authResult.isPreflight) return authResult.response!
 
-  const url = new URL(req.url)
+  try {
+    const supabase = authResult.supabaseClient
+    const userId = authResult.user.id
+    const url = new URL(req.url)
+    const pathParts = url.pathname.split('/').filter(Boolean)
+    const lastPart = pathParts[pathParts.length - 1]
 
-  if (req.method === 'GET') {
-    try {
-      const supabase = authResult.supabaseClient
-      const userId = authResult.user.id
+    // GET /notifications - List notifications
+    if (req.method === 'GET' && lastPart === 'notifications') {
+      const page = parseInt(url.searchParams.get('page') || '1')
+      const limit = parseInt(url.searchParams.get('limit') || '50')
+      const unread_only = url.searchParams.get('unread_only') === 'true'
 
-      const { data: notifications } = await supabase
+      let query = supabase
         .from('notifications')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('user_id', userId)
-        .order('sent_at', { ascending: false })
-        .limit(50)
 
-      return successResponse({ notifications: notifications || [] }, 'Notifications loaded')
-    } catch (error) {
-      return serverError(error.message || 'Internal server error')
-    }
-  }
-
-  if (req.method === 'PUT') {
-    try {
-      const supabase = authResult.supabaseClient
-      const userId = authResult.user.id
-      const body = await req.json()
-
-      if (!body.notification_id) {
-        return badRequest('notification_id is required')
+      if (unread_only) {
+        query = query.eq('is_read', false)
       }
 
-      const updateData: any = {}
-      if (body.read_at) updateData.read_at = body.read_at
-      if (body.dismissed_at) updateData.dismissed_at = body.dismissed_at
+      const { data: notifications, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range((page - 1) * limit, page * limit - 1)
+
+      if (error) {
+        console.error('Failed to fetch notifications:', error)
+        return serverError('Failed to fetch notifications')
+      }
+
+      // Count unread
+      const { count: unreadCount } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false)
+
+      const total = count || 0
+      return successResponse({
+        notifications: notifications || [],
+        unread_count: unreadCount || 0,
+        pagination: {
+          page,
+          limit,
+          total,
+          total_pages: Math.ceil(total / limit),
+        },
+      }, 'Notifications retrieved.')
+    }
+
+    // PUT /notifications/read - Mark notifications as read
+    if (req.method === 'PUT' && lastPart === 'read') {
+      const body = await req.json()
+      const { notification_ids, mark_all } = body
+
+      let query = supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', userId)
+
+      if (mark_all) {
+        // Mark all as read
+        query = query.eq('is_read', false)
+      } else if (notification_ids && Array.isArray(notification_ids)) {
+        query = query.in('id', notification_ids)
+      } else {
+        return validationError('Provide notification_ids array or mark_all: true')
+      }
+
+      const { error } = await query
+
+      if (error) {
+        console.error('Failed to mark notifications as read:', error)
+        return serverError('Failed to update notifications')
+      }
+
+      return successResponse(null, 'Notifications marked as read.')
+    }
+
+    // DELETE /notifications/{id} - Delete notification
+    if (req.method === 'DELETE' && lastPart !== 'notifications' && lastPart !== 'read') {
+      const notificationId = lastPart
 
       const { error } = await supabase
         .from('notifications')
-        .update(updateData)
-        .eq('id', body.notification_id)
+        .delete()
+        .eq('id', notificationId)
         .eq('user_id', userId)
 
-      if (error) return badRequest(error.message)
+      if (error) {
+        console.error('Failed to delete notification:', error)
+        return serverError('Failed to delete notification')
+      }
 
-      return successResponse(null, 'Notification updated')
-    } catch (error) {
-      return serverError(error.message || 'Internal server error')
+      return noContentResponse()
     }
-  }
 
-  return badRequest('Invalid method')
+    return badRequest('Method not allowed')
+  } catch (error) {
+    console.error('Notifications error:', error)
+    return serverError(error.message || 'Internal server error')
+  }
 })

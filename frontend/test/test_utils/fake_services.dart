@@ -7,7 +7,9 @@ import 'package:ai_language_coach/features/subscription/domain/entities/subscrip
 import 'package:ai_language_coach/features/subscription/domain/repositories/subscription_repository.dart';
 import 'package:ai_language_coach/core/services/connectivity_service.dart';
 
-// ─── Fake Auth Repository ────────────────�class FakeAuthRepository implements AuthRepository {
+// ─── Fake Auth Repository ────────────────
+
+class FakeAuthRepository implements AuthRepository {
   final StreamController<bool> _authController =
       StreamController<bool>.broadcast();
   AuthUser? _user;
@@ -104,10 +106,6 @@ import 'package:ai_language_coach/core/services/connectivity_service.dart';
   }
 
   @override
-  Stream<bool> get authStateChanges => _authController.stream;
-
-  void dispose() => _authController.close();
-}e
   Stream<bool> get authStateChanges => _authController.stream;
 
   void dispose() => _authController.close();

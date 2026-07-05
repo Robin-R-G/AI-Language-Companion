@@ -75,19 +75,19 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        final data = response.data['data'];
+        final data = response.data['data'] as Map<String, dynamic>;
         return Result.success(ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           conversationId: conversationId,
           role: 'assistant',
-          content: data['reply'] ?? '',
-          tokenCount: data['tokens_used'] ?? 0,
-          grammarFeedback: data['grammar_feedback'],
-          translation: data['translation'],
+          content: (data['reply'] as String?) ?? '',
+          tokenCount: (data['tokens_used'] as int?) ?? 0,
+          grammarFeedback: data['grammar_feedback'] as Map<String, dynamic>?,
+          translation: data['translation'] as String?,
         ));
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Send failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Send failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Send failed: ${e.message}'));
     } catch (e) {
@@ -106,7 +106,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .limit(100);
 
       final messages = (response as List)
-          .map((json) => ChatMessage.fromJson(json))
+          .map((json) => ChatMessage.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return Result.success(messages);

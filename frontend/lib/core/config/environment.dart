@@ -66,9 +66,9 @@ class Environment {
   static String _getDefaultValue(String key) {
     switch (key) {
       case 'SUPABASE_URL':
-        return 'https://tuashfxoiwyyglmrchjn.supabase.co';
+        return 'your-supabase-url';
       case 'SUPABASE_ANON_KEY':
-        return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1YXNoZnhvaXd5eWdsbXJjaGpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNTY0NjEsImV4cCI6MjA5ODczMjQ2MX0.VGPNy7pTrdGe0su2rBF4jCws715AzFVgcAoUjPzOByI';
+        return 'your-supabase-anon-key';
       case 'REVENUECAT_API_KEY':
         return 'your-revenuecat-api-key';
       case 'FIREBASE_PROJECT_ID':
