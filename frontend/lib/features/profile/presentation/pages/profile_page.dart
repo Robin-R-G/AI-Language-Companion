@@ -5,8 +5,8 @@ import '../../../../app/router.dart';
 import '../../../../app/app.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/storage/local_storage.dart';
+import '../controllers/profile_controller.dart';
 
-/// User profile and settings page.
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
@@ -16,15 +16,27 @@ class ProfilePage extends ConsumerStatefulWidget {
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(profileControllerProvider.notifier).loadProfile();
+      ref.read(progressControllerProvider.notifier).loadProgress();
+      ref.read(streakControllerProvider.notifier).loadStreak();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profileState = ref.watch(profileControllerProvider);
+    final progressState = ref.watch(progressControllerProvider);
+    final streakState = ref.watch(streakControllerProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
           IconButton(
-            onPressed: () {
-              // TODO: Navigate to settings
-            },
+            onPressed: () {},
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
@@ -33,17 +45,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         padding: const EdgeInsets.all(AppSpacing.base),
         child: Column(
           children: [
-            // Profile Header
-            _buildProfileHeader(),
-
+            _buildProfileHeader(profileState),
             const SizedBox(height: AppSpacing.base),
-
-            // Stats Cards
-            _buildStatsCards(),
-
+            _buildStatsCards(progressState, streakState),
             const SizedBox(height: AppSpacing.base),
-
-            // Settings List
             _buildSettingsList(),
           ],
         ),
@@ -51,137 +56,175 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(AsyncValue profileState) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          children: [
-            // Avatar
-            Stack(
+        child: profileState.when(
+          data: (profile) {
+            final name = profile?.fullName ?? 'Learner';
+            final level = profile?.level ?? 1;
+            final avatarUrl = profile?.avatarUrl;
+
+            return Column(
               children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: Theme.of(
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
+                      child: avatarUrl != null
+                          ? ClipOval(
+                              child: Image.network(
+                                avatarUrl,
+                                width: 96,
+                                height: 96,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.person,
+                                  size: 56,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            )
+                          : Icon(
+                              Icons.person,
+                              size: 56,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(AppSpacing.xs),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.base),
+                Text(
+                  name,
+                  style: Theme.of(
                     context,
-                  ).colorScheme.primary.withOpacity(0.1),
-                  child: Icon(
-                    Icons.person,
-                    size: 56,
-                    color: Theme.of(context).colorScheme.primary,
+                  ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.round),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.star, size: 14, color: AppColors.warning),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        'Level $level',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: AppColors.warning,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.xs),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
+                const SizedBox(height: AppSpacing.base),
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.warning.withOpacity(0.1),
+                        AppColors.primary500.withOpacity(0.1),
+                      ],
                     ),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      size: 16,
-                      color: Colors.white,
-                    ),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.diamond, size: 18, color: AppColors.warning),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text(
+                        'Free Plan',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
-
-            const SizedBox(height: AppSpacing.base),
-
-            // Name
-            Text(
-              'Learner',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: AppSpacing.xs),
-
-            // Level Badge
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppRadius.round),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.star, size: 14, color: AppColors.warning),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    'Level 5',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.warning,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.base),
-
-            // Subscription Status
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.warning.withOpacity(0.1),
-                    AppColors.primary500.withOpacity(0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.diamond, size: 18, color: AppColors.warning),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    'Free Plan',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            );
+          },
+          loading: () => const Column(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: AppSpacing.base),
+              Text('Loading profile...'),
+            ],
+          ),
+          error: (error, _) => Column(
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: AppSpacing.sm),
+              Text('Failed to load profile: $error'),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildStatsCards() {
-    return const Row(
+  Widget _buildStatsCards(AsyncValue progressState, AsyncValue streakState) {
+    return Row(
       children: [
         _StatCard(
           label: 'XP',
-          value: '2,450',
+          value: progressState.when(
+            data: (progress) => '${progress?.xp ?? 0}',
+            loading: () => '...',
+            error: (_, __) => '0',
+          ),
           icon: Icons.star,
           color: AppColors.warning,
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         _StatCard(
           label: 'Streak',
-          value: '5 days',
+          value: streakState.when(
+            data: (streak) => '${streak?.currentStreak ?? 0} days',
+            loading: () => '...',
+            error: (_, __) => '0 days',
+          ),
           icon: Icons.local_fire_department,
           color: AppColors.error,
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         _StatCard(
           label: 'Words',
-          value: '128',
+          value: progressState.when(
+            data: (progress) => '${progress?.wordsLearned ?? 0}',
+            loading: () => '...',
+            error: (_, __) => '0',
+          ),
           icon: Icons.book,
           color: AppColors.info,
         ),
@@ -196,26 +239,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _SettingsTile(
             icon: Icons.person_outline,
             title: 'Edit Profile',
-            onTap: () {
-              // TODO: Edit profile
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.language,
             title: 'Languages',
             subtitle: 'English, Malayalam',
-            onTap: () {
-              // TODO: Language settings
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
-            onTap: () {
-              // TODO: Notification settings
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -258,33 +295,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
-            onTap: () {
-              // TODO: Show subscription page
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.help_outline,
             title: 'Help & Support',
-            onTap: () {
-              // TODO: Help page
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.description_outlined,
             title: 'Terms of Service',
-            onTap: () {
-              // TODO: Terms page
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
-            onTap: () {
-              // TODO: Privacy page
-            },
+            onTap: () {},
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -349,7 +378,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
           TextButton(
             onPressed: () {
-              // TODO: Implement account deletion
               Navigator.pop(context);
             },
             child: const Text(

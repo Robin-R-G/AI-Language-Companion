@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="b9" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="35" fill="url(#b9)"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- Trophy -->
+  <path d="M30 25 L50 25 L48 40 Q40 48, 32 40Z" fill="white" opacity="0.9"/>
+  <rect x="36" y="46" width="8" height="8" rx="1" fill="white" opacity="0.9"/>
+  <rect x="32" y="54" width="16" height="4" rx="2" fill="white" opacity="0.9"/>
+  <!-- Star on trophy -->
+  <text x="40" y="38" font-family="Inter, sans-serif" font-size="12" fill="#2563EB" text-anchor="middle">&#9733;</text>
+</svg>

@@ -144,7 +144,7 @@ class AppTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary500,
       brightness: Brightness.dark,
-      primary: const Color(0xFF6366F1),
+      primary: AppColors.primary500,
       secondary: AppColors.secondary,
       surface: AppColors.darkSurface,
       error: AppColors.error,
@@ -186,7 +186,7 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6366F1),
+          backgroundColor: AppColors.primary500,
           foregroundColor: AppColors.textOnPrimary,
           minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
@@ -199,12 +199,12 @@ class AppTheme {
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF6366F1),
+          foregroundColor: AppColors.primary500,
           minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          side: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
+          side: const BorderSide(color: AppColors.primary500, width: 1.5),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
@@ -212,7 +212,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFF6366F1),
+          foregroundColor: AppColors.primary500,
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
@@ -235,7 +235,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+          borderSide: const BorderSide(color: AppColors.primary500, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -252,7 +252,7 @@ class AppTheme {
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkSurface,
-        selectedItemColor: Color(0xFF6366F1),
+        selectedItemColor: AppColors.primary500,
         unselectedItemColor: AppColors.darkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -260,7 +260,7 @@ class AppTheme {
 
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Color(0xFF6366F1),
+        backgroundColor: AppColors.primary500,
         foregroundColor: AppColors.textOnPrimary,
         elevation: 4,
         shape: CircleBorder(),

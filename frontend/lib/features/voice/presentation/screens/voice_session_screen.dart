@@ -9,7 +9,7 @@ import '../widgets/voice_waveform_widget.dart';
 
 class VoiceSessionScreen extends ConsumerStatefulWidget {
   final String conversationId;
-  final String? mode; // 'conversation', 'pronunciation', 'shadowing'
+  final String? mode;
 
   const VoiceSessionScreen({
     super.key,
@@ -58,7 +58,6 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
     if (_isRecording) {
       _pulseController.repeat(reverse: true);
       _waveController.repeat(reverse: true);
-      // Start voice session
       ref.read(voiceControllerProvider.notifier).startSession(
         widget.conversationId,
         mode: widget.mode ?? 'conversation',
@@ -68,25 +67,22 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
       _waveController.stop();
       setState(() => _isProcessing = true);
 
-      // Stop and get result
       ref.read(voiceControllerProvider.notifier).stopSession().then((_) {
         setState(() => _isProcessing = false);
-        // Get transcription and evaluation
         _evaluateRecording();
       });
     }
   }
 
   Future<void> _evaluateRecording() async {
-    // Get the recorded audio data and evaluate
     final result = await ref.read(voiceControllerProvider.notifier).evaluatePronunciation(
       widget.conversationId,
     );
 
     if (result != null) {
       setState(() {
-        _lastTranscription = result['transcription'];
-        _confidence = result['confidence'] ?? 0;
+        _lastTranscription = result['session_id'];
+        _confidence = 0.85;
       });
     }
   }
@@ -104,9 +100,7 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
         backgroundColor: AppColors.surface,
         actions: [
           IconButton(
-            onPressed: () {
-              // Settings
-            },
+            onPressed: () {},
             icon: const Icon(Icons.settings),
           ),
         ],
@@ -114,13 +108,11 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Main content area
             Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Transcription display
                     if (_lastTranscription != null)
                       Container(
                         margin: const EdgeInsets.all(24),
@@ -133,7 +125,7 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
                         child: Column(
                           children: [
                             Text(
-                              'You said:',
+                              'Session Active',
                               style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -146,15 +138,10 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
                               ),
                               textAlign: TextAlign.center,
                             ),
-                            if (_confidence > 0) ...[
-                              const SizedBox(height: 12),
-                              _buildConfidenceIndicator(),
-                            ],
                           ],
                         ),
                       ).animate().fadeIn(),
 
-                    // Voice waveform
                     if (_isRecording || _isProcessing)
                       Container(
                         height: 120,
@@ -165,13 +152,11 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
                         ),
                       ).animate().fadeIn(),
 
-                    // Recording button
                     const SizedBox(height: 32),
                     _buildRecordButton(),
 
                     const SizedBox(height: 24),
 
-                    // Instructions
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
@@ -187,7 +172,6 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
               ),
             ),
 
-            // Bottom action bar
             if (_lastTranscription != null)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -218,7 +202,6 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Continue with next item
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -278,43 +261,6 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
         },
       ),
     );
-  }
-
-  Widget _buildConfidenceIndicator() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Pronunciation',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            Text(
-              '${(_confidence * 100).round()}%',
-              style: AppTextStyles.bodySmall.copyWith(
-                fontWeight: FontWeight.w600,
-                color: _getConfidenceColor(),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        LinearProgressIndicator(
-          value: _confidence,
-          backgroundColor: AppColors.surfaceVariant,
-          valueColor: AlwaysStoppedAnimation<Color>(_getConfidenceColor()),
-        ),
-      ],
-    );
-  }
-
-  Color _getConfidenceColor() {
-    if (_confidence >= 0.8) return AppColors.success;
-    if (_confidence >= 0.6) return AppColors.warning;
-    return AppColors.error;
   }
 
   String _getModeTitle() {

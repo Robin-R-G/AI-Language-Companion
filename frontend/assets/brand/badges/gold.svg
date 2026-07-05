@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#CD7F32"/>
+      <stop offset="100%" stop-color="#A0522D"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="35" fill="url(#bg)"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- Star -->
+  <polygon points="40,18 44,32 58,32 47,40 51,54 40,46 29,54 33,40 22,32 36,32" fill="white" opacity="0.9"/>
+  <text x="40" y="66" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="white" text-anchor="middle">GOLD</text>
+</svg>

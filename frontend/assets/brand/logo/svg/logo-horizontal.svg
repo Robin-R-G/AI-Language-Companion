@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" fill="none">
+  <defs>
+    <linearGradient id="hLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="hBrainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon -->
+  <g transform="translate(4, 4)">
+    <circle cx="28" cy="28" r="26" fill="url(#hLogoGrad)" opacity="0.1"/>
+    <circle cx="28" cy="28" r="26" stroke="url(#hLogoGrad)" stroke-width="2" fill="none"/>
+    <ellipse cx="28" cy="28" rx="12" ry="26" stroke="url(#hLogoGrad)" stroke-width="1.5" fill="none" opacity="0.4"/>
+    <line x1="2" y1="28" x2="54" y2="28" stroke="url(#hLogoGrad)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="28" y1="2" x2="28" y2="54" stroke="url(#hLogoGrad)" stroke-width="1.5" opacity="0.4"/>
+    <path d="M20 18 C20 14, 24 10, 28 10 C32 10, 36 14, 36 18 C38 18, 40 20, 40 22 C42 22, 44 24, 44 26 C44 30, 42 32, 40 32 C40 36, 38 38, 34 40 C32 42, 24 42, 22 40 C18 38, 16 36, 16 32 C14 32, 12 30, 12 26 C12 24, 14 22, 16 22 C16 20, 18 18, 20 18Z" 
+          fill="url(#hBrainGrad)" opacity="0.9"/>
+    <path d="M28 12 L28 40" stroke="white" stroke-width="1" opacity="0.3"/>
+    <path d="M20 20 Q28 24, 36 20" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/>
+    <path d="M18 28 Q28 32, 38 28" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/>
+    <path d="M20 34 Q28 38, 36 34" stroke="white" stroke-width="1.2" fill="none" opacity="0.5"/>
+    <path d="M36 36 L44 44 L38 38" fill="url(#hLogoGrad)" opacity="0.9"/>
+    <text x="14" y="26" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="white" opacity="0.9">A</text>
+    <text x="34" y="26" font-family="Inter, sans-serif" font-size="7" font-weight="700" fill="white" opacity="0.9">あ</text>
+    <text x="24" y="36" font-family="Inter, sans-serif" font-size="6" font-weight="700" fill="white" opacity="0.9">ñ</text>
+  </g>
+  
+  <!-- Wordmark (single line) -->
+  <text x="72" y="40" font-family="Inter, sans-serif" font-size="26" font-weight="700" fill="#0F172A">
+    AI Language 
+  </text>
+  <text x="218" y="40" font-family="Inter, sans-serif" font-size="26" font-weight="700" fill="url(#hLogoGrad)">
+    Coach
+  </text>
+</svg>

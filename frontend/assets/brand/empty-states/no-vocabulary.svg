@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <defs>
+    <linearGradient id="es2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="100" r="70" fill="url(#es2)"/>
+  <rect x="75" y="65" width="90" height="70" rx="10" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <rect x="85" y="78" width="40" height="6" rx="3" fill="#CBD5E1"/>
+  <rect x="85" y="90" width="70" height="4" rx="2" fill="#E2E8F0"/>
+  <rect x="85" y="98" width="55" height="4" rx="2" fill="#E2E8F0"/>
+  <rect x="85" y="110" width="30" height="16" rx="8" fill="#7C3AED" opacity="0.15"/>
+  <text x="100" y="122" font-family="Inter, sans-serif" font-size="8" font-weight="600" fill="#7C3AED" text-anchor="middle">0</text>
+  <path d="M140 155 L160 155 L160 170 Q160 175 155 175 L145 175 Q140 175 140 170Z" fill="#7C3AED" opacity="0.15"/>
+  <text x="150" y="167" font-family="Inter, sans-serif" font-size="7" font-weight="600" fill="#7C3AED" text-anchor="middle">+</text>
+</svg>

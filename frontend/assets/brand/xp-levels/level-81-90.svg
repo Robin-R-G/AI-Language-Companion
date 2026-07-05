@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="diamond" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B9F2FF"/>
+      <stop offset="100%" style="stop-color:#7DD3FC"/>
+    </linearGradient>
+    <linearGradient id="diamondGem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0F2FE"/>
+      <stop offset="100%" style="stop-color:#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 2 L58 14 L58 37 C58 53 45 62 32 63 C19 62 6 53 6 37 L6 14 Z" fill="url(#diamond)" stroke="#7DD3FC" stroke-width="1.5"/>
+  <path d="M32 8 L52 18 L52 35 C52 48 43 56 32 58 C21 56 12 48 12 35 L12 18 Z" fill="none" stroke="#E0F2FE" stroke-width="1" opacity="0.7"/>
+  <path d="M32 12 L48 20 L48 33 C48 44 40 50 32 52 C24 50 16 44 16 33 L16 20 Z" fill="none" stroke="#BAE6FD" stroke-width="0.8" opacity="0.5"/>
+  <path d="M14 12 L32 4 L50 12" fill="none" stroke="#E0F2FE" stroke-width="0.8" opacity="0.5"/>
+  <path d="M10 18 L32 8 L54 18" fill="none" stroke="#E0F2FE" stroke-width="0.8" opacity="0.4"/>
+  <path d="M8 24 L32 12 L56 24" fill="none" stroke="#BAE6FD" stroke-width="0.6" opacity="0.3"/>
+  <polygon points="32,12 36,20 44,20 38,26 40,34 32,29 24,34 26,26 20,20 28,20" fill="url(#diamondGem)" stroke="#0284C7" stroke-width="0.5"/>
+  <polygon points="32,16 34.5,22 39,22 36,25 37,30 32,27 27,30 28,25 25,22 29.5,22" fill="#F0F9FF" opacity="0.5"/>
+  <polygon points="32,20 33.5,23 36,23 34.5,25 35,28 32,26 29,28 29.5,25 28,23 30.5,23" fill="#FFFFFF" opacity="0.3"/>
+  <circle cx="14" cy="22" r="1.5" fill="#E0F2FE" opacity="0.6"/>
+  <circle cx="50" cy="22" r="1.5" fill="#E0F2FE" opacity="0.6"/>
+  <circle cx="18" cy="28" r="1" fill="#BAE6FD" opacity="0.5"/>
+  <circle cx="46" cy="28" r="1" fill="#BAE6FD" opacity="0.5"/>
+  <circle cx="22" cy="34" r="0.8" fill="#BAE6FD" opacity="0.4"/>
+  <circle cx="42" cy="34" r="0.8" fill="#BAE6FD" opacity="0.4"/>
+  <path d="M16 36 L22 34" stroke="#E0F2FE" stroke-width="0.6" opacity="0.4"/>
+  <path d="M48 36 L42 34" stroke="#E0F2FE" stroke-width="0.6" opacity="0.4"/>
+  <text x="32" y="50" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="#F0F9FF">81-90</text>
+</svg>

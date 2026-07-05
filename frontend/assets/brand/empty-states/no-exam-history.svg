@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <defs>
+    <linearGradient id="es7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#A855F7" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="100" r="70" fill="url(#es7)"/>
+  <!-- Clipboard -->
+  <rect x="80" y="55" width="80" height="95" rx="8" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <rect x="105" y="48" width="30" height="14" rx="5" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <!-- Checkmark lines -->
+  <circle cx="95" cy="78" r="5" fill="#E2E8F0"/>
+  <rect x="105" y="75" width="40" height="5" rx="2.5" fill="#E2E8F0"/>
+  <circle cx="95" cy="95" r="5" fill="#E2E8F0"/>
+  <rect x="105" y="92" width="35" height="5" rx="2.5" fill="#E2E8F0"/>
+  <circle cx="95" cy="112" r="5" fill="#E2E8F0"/>
+  <rect x="105" y="109" width="30" height="5" rx="2.5" fill="#E2E8F0"/>
+  <circle cx="95" cy="129" r="5" fill="#E2E8F0"/>
+  <rect x="105" y="126" width="38" height="5" rx="2.5" fill="#E2E8F0"/>
+  <text x="120" y="178" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748B" text-anchor="middle">No exam history yet</text>
+</svg>

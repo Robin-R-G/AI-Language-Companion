@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <defs>
+    <linearGradient id="es3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="100" r="70" fill="url(#es3)"/>
+  <circle cx="120" cy="95" r="35" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <path d="M120 65 L120 95" stroke="#CBD5E1" stroke-width="3" stroke-linecap="round"/>
+  <path d="M120 95 L140 110" stroke="#CBD5E1" stroke-width="3" stroke-linecap="round"/>
+  <path d="M105 145 C105 138, 112 132, 120 132 C128 132, 135 138, 135 145 L135 155 L105 155Z" fill="white" stroke="#EF4444" stroke-width="1.5"/>
+  <path d="M115 150 L125 150" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+  <path d="M112 165 L128 165" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+  <text x="120" y="185" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#EF4444" text-anchor="middle">OFFLINE</text>
+</svg>

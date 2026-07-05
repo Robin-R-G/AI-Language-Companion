@@ -1,0 +1,43 @@
+{
+  "colors": {
+    "primary": "#2563EB",
+    "primaryContainer": "#EEF2FF",
+    "onPrimary": "#FFFFFF",
+    "secondary": "#14B8A6",
+    "secondaryContainer": "#ECFEFF",
+    "onSecondary": "#0891B2",
+    "background": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "surfaceVariant": "#F1F5F9",
+    "outline": "#E2E8F0",
+    "success": "#22C55E",
+    "warning": "#F59E0B",
+    "error": "#EF4444",
+    "info": "#3B82F6"
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64
+  ],
+  "radius": {
+    "small": 8,
+    "medium": 12,
+    "large": 16,
+    "xl": 24
+  },
+  "elevation": {
+    "flat": 0,
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "modal": 4
+  }
+}

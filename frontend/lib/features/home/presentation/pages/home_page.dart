@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../controllers/home_controller.dart';
 
-/// Home dashboard page showing daily tasks and progress.
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -16,44 +16,50 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(homeControllerProvider.notifier).loadDashboard();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final dashboardState = ref.watch(homeControllerProvider);
+
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.base),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Greeting & Streak Card
-              _buildGreetingCard(),
-
-              const SizedBox(height: AppSpacing.base),
-
-              // Daily Progress
-              _buildDailyProgress(),
-
-              const SizedBox(height: AppSpacing.base),
-
-              // Today's Mission
-              _buildDailyMission(),
-
-              const SizedBox(height: AppSpacing.base),
-
-              // Quick Actions Grid
-              _buildQuickActions(),
-
-              const SizedBox(height: AppSpacing.base),
-
-              // Motivational Quote
-              _buildMotivationalQuote(),
-            ],
-          ),
+        child: dashboardState.when(
+          data: (data) {
+            if (data == null) {
+              return const Center(child: Text('No data available'));
+            }
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.base),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildGreetingCard(data),
+                  const SizedBox(height: AppSpacing.base),
+                  _buildDailyProgress(data),
+                  const SizedBox(height: AppSpacing.base),
+                  _buildDailyMission(),
+                  const SizedBox(height: AppSpacing.base),
+                  _buildQuickActions(),
+                  const SizedBox(height: AppSpacing.base),
+                  _buildMotivationalQuote(),
+                ],
+              ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(child: Text('Error: $error')),
         ),
       ),
     );
   }
 
-  Widget _buildGreetingCard() {
+  Widget _buildGreetingCard(DashboardData data) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.base),
@@ -76,7 +82,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hi, Learner! 👋',
+                    'Hi, Learner!',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -91,7 +97,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       const SizedBox(width: AppSpacing.xs),
                       Text(
-                        '5-Day Streak',
+                        '${data.streak}-Day Streak',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.warning,
                           fontWeight: FontWeight.w600,
@@ -104,10 +110,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             IconButton(
               onPressed: () => context.push(RouteNames.notifications),
-              icon: const Badge(
-                label: Text('3'),
-                child: Icon(Icons.notifications_outlined),
-              ),
+              icon: const Icon(Icons.notifications_outlined),
             ),
           ],
         ),
@@ -115,7 +118,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildDailyProgress() {
+  Widget _buildDailyProgress(DashboardData data) {
+    final dailyGoalMinutes = 20;
+    final progressFraction = (data.todayMinutes / dailyGoalMinutes).clamp(0.0, 1.0);
+    final remainingMinutes = dailyGoalMinutes - data.todayMinutes;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.base),
@@ -132,7 +139,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
                 Text(
-                  '15/20 min',
+                  '${data.todayMinutes}/$dailyGoalMinutes min',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -144,7 +151,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.round),
               child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0.0, end: 0.75),
+                tween: Tween<double>(begin: 0.0, end: progressFraction),
                 duration: const Duration(milliseconds: 800),
                 curve: Curves.easeOutCubic,
                 builder: (context, value, _) {
@@ -160,7 +167,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              '5 more minutes to reach your daily goal!',
+              remainingMinutes > 0
+                  ? '$remainingMinutes more minutes to reach your daily goal!'
+                  : 'Daily goal reached! Great work!',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
               ),

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="b14" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="35" fill="url(#b14)"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- Certificate -->
+  <rect x="22" y="24" width="36" height="28" rx="3" fill="white" opacity="0.9"/>
+  <text x="40" y="36" font-family="Inter, sans-serif" font-size="6" font-weight="700" fill="#EF4444" text-anchor="middle">GOETHE</text>
+  <text x="40" y="46" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#EF4444" text-anchor="middle">B2</text>
+  <circle cx="40" cy="58" r="6" fill="white"/>
+  <text x="40" y="61" font-family="Inter, sans-serif" font-size="8" fill="#F59E0B" text-anchor="middle">&#9733;</text>
+</svg>

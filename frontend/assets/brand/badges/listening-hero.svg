@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="b12" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="35" fill="url(#b12)"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- Headphones -->
+  <path d="M22 40 Q22 22, 40 20 Q58 22, 58 40" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <rect x="18" y="36" width="8" height="14" rx="4" fill="white"/>
+  <rect x="54" y="36" width="8" height="14" rx="4" fill="white"/>
+  <!-- Sound waves -->
+  <path d="M32 46 Q40 52, 48 46" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

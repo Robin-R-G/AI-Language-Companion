@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D2D2D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A1A1A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Badge Background -->
+  <rect width="200" height="60" rx="8" fill="url(#badgeGradient)"/>
+  <rect width="200" height="60" rx="8" fill="none" stroke="#4A4A4A" stroke-width="1"/>
+  
+  <!-- Google Play Triangle Icon -->
+  <g transform="translate(25, 30)">
+    <path d="M-12,-15 L-12,15 L12,0 Z" fill="#FFFFFF"/>
+    <path d="M-12,-15 L-12,15 L12,0 Z" fill="none" stroke="#FFFFFF" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="55" y="22" font-family="Arial, sans-serif" font-size="10" fill="#FFFFFF" font-weight="normal">GET IT ON</text>
+  <text x="55" y="42" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" font-weight="bold">Google Play</text>
+</svg>

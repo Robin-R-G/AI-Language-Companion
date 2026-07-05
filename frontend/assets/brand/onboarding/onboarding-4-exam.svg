@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <linearGradient id="o4bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF7ED"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <linearGradient id="o4primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="400" height="400" fill="url(#o4bg)"/>
+  
+  <!-- Certificate border -->
+  <g transform="translate(50, 30)">
+    <rect x="0" y="0" width="300" height="200" rx="16" fill="white" stroke="#F59E0B" stroke-width="2"/>
+    
+    <!-- Header decoration -->
+    <rect x="20" y="15" width="260" height="4" rx="2" fill="url(#o4primary)"/>
+    
+    <!-- Text lines -->
+    <text x="150" y="55" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">CERTIFICATE</text>
+    <text x="150" y="72" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#64748B" text-anchor="middle">of Completion</text>
+    
+    <line x1="40" y1="85" x2="260" y2="85" stroke="#E2E8F0" stroke-width="1"/>
+    
+    <text x="150" y="110" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#64748B" text-anchor="middle">This certifies that</text>
+    <text x="150" y="135" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#2563EB" text-anchor="middle">Student Name</text>
+    <text x="150" y="155" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#64748B" text-anchor="middle">has successfully completed</text>
+    <text x="150" y="172" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">IELTS Preparation Course</text>
+    
+    <!-- Seal -->
+    <circle cx="150" cy="185" r="10" fill="#F59E0B" opacity="0.2"/>
+    <circle cx="150" cy="185" r="7" fill="#F59E0B" opacity="0.3"/>
+  </g>
+  
+  <!-- Exam badges -->
+  <g transform="translate(60, 260)">
+    <rect x="0" y="0" width="60" height="60" rx="12" fill="white" stroke="#E2E8F0"/>
+    <text x="30" y="28" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#2563EB" text-anchor="middle">IELTS</text>
+    <text x="30" y="45" font-family="Inter, sans-serif" font-size="9" font-weight="400" fill="#64748B" text-anchor="middle">7.5 Band</text>
+    
+    <rect x="70" y="0" width="60" height="60" rx="12" fill="white" stroke="#E2E8F0"/>
+    <text x="100" y="28" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#7C3AED" text-anchor="middle">TOEFL</text>
+    <text x="100" y="45" font-family="Inter, sans-serif" font-size="9" font-weight="400" fill="#64748B" text-anchor="middle">100+</text>
+    
+    <rect x="140" y="0" width="60" height="60" rx="12" fill="white" stroke="#E2E8F0"/>
+    <text x="170" y="28" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#06B6D4" text-anchor="middle">GOETHE</text>
+    <text x="170" y="45" font-family="Inter, sans-serif" font-size="9" font-weight="400" fill="#64748B" text-anchor="middle">B2</text>
+    
+    <rect x="210" y="0" width="60" height="60" rx="12" fill="white" stroke="#E2E8F0"/>
+    <text x="240" y="28" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#22C55E" text-anchor="middle">JLPT</text>
+    <text x="240" y="45" font-family="Inter, sans-serif" font-size="9" font-weight="400" fill="#64748B" text-anchor="middle">N3</text>
+  </g>
+  
+  <!-- Star decorations -->
+  <g opacity="0.15">
+    <text x="30" y="250" font-size="20" fill="#F59E0B">&#9733;</text>
+    <text x="360" y="240" font-size="16" fill="#F59E0B">&#9733;</text>
+    <text x="380" y="280" font-size="12" fill="#F59E0B">&#9733;</text>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="360" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">Exam Preparation</text>
+  <text x="200" y="382" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#64748B" text-anchor="middle">Get certified with IELTS, TOEFL, Goethe & more</text>
+</svg>

@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#F5F3FF"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="800" fill="url(#bgGrad)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="50" cy="120" r="80" fill="#2563EB" opacity="0.05"/>
+  <circle cx="350" cy="200" r="120" fill="#7C3AED" opacity="0.05"/>
+  <circle cx="100" cy="650" r="100" fill="#06B6D4" opacity="0.05"/>
+  <circle cx="320" cy="700" r="60" fill="#2563EB" opacity="0.05"/>
+  
+  <!-- AI Assistant (center) -->
+  <g transform="translate(150, 180)">
+    <!-- Body circle -->
+    <circle cx="50" cy="50" r="50" fill="url(#primaryGrad)"/>
+    <!-- Face -->
+    <circle cx="50" cy="45" r="30" fill="white"/>
+    <!-- Eyes -->
+    <circle cx="40" cy="42" r="4" fill="#1E293B"/>
+    <circle cx="60" cy="42" r="4" fill="#1E293B"/>
+    <circle cx="41" cy="41" r="1.5" fill="white"/>
+    <circle cx="61" cy="41" r="1.5" fill="white"/>
+    <!-- Smile -->
+    <path d="M40 52 Q50 60, 60 52" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Headphones -->
+    <path d="M22 40 Q22 20, 50 18 Q78 20, 78 40" stroke="#7C3AED" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="18" y="36" width="8" height="12" rx="4" fill="#7C3AED"/>
+    <rect x="74" y="36" width="8" height="12" rx="4" fill="#7C3AED"/>
+    <!-- Mic icon on body -->
+    <rect x="46" y="62" width="8" height="14" rx="4" fill="white" opacity="0.9"/>
+    <path d="M42 72 Q50 78, 58 72" stroke="white" stroke-width="2" fill="none" opacity="0.9"/>
+  </g>
+  
+  <!-- Student (left) -->
+  <g transform="translate(40, 300)">
+    <!-- Head -->
+    <circle cx="40" cy="30" r="25" fill="#FBBF24"/>
+    <!-- Face -->
+    <circle cx="40" cy="28" r="18" fill="#FEF3C7"/>
+    <!-- Eyes -->
+    <circle cx="34" cy="26" r="2.5" fill="#1E293B"/>
+    <circle cx="46" cy="26" r="2.5" fill="#1E293B"/>
+    <!-- Smile -->
+    <path d="M34 34 Q40 39, 46 34" stroke="#1E293B" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Hair -->
+    <path d="M22 22 Q22 8, 40 6 Q58 8, 58 22" fill="#92400E"/>
+    <!-- Body -->
+    <rect x="25" y="55" width="30" height="40" rx="8" fill="url(#tealGrad)"/>
+    <!-- Speech bubble -->
+    <rect x="55" y="-10" width="80" height="36" rx="12" fill="white" filter="url(#shadow1)"/>
+    <text x="70" y="12" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1E293B">Hola!</text>
+    <polygon points="55,20 48,30 55,25" fill="white"/>
+  </g>
+  
+  <!-- Student (right) -->
+  <g transform="translate(260, 320)">
+    <!-- Head -->
+    <circle cx="40" cy="30" r="25" fill="#A78BFA"/>
+    <!-- Face -->
+    <circle cx="40" cy="28" r="18" fill="#EDE9FE"/>
+    <!-- Eyes -->
+    <circle cx="34" cy="26" r="2.5" fill="#1E293B"/>
+    <circle cx="46" cy="26" r="2.5" fill="#1E293B"/>
+    <!-- Smile -->
+    <path d="M34 34 Q40 39, 46 34" stroke="#1E293B" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Hair -->
+    <path d="M20 25 Q20 5, 40 3 Q60 5, 60 25" fill="#1E293B"/>
+    <!-- Body -->
+    <rect x="25" y="55" width="30" height="40" rx="8" fill="url(#purpleGrad)"/>
+    <!-- Speech bubble -->
+    <rect x="-50" y="-10" width="80" height="36" rx="12" fill="white" filter="url(#shadow1)"/>
+    <text x="-35" y="12" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1E293B">Bonjour!</text>
+    <polygon points="22,20 30,30 22,25" fill="white"/>
+  </g>
+  
+  <!-- Floating language symbols -->
+  <g opacity="0.6">
+    <text x="30" y="480" font-family="Inter, sans-serif" font-size="24" font-weight="700" fill="#2563EB" opacity="0.3">EN</text>
+    <text x="120" y="500" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#7C3AED" opacity="0.3">DE</text>
+    <text x="240" y="470" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#06B6D4" opacity="0.3">JA</text>
+    <text x="320" y="490" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#22C55E" opacity="0.3">FR</text>
+    <text x="180" y="520" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#F59E0B" opacity="0.3">ES</text>
+  </g>
+  
+  <!-- Globe illustration -->
+  <g transform="translate(140, 540)" opacity="0.15">
+    <circle cx="60" cy="60" r="58" stroke="#2563EB" stroke-width="2" fill="none"/>
+    <ellipse cx="60" cy="60" rx="28" ry="58" stroke="#2563EB" stroke-width="1.5" fill="none"/>
+    <line x1="2" y1="60" x2="118" y2="60" stroke="#2563EB" stroke-width="1.5"/>
+    <line x1="60" y1="2" x2="60" y2="118" stroke="#2563EB" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Floating connection lines -->
+  <path d="M80 420 Q200 380, 320 420" stroke="url(#primaryGrad)" stroke-width="1.5" fill="none" opacity="0.2" stroke-dasharray="8,4"/>
+  <path d="M60 460 Q200 420, 340 460" stroke="url(#tealGrad)" stroke-width="1.5" fill="none" opacity="0.15" stroke-dasharray="8,4"/>
+  
+  <!-- Wave pattern at bottom -->
+  <path d="M0 700 Q100 680, 200 700 Q300 720, 400 700 L400 800 L0 800Z" fill="url(#primaryGrad)" opacity="0.08"/>
+  <path d="M0 720 Q100 700, 200 720 Q300 740, 400 720 L400 800 L0 800Z" fill="url(#primaryGrad)" opacity="0.05"/>
+  
+  <!-- Dots pattern -->
+  <g opacity="0.1">
+    <circle cx="30" cy="100" r="3" fill="#2563EB"/>
+    <circle cx="50" cy="100" r="3" fill="#2563EB"/>
+    <circle cx="70" cy="100" r="3" fill="#2563EB"/>
+    <circle cx="30" cy="120" r="3" fill="#2563EB"/>
+    <circle cx="50" cy="120" r="3" fill="#2563EB"/>
+    <circle cx="70" cy="120" r="3" fill="#2563EB"/>
+  </g>
+  
+  <!-- Shadow filter -->
+  <defs>
+    <filter id="shadow1" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+</svg>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <linearGradient id="o3bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0FDF4"/>
+      <stop offset="100%" stop-color="#EFF6FF"/>
+    </linearGradient>
+    <linearGradient id="o3card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="400" height="400" fill="url(#o3bg)"/>
+  
+  <!-- Flashcard stack -->
+  <g transform="translate(100, 60)">
+    <!-- Back card -->
+    <rect x="10" y="10" width="180" height="120" rx="16" fill="white" opacity="0.5" transform="rotate(3, 100, 70)"/>
+    <!-- Middle card -->
+    <rect x="5" y="5" width="180" height="120" rx="16" fill="white" opacity="0.7" transform="rotate(-2, 100, 70)"/>
+    <!-- Front card -->
+    <rect x="0" y="0" width="180" height="120" rx="16" fill="white" filter="url(#o3shadow)"/>
+    
+    <!-- Card content -->
+    <text x="90" y="40" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#0F172A" text-anchor="middle">Hello</text>
+    <text x="90" y="60" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#64748B" text-anchor="middle">/həˈloʊ/</text>
+    <line x1="30" y1="72" x2="150" y2="72" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="90" y="90" font-family="Inter, sans-serif" font-size="12" font-weight="500" fill="#64748B" text-anchor="middle">Meaning:</text>
+    <text x="90" y="108" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#2563EB" text-anchor="middle">Halo (Indonesian)</text>
+  </g>
+  
+  <!-- Flip arrow -->
+  <g transform="translate(170, 200)">
+    <path d="M30 0 A30 30 0 1 1 0 30" stroke="#22C55E" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <polygon points="0,22 -5,32 5,32" fill="#22C55E"/>
+  </g>
+  
+  <!-- Vocabulary grid below -->
+  <g transform="translate(50, 280)">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="80" height="40" rx="10" fill="white" stroke="#E2E8F0"/>
+    <text x="40" y="25" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">Apple</text>
+    
+    <rect x="90" y="0" width="80" height="40" rx="10" fill="white" stroke="#E2E8F0"/>
+    <text x="130" y="25" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">Book</text>
+    
+    <rect x="180" y="0" width="80" height="40" rx="10" fill="white" stroke="#E2E8F0"/>
+    <text x="220" y="25" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">Cat</text>
+    
+    <rect x="270" y="0" width="80" height="40" rx="10" fill="white" stroke="#E2E8F0"/>
+    <text x="310" y="25" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">Dog</text>
+    
+    <!-- Row 2 -->
+    <rect x="0" y="50" width="80" height="40" rx="10" fill="#2563EB" opacity="0.1"/>
+    <text x="40" y="75" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#2563EB" text-anchor="middle">Run</text>
+    
+    <rect x="90" y="50" width="80" height="40" rx="10" fill="#22C55E" opacity="0.1"/>
+    <text x="130" y="75" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#22C55E" text-anchor="middle">Good</text>
+    
+    <rect x="180" y="50" width="80" height="40" rx="10" fill="#7C3AED" opacity="0.1"/>
+    <text x="220" y="75" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#7C3AED" text-anchor="middle">Learn</text>
+    
+    <rect x="270" y="50" width="80" height="40" rx="10" fill="#F59E0B" opacity="0.1"/>
+    <text x="310" y="75" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#F59E0B" text-anchor="middle">Study</text>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="360" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A" text-anchor="middle">Build Vocabulary</text>
+  <text x="200" y="382" font-family="Inter, sans-serif" font-size="13" font-weight="400" fill="#64748B" text-anchor="middle">Smart flashcards with spaced repetition</text>
+  
+  <defs>
+    <filter id="o3shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+</svg>

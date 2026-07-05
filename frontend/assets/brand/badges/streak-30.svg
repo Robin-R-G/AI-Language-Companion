@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="b3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+  <circle cx="40" cy="40" r="35" fill="url(#b3)"/>
+  <circle cx="40" cy="40" r="28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  <!-- Large flame -->
+  <path d="M40 15 C40 15, 26 30, 26 42 C26 52, 32 58, 40 58 C48 58, 54 52, 54 42 C54 30, 40 15, 40 15Z" fill="white" opacity="0.9"/>
+  <path d="M40 28 C40 28, 33 36, 33 42 C33 48, 36 52, 40 52 C44 52, 47 48, 47 42 C47 36, 40 28, 40 28Z" fill="url(#b3)"/>
+  <text x="40" y="68" font-family="Inter, sans-serif" font-size="6" font-weight="700" fill="white" text-anchor="middle">30 DAY</text>
+</svg>

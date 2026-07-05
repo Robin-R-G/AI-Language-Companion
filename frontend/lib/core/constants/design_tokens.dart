@@ -6,12 +6,13 @@ class AppColors {
   AppColors._();
 
   // Primary Colors
-  static const Color primary500 = Color(0xFF4F46E5);
-  static const Color primary600 = Color(0xFF4338CA);
-  static const Color primary700 = Color(0xFF3730A3);
+  static const Color primary500 = Color(0xFF2563EB);
+  static const Color primary600 = Color(0xFF1D4ED8);
+  static const Color primary700 = Color(0xFF1E40AF);
 
   // Secondary Colors
-  static const Color secondary = Color(0xFF06B6D4);
+  static const Color secondary = Color(0xFF7C3AED);
+  static const Color tertiary = Color(0xFF14B8A6);
 
   // Status Colors
   static const Color success = Color(0xFF22C55E);
@@ -25,9 +26,9 @@ class AppColors {
   static const Color card = Color(0xFFFFFFFF);
 
   // Dark Mode Background & Surface
-  static const Color darkBackground = Color(0xFF0F172A);
-  static const Color darkSurface = Color(0xFF1E293B);
-  static const Color darkCard = Color(0xFF334155);
+  static const Color darkBackground = Color(0xFF0B1220);
+  static const Color darkSurface = Color(0xFF131B2E);
+  static const Color darkCard = Color(0xFF1E293B);
 
   // Text Colors
   static const Color textPrimary = Color(0xFF0F172A);

@@ -23,7 +23,26 @@ final voiceRepositoryProvider = AutoDisposeProvider<VoiceRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef VoiceRepositoryRef = AutoDisposeProviderRef<VoiceRepository>;
-String _$voiceControllerHash() => r'a2928aa22bb003f7d98ec2753b7bc37e4ed7a2c0';
+String _$voicePlatformServiceHash() =>
+    r'f1fd38f741f59ab88e1a1d53613ba242ce6d1961';
+
+/// See also [voicePlatformService].
+@ProviderFor(voicePlatformService)
+final voicePlatformServiceProvider =
+    AutoDisposeProvider<VoicePlatformService>.internal(
+      voicePlatformService,
+      name: r'voicePlatformServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$voicePlatformServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef VoicePlatformServiceRef = AutoDisposeProviderRef<VoicePlatformService>;
+String _$voiceControllerHash() => r'14731aafa2fd1c6cd3f137eedac8048284afdf3e';
 
 /// See also [VoiceController].
 @ProviderFor(VoiceController)

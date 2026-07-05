@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#iconGrad)" opacity="0.1"/>
+  <circle cx="32" cy="32" r="30" stroke="url(#iconGrad)" stroke-width="2" fill="none"/>
+  
+  <!-- Globe lines -->
+  <ellipse cx="32" cy="32" rx="14" ry="30" stroke="url(#iconGrad)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <line x1="2" y1="32" x2="62" y2="32" stroke="url(#iconGrad)" stroke-width="1.5" opacity="0.3"/>
+  <line x1="32" y1="2" x2="32" y2="62" stroke="url(#iconGrad)" stroke-width="1.5" opacity="0.3"/>
+  
+  <!-- Brain shape -->
+  <path d="M24 22 C24 17, 28 12, 32 12 C36 12, 40 17, 40 22 C42 22, 44 24, 44 26 C46 26, 48 28, 48 30 C48 34, 46 36, 44 36 C44 40, 42 42, 38 44 C36 46, 28 46, 26 44 C22 42, 20 40, 20 36 C18 36, 16 34, 16 30 C16 28, 18 26, 20 26 C20 24, 22 22, 24 22Z" 
+        fill="url(#brainGrad)" opacity="0.9"/>
+  
+  <!-- Brain center line -->
+  <path d="M32 14 L32 44" stroke="white" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Brain folds -->
+  <path d="M24 24 Q32 28, 40 24" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M22 32 Q32 36, 42 32" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M24 38 Q32 42, 40 38" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+  
+  <!-- Speech bubble -->
+  <path d="M40 40 L50 50 L42 44" fill="url(#iconGrad)" opacity="0.9"/>
+  
+  <!-- Language symbols -->
+  <text x="18" y="30" font-family="Inter, sans-serif" font-size="9" font-weight="700" fill="white" opacity="0.9">A</text>
+  <text x="40" y="30" font-family="Inter, sans-serif" font-size="9" font-weight="700" fill="white" opacity="0.9">あ</text>
+  <text x="28" y="42" font-family="Inter, sans-serif" font-size="8" font-weight="700" fill="white" opacity="0.9">ñ</text>
+</svg>

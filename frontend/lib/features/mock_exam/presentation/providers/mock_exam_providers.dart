@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../core/providers/repository_providers.dart';
+import '../controllers/mock_exam_controller.dart';
 import '../../domain/entities/mock_exam.dart';
 
 part 'mock_exam_providers.g.dart';
@@ -9,10 +9,10 @@ class MockExamsList extends _$MockExamsList {
   @override
   AsyncValue<List<MockExam>> build() => const AsyncValue.data([]);
 
-  Future<void> loadExams({String? examType, String? section}) async {
+  Future<void> loadExams({String? examType}) async {
     state = const AsyncValue.loading();
     final repo = ref.read(mockExamRepositoryProvider);
-    final result = await repo.getExams(examType: examType, section: section);
+    final result = await repo.getExams(examType: examType);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (exams) => state = AsyncValue.data(exams),
@@ -35,26 +35,18 @@ class ActiveExam extends _$ActiveExam {
     );
   }
 
-  Future<void> submitAnswer(
-    String examId,
-    String questionId,
-    String answer,
+  Future<ExamResult?> submitExam(
+    String attemptId,
+    List<Map<String, dynamic>> answers,
   ) async {
     final repo = ref.read(mockExamRepositoryProvider);
-    final result = await repo.submitAnswer(examId, questionId, answer);
-    result.fold(
-      (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (_) {},
+    final result = await repo.submitExam(
+      attemptId: attemptId,
+      answers: answers,
     );
-  }
-
-  Future<void> completeExam(String examId) async {
-    state = const AsyncValue.loading();
-    final repo = ref.read(mockExamRepositoryProvider);
-    final result = await repo.completeExam(examId);
-    result.fold(
-      (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (exam) => state = AsyncValue.data(exam),
+    return result.fold(
+      (failure) => null,
+      (examResult) => examResult,
     );
   }
 }

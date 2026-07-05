@@ -6,7 +6,7 @@ part of 'mock_exam_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$mockExamsListHash() => r'0f9d72377983561a3485e8202e8c2233458c251e';
+String _$mockExamsListHash() => r'2fd36a249dc75933d9f02af0596d48aa6ebddaf5';
 
 /// See also [MockExamsList].
 @ProviderFor(MockExamsList)
@@ -25,7 +25,7 @@ final mockExamsListProvider =
     );
 
 typedef _$MockExamsList = AutoDisposeNotifier<AsyncValue<List<MockExam>>>;
-String _$activeExamHash() => r'df169b8cc7d76ab4fe607bd601166c5ec8120b8e';
+String _$activeExamHash() => r'58c290d647bac1d79255cdb76bc16eb770779827';
 
 /// See also [ActiveExam].
 @ProviderFor(ActiveExam)

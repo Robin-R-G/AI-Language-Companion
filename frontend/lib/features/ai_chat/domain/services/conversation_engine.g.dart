@@ -7,7 +7,7 @@ part of 'conversation_engine.dart';
 // **************************************************************************
 
 String _$conversationEngineHash() =>
-    r'12a66ac4f954deb15ca4ae8ee5d3ccdce1a22f3c';
+    r'fda8774c6347246680e02ecfa16974c547707899';
 
 /// See also [ConversationEngine].
 @ProviderFor(ConversationEngine)

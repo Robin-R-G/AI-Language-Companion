@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../providers/mock_exam_providers.dart';
 
-/// Mock exam page for IELTS/PTE practice tests.
 class MockExamPage extends ConsumerStatefulWidget {
   const MockExamPage({super.key});
 
@@ -15,18 +15,25 @@ class MockExamPage extends ConsumerStatefulWidget {
 
 class _MockExamPageState extends ConsumerState<MockExamPage> {
   Timer? _examTimer;
+  String? _selectedExam;
+  String? _selectedSection;
+  bool _isStarted = false;
+  int _timeRemaining = 600;
+  bool _isTimerRunning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(mockExamsListProvider.notifier).loadExams();
+    });
+  }
 
   @override
   void dispose() {
     _examTimer?.cancel();
     super.dispose();
   }
-
-  String? _selectedExam;
-  String? _selectedSection;
-  bool _isStarted = false;
-  int _timeRemaining = 600; // 10 minutes in seconds
-  bool _isTimerRunning = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +77,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Text(
             'Choose Your Exam',
             style: Theme.of(
@@ -87,7 +93,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // Exam Type Selection
           Text(
             'Exam Type',
             style: Theme.of(
@@ -118,7 +123,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // Section Selection
           if (_selectedExam != null) ...[
             Text(
               'Section',
@@ -147,7 +151,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
           const SizedBox(height: AppSpacing.xxl),
 
-          // Start Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -160,7 +163,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
           const SizedBox(height: AppSpacing.xxl),
 
-          // Recent Exams
           Text(
             'Recent Exams',
             style: Theme.of(
@@ -177,14 +179,12 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
   Widget _buildExamView() {
     return Column(
       children: [
-        // Exam Content
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.base),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Question Card
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.base),
@@ -234,7 +234,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
                 const SizedBox(height: AppSpacing.base),
 
-                // Recording Area
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.base),
@@ -264,7 +263,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           ),
         ),
 
-        // Bottom Actions
         Container(
           padding: const EdgeInsets.all(AppSpacing.base),
           decoration: BoxDecoration(
@@ -279,18 +277,14 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {
-                    // TODO: Skip question
-                  },
+                  onPressed: () {},
                   child: const Text('Skip'),
                 ),
               ),
               const SizedBox(width: AppSpacing.base),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Submit answer
-                  },
+                  onPressed: () {},
                   child: const Text('Submit'),
                 ),
               ),
@@ -302,64 +296,60 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
   }
 
   Widget _buildRecentExamsList() {
-    // TODO: Replace with actual data
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.base),
-        child: Column(
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                backgroundColor: AppColors.success.withOpacity(0.1),
-                child: const Icon(Icons.check_circle, color: AppColors.success),
-              ),
-              title: const Text('IELTS Speaking - Part 2'),
-              subtitle: const Text('2 days ago'),
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: const Text(
-                  '7.0',
-                  style: TextStyle(
-                    color: AppColors.success,
-                    fontWeight: FontWeight.bold,
+    final examsState = ref.watch(mockExamsListProvider);
+
+    return examsState.when(
+      data: (exams) {
+        if (exams.isEmpty) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.base),
+              child: Center(
+                child: Text(
+                  'No exams taken yet',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   ),
                 ),
               ),
             ),
-            const Divider(),
-            ListTile(
-              leading: CircleAvatar(
-                backgroundColor: AppColors.warning.withOpacity(0.1),
-                child: const Icon(Icons.check_circle, color: AppColors.warning),
-              ),
-              title: const Text('IELTS Writing - Task 2'),
-              subtitle: const Text('5 days ago'),
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: const Text(
-                  '6.5',
-                  style: TextStyle(
-                    color: AppColors.warning,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+          );
+        }
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            child: Column(
+              children: exams.take(5).map((exam) {
+                final isLast = exam == exams.last;
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors.success.withOpacity(0.1),
+                        child: const Icon(Icons.check_circle, color: AppColors.success),
+                      ),
+                      title: Text(exam.title ?? exam.examType),
+                      subtitle: Text(exam.section ?? ''),
+                    ),
+                    if (!isLast) const Divider(),
+                  ],
+                );
+              }).toList(),
             ),
-          ],
+          ),
+        );
+      },
+      loading: () => const Card(
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.base),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, _) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.base),
+          child: Center(child: Text('Failed to load exams: $error')),
         ),
       ),
     );
@@ -367,7 +357,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
 
   List<Map<String, String>> _getSectionsForExam(String examCode) {
     switch (examCode) {
-      // ─── English Exams ──────────────────────────────────────────────────
       case 'ielts':
         return [
           {'code': 'speaking', 'name': 'Speaking'},
@@ -452,7 +441,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'quantitative', 'name': 'Quantitative'},
           {'code': 'data_insights', 'name': 'Data Insights'},
         ];
-      // ─── German Exams ───────────────────────────────────────────────────
       case 'goethe_a1':
       case 'goethe_a2':
       case 'goethe_b1':
@@ -486,7 +474,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'schreiben', 'name': 'Writing'},
           {'code': 'sprechen', 'name': 'Speaking'},
         ];
-      // ─── French Exams ───────────────────────────────────────────────────
       case 'delf_dalf':
         return [
           {'code': 'comprehension_orale', 'name': 'Listening'},
@@ -508,7 +495,6 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'production_ecrite', 'name': 'Writing'},
           {'code': 'production_orale', 'name': 'Speaking'},
         ];
-      // ─── Spanish Exams ──────────────────────────────────────────────────
       case 'dele':
         return [
           {'code': 'comprension_lectora', 'name': 'Reading'},
@@ -523,27 +509,23 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           {'code': 'expresion_escrita', 'name': 'Writing'},
           {'code': 'expresion_oral', 'name': 'Speaking'},
         ];
-      // ─── Japanese Exams ─────────────────────────────────────────────────
       case 'jlpt':
         return [
           {'code': 'kanji_vocabulary', 'name': 'Language Knowledge (Kanji/Vocabulary)'},
           {'code': 'grammar_reading', 'name': 'Language Knowledge (Grammar) & Reading'},
           {'code': 'listening', 'name': 'Listening'},
         ];
-      // ─── Korean Exams ───────────────────────────────────────────────────
       case 'topik':
         return [
           {'code': 'listening', 'name': 'Listening'},
           {'code': 'reading', 'name': 'Reading'},
           {'code': 'writing', 'name': 'Writing'},
         ];
-      // ─── Chinese Exams ──────────────────────────────────────────────────
       case 'hsk':
         return [
           {'code': 'listening', 'name': 'Listening'},
           {'code': 'reading', 'name': 'Reading'},
         ];
-      // ─── Default Fallback ───────────────────────────────────────────────
       default:
         return [
           {'code': 'speaking', 'name': 'Speaking'},
@@ -552,12 +534,15 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
     }
   }
 
-  void _startExam() {
+  void _startExam() async {
     setState(() {
       _isStarted = true;
       _isTimerRunning = true;
     });
     _startTimer();
+
+    final activeExamNotifier = ref.read(activeExamProvider.notifier);
+    await activeExamNotifier.startExam(_selectedExam!);
   }
 
   void _startTimer() {
@@ -582,27 +567,38 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
     return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
   }
 
-  void _submitExam() {
+  void _submitExam() async {
     setState(() {
       _isTimerRunning = false;
     });
-    // TODO: Submit exam and show results
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Exam Complete!'),
-        content: const Text('Your results are being processed.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.pop();
-            },
-            child: const Text('View Results'),
-          ),
-        ],
-      ),
-    );
+
+    final activeExamNotifier = ref.read(activeExamProvider.notifier);
+    await activeExamNotifier.submitExam(_selectedExam!, []);
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Exam Complete!'),
+          content: const Text('Your results are being processed.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                  _isStarted = false;
+                  _selectedExam = null;
+                  _selectedSection = null;
+                  _timeRemaining = 600;
+                });
+                ref.read(mockExamsListProvider.notifier).loadExams();
+              },
+              child: const Text('View Results'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _showExitDialog() {
@@ -619,6 +615,12 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              setState(() {
+                _isStarted = false;
+                _selectedExam = null;
+                _selectedSection = null;
+                _timeRemaining = 600;
+              });
               context.pop();
             },
             child: const Text('Exit', style: TextStyle(color: AppColors.error)),

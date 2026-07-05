@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="aiGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Glow effect -->
+  <circle cx="60" cy="60" r="58" fill="url(#aiGrad2)" opacity="0.15"/>
+  <circle cx="60" cy="60" r="55" fill="url(#aiGrad2)"/>
+  
+  <circle cx="60" cy="52" r="35" fill="white"/>
+  
+  <!-- Eyes - happy squint -->
+  <path d="M42 48 Q48 44, 54 48" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M66 48 Q72 44, 78 48" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Big smile -->
+  <path d="M44 58 Q60 74, 76 58" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Headphones -->
+  <path d="M28 45 Q28 20, 60 18 Q92 20, 92 45" stroke="#7C3AED" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <rect x="22" y="40" width="12" height="18" rx="6" fill="#7C3AED"/>
+  <rect x="86" y="40" width="12" height="18" rx="6" fill="#7C3AED"/>
+  
+  <!-- Mic -->
+  <rect x="54" y="78" width="12" height="20" rx="6" fill="white" opacity="0.9"/>
+  <path d="M48 92 Q60 102, 72 92" stroke="white" stroke-width="2.5" fill="none" opacity="0.9" stroke-linecap="round"/>
+</svg>
