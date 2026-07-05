@@ -2,31 +2,41 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/providers/repository_providers.dart';
 import '../../data/repositories/chat_repository_impl.dart';
-import '../../domain/entities/chat_message.dart';
+import '../../domain/entities/chat_message.dart' as domain;
 import '../../domain/repositories/chat_repository.dart';
 
 part 'chat_providers.g.dart';
 
 @riverpod
 ChatRepository chatRepository(ChatRepositoryRef ref) {
-  final dioClient = ref.watch(dioClientProvider);
-  return ChatRepositoryImpl(dioClient: dioClient);
+  return ChatRepositoryImpl();
 }
 
 @riverpod
 class ChatMessages extends _$ChatMessages {
   @override
-  List<ChatMessage> build() => [];
+  List<domain.ChatMessage> build() => [];
 
   Future<void> loadMessages(String conversationId) async {
     final repo = ref.read(chatRepositoryProvider);
     final result = await repo.getMessages(conversationId);
-    result.fold((_) {}, (messages) => state = messages);
+    result.fold((_) {}, (messages) {
+      state = messages
+          .map((m) => domain.ChatMessage(
+                id: m.id,
+                role: m.role,
+                content: m.content,
+                timestamp: m.timestamp,
+                tokenCount: m.tokenCount,
+                latencyMs: m.latencyMs,
+              ))
+          .toList();
+    });
   }
 
   Future<void> sendMessage(String conversationId, String message) async {
     final repo = ref.read(chatRepositoryProvider);
-    final userMsg = ChatMessage(
+    final userMsg = domain.ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       role: 'user',
       content: message,
@@ -34,14 +44,29 @@ class ChatMessages extends _$ChatMessages {
     );
     state = [...state, userMsg];
 
-    final result = await repo.sendMessage(conversationId, message);
-    result.fold((_) {}, (reply) => state = [...state, reply]);
+    final result = await repo.sendMessage(
+      conversationId: conversationId,
+      message: message,
+    );
+    result.fold((_) {}, (reply) {
+      state = [
+        ...state,
+        domain.ChatMessage(
+          id: reply.id,
+          role: reply.role,
+          content: reply.content,
+          timestamp: reply.timestamp,
+          tokenCount: reply.tokenCount,
+          latencyMs: reply.latencyMs,
+        ),
+      ];
+    });
   }
 
   Future<String?> createConversation(String title) async {
     final repo = ref.read(chatRepositoryProvider);
-    final result = await repo.createConversation(title);
-    return result.getOrNull();
+    final result = await repo.createConversation(title: title);
+    return result.getOrNull()?.id;
   }
 }
 
@@ -51,16 +76,4 @@ class ActiveConversationId extends _$ActiveConversationId {
   String build() => '';
 
   void set(String id) => state = id;
-}
-
-@riverpod
-class ConversationsList extends _$ConversationsList {
-  @override
-  List<Map<String, dynamic>> build() => [];
-
-  Future<void> loadConversations() async {
-    final repo = ref.read(chatRepositoryProvider);
-    final result = await repo.getConversations();
-    result.fold((_) {}, (conversations) => state = conversations);
-  }
 }

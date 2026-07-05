@@ -1,5 +1,5 @@
 // lib/features/auth/data/repositories/auth_repository_impl.dart
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 import '../../domain/entities/auth_user.dart';
