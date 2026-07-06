@@ -1,0 +1,270 @@
+name: CI/CD — AI Language Coach
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+  JAVA_VERSION: '17'
+  NODE_VERSION: '20'
+
+jobs:
+  # ── 1. Lint & Static Analysis ────────────────────────────────────────────────
+  lint:
+    name: Lint & Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies (frontend)
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Run dart analyze (frontend)
+        working-directory: frontend
+        run: flutter analyze --fatal-infos
+
+      - name: Install dependencies (admin)
+        working-directory: admin
+        run: flutter pub get
+
+      - name: Run dart analyze (admin)
+        working-directory: admin
+        run: flutter analyze --fatal-infos
+
+      - name: Check formatting
+        working-directory: frontend
+        run: dart format --set-exit-if-changed .
+
+  # ── 2. Unit & Widget Tests ───────────────────────────────────────────────────
+  test:
+    name: Unit & Widget Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        working-directory: frontend
+        run: flutter test --coverage --reporter=github
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: frontend/coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  # ── 3. Build Android APK ─────────────────────────────────────────────────────
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Build APK (debug for develop, release for main)
+        working-directory: frontend
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            flutter build apk --release \
+              --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+              --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+              --dart-define=REVENUECAT_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}
+          else
+            flutter build apk --debug \
+              --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+              --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+              --dart-define=REVENUECAT_API_KEY=${{ secrets.REVENUECAT_ANDROID_API_KEY }}
+          fi
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: frontend/build/app/outputs/flutter-apk/*.apk
+          retention-days: 7
+
+  # ── 4. Build Flutter Web (Student App) ──────────────────────────────────────
+  build-web:
+    name: Build Flutter Web
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies (frontend)
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Build frontend web
+        working-directory: frontend
+        run: |
+          flutter build web --release --base-href "/" \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Install dependencies (admin)
+        working-directory: admin
+        run: flutter pub get
+
+      - name: Build admin web
+        working-directory: admin
+        run: |
+          flutter build web --release --base-href "/" \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Upload web artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-builds
+          path: |
+            frontend/build/web/
+            admin/build/web/
+          retention-days: 7
+
+  # ── 5. Deploy Admin Panel to Vercel ─────────────────────────────────────────
+  deploy-admin:
+    name: Deploy Admin Panel
+    runs-on: ubuntu-latest
+    needs: build-web
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      url: ${{ github.ref == 'refs/heads/main' && 'https://ai-language-coach-admin.vercel.app' || 'https://ai-language-coach-admin-git-develop.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Build admin for deployment
+        working-directory: admin
+        run: |
+          flutter pub get
+          flutter build web --release --base-href "/" \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Deploy to Vercel
+        working-directory: admin
+        run: |
+          npx vercel deploy --prod \
+            --yes \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+  # ── 6. Deploy Supabase Edge Functions ───────────────────────────────────────
+  deploy-functions:
+    name: Deploy Supabase Functions
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Deploy functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          supabase functions deploy --project-ref $SUPABASE_PROJECT_ID \
+            ai-gateway \
+            revenuecat_webhook \
+            livekit_token \
+            payment-api \
+            finance-api \
+            tutor-api \
+            tutor-payout-api \
+            marketplace-api \
+            subscription-api \
+            notifications-api
+
+  # ── 7. Run Database Migrations ───────────────────────────────────────────────
+  migrate-db:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    needs: deploy-functions
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Run migrations
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          supabase db push --project-ref $SUPABASE_PROJECT_ID
+
+  # ── 8. Notify on Completion ──────────────────────────────────────────────────
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [lint, test, build-android, build-web]
+    if: always()
+    steps:
+      - name: Send Slack notification
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
