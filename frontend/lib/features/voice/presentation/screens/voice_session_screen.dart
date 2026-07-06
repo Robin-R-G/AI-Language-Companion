@@ -81,7 +81,7 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
 
     if (result != null) {
       setState(() {
-        _lastTranscription = result['session_id'];
+        _lastTranscription = (result['session_id'] as String?) ?? '';
         _confidence = 0.85;
       });
     }

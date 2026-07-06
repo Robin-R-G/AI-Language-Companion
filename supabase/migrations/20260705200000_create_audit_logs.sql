@@ -1,6 +1,8 @@
 -- Migration: 20260705200000_create_audit_logs.sql
 -- Creates audit_logs table for tracking important events
 
+ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user';
+
 -- ─── Audit Logs ─────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS audit_logs (

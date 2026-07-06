@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/design_tokens.dart';
+import '../../core/constants/design_tokens.dart';
 
 /// Chart components for the AI Language Coach application.
 /// These are placeholder widgets that can be replaced with fl_chart or similar.
@@ -148,9 +148,12 @@ class _LineChartPainter extends CustomPainter {
     if (labels != null && labels!.length == data.length) {
       final textPainter = TextPainter(
         textDirection: TextDirection.ltr,
-        text: TextStyle(
-          color: Colors.grey,
-          fontSize: 10,
+        text: TextSpan(
+          text: '',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 10,
+          ),
         ),
       );
 
@@ -221,7 +224,7 @@ class XPBarChart extends StatelessWidget {
                     height: (height! - 60) * normalizedHeight,
                     decoration: BoxDecoration(
                       color: item.color ?? theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(AppRadius.xs),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),

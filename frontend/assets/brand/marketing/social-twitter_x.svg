@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="twGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <rect width="1200" height="630" fill="url(#twGrad)" opacity="0.12"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="900" cy="315" r="250" stroke="#2563EB" stroke-width="1" opacity="0.1"/>
+  <circle cx="900" cy="315" r="180" stroke="#06B6D4" stroke-width="1" opacity="0.08"/>
+  <circle cx="900" cy="315" r="110" stroke="#7C3AED" stroke-width="1" opacity="0.06"/>
+  
+  <!-- Phone mockup -->
+  <g transform="translate(820, 95)">
+    <rect width="260" height="440" rx="28" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+    <rect x="10" y="10" width="240" height="420" rx="22" fill="#F8FAFC"/>
+    <!-- App header -->
+    <rect x="24" y="24" width="212" height="36" rx="8" fill="#2563EB"/>
+    <text x="130" y="46" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Start Practicing</text>
+    <!-- Voice wave bars -->
+    <g transform="translate(44, 80)">
+      <rect x="0" y="10" width="8" height="20" rx="4" fill="#22C55E"/>
+      <rect x="16" y="0" width="8" height="40" rx="4" fill="#2563EB"/>
+      <rect x="32" y="8" width="8" height="24" rx="4" fill="#7C3AED"/>
+      <rect x="48" y="4" width="8" height="32" rx="4" fill="#14B8A6"/>
+      <rect x="64" y="12" width="8" height="16" rx="4" fill="#F59E0B"/>
+      <rect x="80" y="2" width="8" height="36" rx="4" fill="#2563EB"/>
+      <rect x="96" y="6" width="8" height="28" rx="4" fill="#22C55E"/>
+      <rect x="112" y="14" width="8" height="12" rx="4" fill="#EC4899"/>
+      <rect x="128" y="0" width="8" height="40" rx="4" fill="#7C3AED"/>
+      <rect x="144" y="8" width="8" height="24" rx="4" fill="#06B6D4"/>
+      <rect x="160" y="4" width="8" height="32" rx="4" fill="#2563EB"/>
+      <rect x="176" y="12" width="8" height="16" rx="4" fill="#22C55E"/>
+    </g>
+    <!-- Chat bubbles -->
+    <rect x="24" y="140" width="160" height="32" rx="12" fill="#F1F5F9"/>
+    <rect x="76" y="184" width="160" height="32" rx="12" fill="#2563EB"/>
+    <rect x="24" y="228" width="140" height="32" rx="12" fill="#F1F5F9"/>
+    <!-- Stats cards -->
+    <rect x="24" y="280" width="100" height="60" rx="8" fill="#F0FDF4"/>
+    <text x="74" y="304" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#22C55E" text-anchor="middle">15 XP</text>
+    <text x="74" y="322" font-family="Inter, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Today</text>
+    <rect x="136" y="280" width="100" height="60" rx="8" fill="#EFF6FF"/>
+    <text x="186" y="304" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#2563EB" text-anchor="middle">5</text>
+    <text x="186" y="322" font-family="Inter, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Day Streak</text>
+  </g>
+  
+  <!-- Text content -->
+  <text x="80" y="200" font-family="Inter, sans-serif" font-size="44" font-weight="700" fill="#FFFFFF">Speak. Learn.</text>
+  <text x="80" y="260" font-family="Inter, sans-serif" font-size="44" font-weight="700" fill="#06B6D4">Fluently.</text>
+  <text x="80" y="310" font-family="Inter, sans-serif" font-size="18" fill="#94A3B8">AI-powered voice conversations</text>
+  <text x="80" y="340" font-family="Inter, sans-serif" font-size="18" fill="#94A3B8">for real-world language mastery.</text>
+  
+  <!-- CTA -->
+  <rect x="80" y="380" width="200" height="48" rx="12" fill="#2563EB"/>
+  <text x="180" y="410" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Start Free Trial</text>
+</svg>

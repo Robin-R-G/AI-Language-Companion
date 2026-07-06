@@ -13,11 +13,11 @@ void main() {
     mockSupabase = MockSupabaseClient();
     mockAuth = MockSupabaseAuth();
     when(() => mockSupabase.auth).thenReturn(mockAuth);
-    repository = AuthRepositoryImpl(mockSupabase);
+    repository = AuthRepositoryImpl(client: mockSupabase);
   });
 
   group('AuthRepositoryImpl', () {
-    test('signUp returns AppUser on success', () async {
+    test('signUp returns AuthUser on success', () async {
       final mockUser = MockUser();
       when(() => mockUser.id).thenReturn('user_1');
       when(() => mockUser.email).thenReturn('test@test.com');
@@ -27,10 +27,10 @@ void main() {
       final response = MockAuthResponse();
       when(() => response.user).thenReturn(mockUser);
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password'), data: any(named: 'data')),
       ).thenAnswer((_) async => response);
 
-      final result = await repository.signUp('test@test.com', 'password123');
+      final result = await repository.signUp(email: 'test@test.com', password: 'password123', name: 'Test');
       expect(result.isSuccess, true);
       expect(result.value.email, 'test@test.com');
     });
@@ -39,23 +39,23 @@ void main() {
       final response = MockAuthResponse();
       when(() => response.user).thenReturn(null);
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password'), data: any(named: 'data')),
       ).thenAnswer((_) async => response);
 
-      final result = await repository.signUp('test@test.com', 'password123');
+      final result = await repository.signUp(email: 'test@test.com', password: 'password123', name: 'Test');
       expect(result.isFailure, true);
     });
 
     test('signUp catches exceptions', () async {
       when(
-        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password')),
+        () => mockAuth.signUp(email: any(named: 'email'), password: any(named: 'password'), data: any(named: 'data')),
       ).thenThrow(Exception('Network error'));
 
-      final result = await repository.signUp('test@test.com', 'password123');
+      final result = await repository.signUp(email: 'test@test.com', password: 'password123', name: 'Test');
       expect(result.isFailure, true);
     });
 
-    test('signIn returns AppUser on success', () async {
+    test('signIn returns AuthUser on success', () async {
       final mockUser = MockUser();
       when(() => mockUser.id).thenReturn('user_1');
       when(() => mockUser.email).thenReturn('test@test.com');
@@ -70,9 +70,8 @@ void main() {
           password: any(named: 'password'),
         ),
       ).thenAnswer((_) async => response);
-      // ... existing code continues
 
-      final result = await repository.signIn('test@test.com', 'password123');
+      final result = await repository.signIn(email: 'test@test.com', password: 'password123');
       expect(result.isSuccess, true);
       expect(result.value.id, 'user_1');
     });
@@ -88,17 +87,6 @@ void main() {
       when(() => mockAuth.signOut()).thenThrow(Exception('err'));
       final result = await repository.signOut();
       expect(result.isFailure, true);
-    });
-
-    test('currentUser returns null when no user', () {
-      when(() => mockAuth.currentUser).thenReturn(null);
-      expect(repository.currentUser, isNull);
-    });
-
-    test('authStateChanges maps to bool', () {
-      when(() => mockAuth.onAuthStateChange)
-          .thenAnswer((_) => const Stream.empty());
-      expect(repository.authStateChanges, isA<Stream<bool>>());
     });
   });
 }

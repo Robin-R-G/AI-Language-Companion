@@ -51,15 +51,15 @@ class MemoryEngine extends _$MemoryEngine {
       if (response != null) {
         for (final item in response) {
           final entry = MemoryEntry(
-            id: item['id'],
-            userId: item['user_id'],
-            type: item['memory_type'],
-            key: item['memory_key'],
-            value: item['memory_value'],
-            strength: item['strength'] ?? 50,
-            lastAccessed: DateTime.parse(item['last_accessed']),
-            createdAt: DateTime.parse(item['created_at']),
-            metadata: item['metadata'],
+            id: item['id'] as String,
+            userId: item['user_id'] as String,
+            type: item['memory_type'] as String,
+            key: item['memory_key'] as String,
+            value: item['memory_value'] as String,
+            strength: (item['strength'] as num?)?.toInt() ?? 50,
+            lastAccessed: DateTime.parse(item['last_accessed'] as String),
+            createdAt: DateTime.parse(item['created_at'] as String),
+            metadata: item['metadata'] as Map<String, dynamic>?,
           );
           _memoryCache[entry.key] = entry;
         }

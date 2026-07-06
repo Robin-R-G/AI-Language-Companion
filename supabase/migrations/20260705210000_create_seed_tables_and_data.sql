@@ -1,6 +1,8 @@
 -- Migration: 20260705210000_create_seed_tables_and_data.sql
 -- Creates reference tables and seed data for development
 
+ALTER TABLE public.grammar_topics ALTER COLUMN difficulty TYPE VARCHAR(50);
+
 -- ─── Languages ──────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS languages (
@@ -254,6 +256,6 @@ INSERT INTO vocabulary (word, meaning, pronunciation, examples, cefr_level) VALU
 ('important', 'Of great significance', '/ɪmˈpɔːrtənt/', '[{"example": "This is very important.", "context": "Emphasis"}]'::jsonb, 'A2'),
 ('understand', 'Comprehend the meaning', '/ˌʌndərˈstænd/', '[{"example": "I understand the lesson.", "context": "Learning"}]'::jsonb, 'A2'),
 ('environment', 'Natural world and surroundings', '/ɪnˈvaɪrənmənt/', '[{"example": "We must protect the environment.", "context": "Nature"}]'::jsonb, 'B1'),
-('opportunity', 'A chance to do something", '/ˌɒpərˈtjuːnɪti/', '[{"example": "This is a great opportunity.", "context": "Career"}]'::jsonb, 'B1'),
-('consequence', 'A result of an action", '/ˈkɒnsɪkwəns/', '[{"example": "Consider the consequences.", "context": "Decision-making"}]'::jsonb, 'B1')
+('opportunity', 'A chance to do something', '/ˌɒpərˈtjuːnɪti/', '[{"example": "This is a great opportunity.", "context": "Career"}]'::jsonb, 'B1'),
+('consequence', 'A result of an action', '/ˈkɒnsɪkwəns/', '[{"example": "Consider the consequences.", "context": "Decision-making"}]'::jsonb, 'B1')
 ON CONFLICT DO NOTHING;

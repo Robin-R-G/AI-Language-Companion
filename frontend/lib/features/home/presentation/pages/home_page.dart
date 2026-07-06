@@ -48,6 +48,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                   const SizedBox(height: AppSpacing.base),
                   _buildQuickActions(),
                   const SizedBox(height: AppSpacing.base),
+                  _buildBusinessActions(),
+                  const SizedBox(height: AppSpacing.base),
+                  _buildSponsoredContent(),
+                  const SizedBox(height: AppSpacing.base),
                   _buildMotivationalQuote(),
                 ],
               ),
@@ -330,6 +334,145 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  Widget _buildBusinessActions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Monetization & Partner Services',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 3,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
+          children: [
+            _QuickActionCard(
+              icon: Icons.account_balance_wallet_rounded,
+              label: 'Credits Wallet',
+              color: Colors.blue,
+              onTap: () => context.push(RouteNames.wallet),
+            ),
+            _QuickActionCard(
+              icon: Icons.share_arrival_rounded,
+              label: 'Referrals',
+              color: Colors.orange,
+              onTap: () => context.push(RouteNames.referral),
+            ),
+            _QuickActionCard(
+              icon: Icons.verified_user_rounded,
+              label: 'Tutor Market',
+              color: Colors.purple,
+              onTap: () => context.push(RouteNames.tutors),
+            ),
+            _QuickActionCard(
+              icon: Icons.shopping_bag_rounded,
+              label: 'Affiliate Shop',
+              color: Colors.green,
+              onTap: () => context.push(RouteNames.affiliates),
+            ),
+            _QuickActionCard(
+              icon: Icons.card_membership_rounded,
+              label: 'Certificates',
+              color: Colors.teal,
+              onTap: () => context.push(RouteNames.certificates),
+            ),
+            _QuickActionCard(
+              icon: Icons.credit_card_rounded,
+              label: 'Get Premium',
+              color: Colors.pink,
+              onTap: () => context.push(RouteNames.subscription),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSponsoredContent() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.base),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.workspace_premium_rounded, color: Colors.amber, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Sponsored Partnerships',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (context) => const AlertDialog(
+                        title: Text('Sponsored Scholarship Path'),
+                        content: Text('Redirecting you to the official Oxford English Honors Program portal for international candidates...'),
+                      ),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
+                      ),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('University of Oxford', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue)),
+                          SizedBox(height: 4),
+                          Text('English Honors Program', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (context) => const AlertDialog(
+                        title: Text('Official Exam Partner'),
+                        content: Text('Redirecting you to Duolingo English Test registration with 10% platform discount code...'),
+                      ),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
+                      ),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Duolingo Partner', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue)),
+                          SizedBox(height: 4),
+                          Text('Duolingo Exam (10% Off)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),

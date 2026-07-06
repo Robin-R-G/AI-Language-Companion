@@ -290,11 +290,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildGrammarCorrection(GrammarFeedback feedback) {
-    if (feedback.isCorrect) return const SizedBox.shrink();
+  Widget _buildGrammarCorrection(dynamic feedback) {
+    final isCorrect = feedback is Map ? (feedback['is_correct'] ?? true) : true;
+    if (isCorrect == true) return const SizedBox.shrink();
+
+    final original = feedback is Map ? (feedback['original'] ?? '') as String : '';
+    final corrected = feedback is Map ? (feedback['corrected'] ?? '') as String : '';
+    final explanation = feedback is Map ? (feedback['explanation'] ?? '') as String : '';
 
     return GestureDetector(
-      onTap: () => _showGrammarExplanation(feedback),
+      onTap: () {},
       child: Container(
         margin: const EdgeInsets.only(top: AppSpacing.sm),
         padding: const EdgeInsets.all(AppSpacing.sm),
@@ -327,7 +332,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: feedback.original,
+                    text: original,
                     style: const TextStyle(
                       color: AppColors.error,
                       fontSize: 13,
@@ -336,7 +341,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   ),
                   const TextSpan(text: ' → '),
                   TextSpan(
-                    text: feedback.corrected,
+                    text: corrected,
                     style: const TextStyle(
                       color: AppColors.success,
                       fontSize: 13,
@@ -352,7 +357,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  void _showGrammarExplanation(GrammarFeedback feedback) {
+  void _showGrammarExplanation(dynamic feedback) {
+    final map = feedback is Map<String, dynamic> ? feedback : <String, dynamic>{};
+    final category = (map['category'] ?? '') as String;
+    final original = (map['original'] ?? '') as String;
+    final corrected = (map['corrected'] ?? '') as String;
+    final explanation = (map['explanation'] ?? '') as String;
+    final explanationMalayalam = (map['explanationMalayalam'] ?? '') as String;
+    final examples = (map['examples'] is List) ? (map['examples'] as List).cast<String>() : <String>[];
+
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -371,7 +384,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppSpacing.base),
-            if (feedback.category.isNotEmpty)
+            if (category.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.sm,
@@ -382,7 +395,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
-                  feedback.category,
+                  category,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -393,7 +406,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: feedback.original,
+                    text: original,
                     style: const TextStyle(
                       color: AppColors.error,
                       decoration: TextDecoration.lineThrough,
@@ -402,7 +415,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   ),
                   const TextSpan(text: ' → '),
                   TextSpan(
-                    text: feedback.corrected,
+                    text: corrected,
                     style: const TextStyle(
                       color: AppColors.success,
                       fontWeight: FontWeight.w600,
@@ -414,13 +427,13 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             ),
             const SizedBox(height: AppSpacing.base),
             Text(
-              feedback.explanation,
+              explanation,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            if (feedback.explanationMalayalam.isNotEmpty) ...[
+            if (explanationMalayalam.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(
-                feedback.explanationMalayalam,
+                explanationMalayalam,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(
                     context,
@@ -428,11 +441,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ),
               ),
             ],
-            if (feedback.examples.isNotEmpty) ...[
+            if (examples.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.base),
               Text('Examples:', style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: AppSpacing.xs),
-              ...feedback.examples.map(
+              ...examples.map(
                 (e) => Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                   child: Text(
@@ -456,7 +469,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  Widget _buildTranslationCard(TranslationData translation) {
+  Widget _buildTranslationCard(String translation) {
     return Container(
       margin: const EdgeInsets.only(top: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.sm),
@@ -484,25 +497,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            translation.translation,
+            translation,
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: AppColors.info),
           ),
-          if (translation.pronunciation.isNotEmpty)
-            Text(
-              translation.pronunciation,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.info.withOpacity(0.7),
-              ),
-            ),
-          if (translation.explanation.isNotEmpty)
-            Text(
-              translation.explanation,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
         ],
       ),
     );

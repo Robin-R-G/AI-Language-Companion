@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/design_tokens.dart';
+import '../../core/constants/design_tokens.dart';
 
 /// Exam components for the AI Language Coach application.
 /// Follows the Flutter Component Library specification.
@@ -453,7 +453,7 @@ class ExamSectionHeader extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.section,
+            Icons.view_list,
             color: theme.colorScheme.primary,
           ),
           const SizedBox(width: AppSpacing.sm),

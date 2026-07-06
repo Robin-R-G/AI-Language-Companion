@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/design_tokens.dart';
+import '../../core/constants/design_tokens.dart';
 
 /// AI components for the AI Language Coach application.
 /// Follows the Flutter Component Library specification.
@@ -468,7 +468,7 @@ class ContextPreview extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.context,
+            Icons.psychology,
             size: 20,
             color: theme.colorScheme.primary,
           ),

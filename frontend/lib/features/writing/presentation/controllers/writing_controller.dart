@@ -1,14 +1,10 @@
 // lib/features/writing/presentation/controllers/writing_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/datasources/writing_remote_datasource.dart';
-import '../../data/repositories/writing_repository_impl.dart';
+import '../../domain/repositories/writing_repository.dart';
+import '../../../../core/providers/repository_providers.dart';
 
 part 'writing_controller.g.dart';
-
-@riverpod
-WritingRepository writingRepository(WritingRepositoryRef ref) {
-  return WritingRepositoryImpl();
-}
 
 @riverpod
 class WritingController extends _$WritingController {

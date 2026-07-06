@@ -39,7 +39,7 @@ class LessonsRemoteDataSourceImpl implements LessonsRemoteDataSource {
       final response = await query.order('title');
 
       final lessons = (response as List)
-          .map((json) => Lesson.fromJson(json))
+          .map((json) => Lesson.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return Result.success(lessons);
@@ -105,7 +105,7 @@ class LessonsRemoteDataSourceImpl implements LessonsRemoteDataSource {
           .eq('auth_user_id', userId)
           .single();
 
-      final level = profile['proficiency_level'] ?? 'A1';
+      final level = (profile['proficiency_level'] as String?) ?? 'A1';
 
       final response = await _client
           .from('lessons')
@@ -115,7 +115,7 @@ class LessonsRemoteDataSourceImpl implements LessonsRemoteDataSource {
           .limit(5);
 
       final lessons = (response as List)
-          .map((json) => Lesson.fromJson(json))
+          .map((json) => Lesson.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return Result.success(lessons);

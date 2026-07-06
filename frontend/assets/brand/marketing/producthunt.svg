@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="phGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6154"/>
+      <stop offset="100%" stop-color="#DA5244"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0F172A"/>
+  
+  <!-- Product Hunt upvote badge -->
+  <g transform="translate(80, 80)">
+    <rect width="200" height="140" rx="12" fill="#1E293B"/>
+    <text x="100" y="40" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FF6154" text-anchor="middle">Product Hunt</text>
+    <g transform="translate(80, 50)">
+      <circle cx="20" cy="20" r="20" fill="url(#phGrad)"/>
+      <text x="20" y="26" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF" text-anchor="middle">P</text>
+    </g>
+    <text x="100" y="105" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">AI Language Coach</text>
+    <text x="100" y="125" font-family="Inter, sans-serif" font-size="11" fill="#94A3B8" text-anchor="middle">#1 Education Tool</text>
+  </g>
+  
+  <!-- Phone mockup -->
+  <g transform="translate(850, 90)">
+    <rect width="240" height="450" rx="24" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+    <rect x="10" y="10" width="220" height="430" rx="20" fill="#F8FAFC"/>
+    <rect x="20" y="20" width="200" height="36" rx="8" fill="url(#brandGrad)"/>
+    <text x="120" y="42" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Daily Mission</text>
+    <rect x="20" y="68" width="200" height="100" rx="8" fill="#F1F5F9"/>
+    <rect x="20" y="180" width="200" height="80" rx="8" fill="#F1F5F9"/>
+    <rect x="20" y="272" width="94" height="50" rx="8" fill="#2563EB" opacity="0.1"/>
+    <rect x="126" y="272" width="94" height="50" rx="8" fill="#7C3AED" opacity="0.1"/>
+    <rect x="20" y="334" width="200" height="80" rx="8" fill="#F0FDF4"/>
+  </g>
+  
+  <!-- Main text -->
+  <text x="80" y="220" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF">Featured on</text>
+  <text x="80" y="280" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#FF6154">Product Hunt</text>
+  <text x="80" y="330" font-family="Inter, sans-serif" font-size="18" fill="#94A3B8">The #1 AI-powered language</text>
+  <text x="80" y="358" font-family="Inter, sans-serif" font-size="18" fill="#94A3B8">learning platform for exam prep.</text>
+  
+  <!-- Stats -->
+  <g transform="translate(80, 400)">
+    <rect width="140" height="60" rx="8" fill="#1E293B"/>
+    <text x="70" y="30" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#FF6154" text-anchor="middle">4.9/5</text>
+    <text x="70" y="48" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">User Rating</text>
+    <rect x="160" width="140" height="60" rx="8" fill="#1E293B"/>
+    <text x="230" y="30" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#22C55E" text-anchor="middle">50K+</text>
+    <text x="230" y="48" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Active Learners</text>
+  </g>
+</svg>

@@ -1,14 +1,10 @@
 // lib/features/grammar/presentation/controllers/grammar_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/datasources/grammar_remote_datasource.dart';
-import '../../data/repositories/grammar_repository_impl.dart';
+import '../../domain/repositories/grammar_repository.dart';
+import '../../../../core/providers/repository_providers.dart';
 
 part 'grammar_controller.g.dart';
-
-@riverpod
-GrammarRepository grammarRepository(GrammarRepositoryRef ref) {
-  return GrammarRepositoryImpl();
-}
 
 @riverpod
 class GrammarController extends _$GrammarController {

@@ -308,166 +308,237 @@ class BrandTokens {
   );
 
   // ===========================================================================
-  // ASSET PATHS
+  // ASSET PATHS — Updated to match actual brand/ directory structure
   // ===========================================================================
 
-  // Logo paths
-  static const String logoFull = 'assets/images/logo/logo_full.png';
-  static const String logoIcon = 'assets/images/logo/logo_icon.png';
-  static const String logoMonochrome = 'assets/images/logo/logo_monochrome.png';
-  static const String logoHorizontal = 'assets/images/logo/logo_horizontal.png';
-  static const String logoVertical = 'assets/images/logo/logo_vertical.png';
-  static const String logoFavicon = 'assets/images/logo/logo_favicon.png';
+  // Logo paths (assets/brand/logo/)
+  static const String logoFull = 'assets/brand/logo/png/logo-full.png';
+  static const String logoIcon = 'assets/brand/logo/png/logo-icon.png';
+  static const String logoMonochrome = 'assets/brand/logo/png/logo-monochrome.png';
+  static const String logoHorizontal = 'assets/brand/logo/png/logo-horizontal.png';
+  static const String logoVertical = 'assets/brand/logo/png/logo-vertical.png';
+  static const String logoFavicon = 'assets/brand/logo/png/favicon.png';
 
-  // Illustration paths
-  static const String illustrationSplash = 'assets/images/illustrations/splash.png';
-  static const String illustrationOnboarding1 = 'assets/images/illustrations/onboarding_1.png';
-  static const String illustrationOnboarding2 = 'assets/images/illustrations/onboarding_2.png';
-  static const String illustrationOnboarding3 = 'assets/images/illustrations/onboarding_3.png';
-  static const String illustrationOnboarding4 = 'assets/images/illustrations/onboarding_4.png';
-  static const String illustrationEmptyChat = 'assets/images/illustrations/empty_chat.png';
-  static const String illustrationEmptyLessons = 'assets/images/illustrations/empty_lessons.png';
-  static const String illustrationEmptyVocabulary = 'assets/images/illustrations/empty_vocabulary.png';
-  static const String illustrationEmptyFriends = 'assets/images/illustrations/empty_friends.png';
-  static const String illustrationEmptyGoals = 'assets/images/illustrations/empty_goals.png';
-  static const String illustrationEmptyBadges = 'assets/images/illustrations/empty_badges.png';
-  static const String illustrationEmptyExams = 'assets/images/illustrations/empty_exams.png';
-  static const String illustrationEmptyRewards = 'assets/images/illustrations/empty_rewards.png';
-  static const String illustrationError = 'assets/images/illustrations/error.png';
-  static const String illustrationSuccess = 'assets/images/illustrations/success.png';
+  // Logo SVG paths
+  static const String logoFullSvg = 'assets/brand/logo/svg/logo-full.svg';
+  static const String logoIconSvg = 'assets/brand/logo/svg/logo-icon.svg';
+  static const String logoMonochromeSvg = 'assets/brand/logo/svg/logo-monochrome.svg';
+  static const String logoHorizontalSvg = 'assets/brand/logo/svg/logo-horizontal.svg';
+  static const String logoVerticalSvg = 'assets/brand/logo/svg/logo-vertical.svg';
+  static const String logoFaviconSvg = 'assets/brand/logo/svg/favicon.svg';
 
-  // Badge paths (17 badges)
-  static const String badgeFirstLesson = 'assets/images/badges/badge_first_lesson.png';
-  static const String badgeStreak7 = 'assets/images/badges/badge_streak_7.png';
-  static const String badgeStreak30 = 'assets/images/badges/badge_streak_30.png';
-  static const String badgeStreak90 = 'assets/images/badges/badge_streak_90.png';
-  static const String badgeStreak365 = 'assets/images/badges/badge_streak_365.png';
-  static const String badgeVocabulary100 = 'assets/images/badges/badge_vocabulary_100.png';
-  static const String badgeVocabulary500 = 'assets/images/badges/badge_vocabulary_500.png';
-  static const String badgeVocabulary1000 = 'assets/images/badges/badge_vocabulary_1000.png';
-  static const String badgePerfectScore = 'assets/images/badges/badge_perfect_score.png';
-  static const String badgeExamPassed = 'assets/images/badges/badge_exam_passed.png';
-  static const String badgeExamMaster = 'assets/images/badges/badge_exam_master.png';
-  static const String badgeSocialButterfly = 'assets/images/badges/badge_social_butterfly.png';
-  static const String badgeHelpful = 'assets/images/badges/badge_helpful.png';
-  static const String badgeNightOwl = 'assets/images/badges/badge_night_owl.png';
-  static const String badgeEarlyBird = 'assets/images/badges/badge_early_bird.png';
-  static const String badgeSpeedDemon = 'assets/images/badges/badge_speed_demon.png';
-  static const String badgePolyglot = 'assets/images/badges/badge_polyglot.png';
+  // Splash illustration (assets/brand/splash/)
+  static const String illustrationSplash = 'assets/brand/splash/png/splash_illustration.png';
+  static const String illustrationSplashSvg = 'assets/brand/splash/svg/splash_illustration.svg';
 
-  // XP level paths (10 tiers)
-  static const String xpLevel1 = 'assets/images/xp/xp_level_1.png';
-  static const String xpLevel2 = 'assets/images/xp/xp_level_2.png';
-  static const String xpLevel3 = 'assets/images/xp/xp_level_3.png';
-  static const String xpLevel4 = 'assets/images/xp/xp_level_4.png';
-  static const String xpLevel5 = 'assets/images/xp/xp_level_5.png';
-  static const String xpLevel6 = 'assets/images/xp/xp_level_6.png';
-  static const String xpLevel7 = 'assets/images/xp/xp_level_7.png';
-  static const String xpLevel8 = 'assets/images/xp/xp_level_8.png';
-  static const String xpLevel9 = 'assets/images/xp/xp_level_9.png';
-  static const String xpLevel10 = 'assets/images/xp/xp_level_10.png';
+  // Onboarding illustrations (assets/brand/onboarding/)
+  static const String illustrationOnboarding1 = 'assets/brand/onboarding/png/onboarding_1.png';
+  static const String illustrationOnboarding2 = 'assets/brand/onboarding/png/onboarding_2.png';
+  static const String illustrationOnboarding3 = 'assets/brand/onboarding/png/onboarding_3.png';
+  static const String illustrationOnboarding4 = 'assets/brand/onboarding/png/onboarding_4.png';
+  static const String illustrationOnboarding1Svg = 'assets/brand/onboarding/svg/onboarding_1.svg';
+  static const String illustrationOnboarding2Svg = 'assets/brand/onboarding/svg/onboarding_2.svg';
+  static const String illustrationOnboarding3Svg = 'assets/brand/onboarding/svg/onboarding_3.svg';
+  static const String illustrationOnboarding4Svg = 'assets/brand/onboarding/svg/onboarding_4.svg';
 
-  // AI assistant paths (6 states)
-  static const String aiIdle = 'assets/images/ai/ai_idle.png';
-  static const String aiThinking = 'assets/images/ai/ai_thinking.png';
-  static const String aiSpeaking = 'assets/images/ai/ai_speaking.png';
-  static const String aiHappy = 'assets/images/ai/ai_happy.png';
-  static const String aiEncouraging = 'assets/images/ai/ai_encouraging.png';
-  static const String aiCorrecting = 'assets/images/ai/ai_correcting.png';
+  // Empty state illustrations (assets/brand/empty-states/)
+  static const String illustrationEmptyLessons = 'assets/brand/empty-states/png/no_lessons.png';
+  static const String illustrationEmptyVocabulary = 'assets/brand/empty-states/png/no_vocabulary.png';
+  static const String illustrationEmptyInternet = 'assets/brand/empty-states/png/no_internet.png';
+  static const String illustrationEmptyNotifications = 'assets/brand/empty-states/png/no_notifications.png';
+  static const String illustrationEmptyChat = 'assets/brand/empty-states/png/no_chat_history.png';
+  static const String illustrationEmptyProgress = 'assets/brand/empty-states/png/no_progress.png';
+  static const String illustrationEmptyExams = 'assets/brand/empty-states/png/no_exam_history.png';
+  static const String illustrationEmptyDownloads = 'assets/brand/empty-states/png/no_downloads.png';
 
-  // Exam icon paths (16)
-  static const String examA1 = 'assets/images/exams/exam_a1.png';
-  static const String examA2 = 'assets/images/exams/exam_a2.png';
-  static const String examB1 = 'assets/images/exams/exam_b1.png';
-  static const String examB2 = 'assets/images/exams/exam_b2.png';
-  static const String examC1 = 'assets/images/exams/exam_c1.png';
-  static const String examC2 = 'assets/images/exams/exam_c2.png';
-  static const String examGrammar = 'assets/images/exams/exam_grammar.png';
-  static const String examVocabulary = 'assets/images/exams/exam_vocabulary.png';
-  static const String examListening = 'assets/images/exams/exam_listening.png';
-  static const String examReading = 'assets/images/exams/exam_reading.png';
-  static const String examWriting = 'assets/images/exams/exam_writing.png';
-  static const String examSpeaking = 'assets/images/exams/exam_speaking.png';
-  static const String examPronunciation = 'assets/images/exams/exam_pronunciation.png';
-  static const String examIdioms = 'assets/images/exams/exam_idioms.png';
-  static const String examCollocations = 'assets/images/exams/exam_collocations.png';
-  static const String examPhrasalVerbs = 'assets/images/exams/exam_phrasal_verbs.png';
+  // Achievement badges (assets/brand/badges/) — tiered variants
+  static String badgePath(String badgeName, {String tier = 'gold'}) {
+    return 'assets/brand/badges/png/${badgeName}_$tier.png';
+  }
 
-  // Language icon paths (12)
-  static const String langEnglish = 'assets/images/languages/lang_english.png';
-  static const String langSpanish = 'assets/images/languages/lang_spanish.png';
-  static const String langFrench = 'assets/images/languages/lang_french.png';
-  static const String langGerman = 'assets/images/languages/lang_german.png';
-  static const String langItalian = 'assets/images/languages/lang_italian.png';
-  static const String langPortuguese = 'assets/images/languages/lang_portuguese.png';
-  static const String langJapanese = 'assets/images/languages/lang_japanese.png';
-  static const String langKorean = 'assets/images/languages/lang_korean.png';
-  static const String langChinese = 'assets/images/languages/lang_chinese.png';
-  static const String langArabic = 'assets/images/languages/lang_arabic.png';
-  static const String langRussian = 'assets/images/languages/lang_russian.png';
-  static const String langHindi = 'assets/images/languages/lang_hindi.png';
+  // Named badge convenience paths (gold tier default)
+  static const String badgeFirstLesson = 'assets/brand/badges/png/first_lesson_gold.png';
+  static const String badgeStreak7 = 'assets/brand/badges/png/streak_7_gold.png';
+  static const String badgeStreak30 = 'assets/brand/badges/png/streak_30_gold.png';
+  static const String badgeWords100 = 'assets/brand/badges/png/words_100_gold.png';
+  static const String badgeWords500 = 'assets/brand/badges/png/words_500_gold.png';
+  static const String badgeWords1000 = 'assets/brand/badges/png/words_1000_gold.png';
+  static const String badgeGrammarMaster = 'assets/brand/badges/png/grammar_master_gold.png';
+  static const String badgePronunciationExpert = 'assets/brand/badges/png/pronunciation_expert_gold.png';
+  static const String badgeSpeakingChampion = 'assets/brand/badges/png/speaking_champion_gold.png';
+  static const String badgeWritingExpert = 'assets/brand/badges/png/writing_expert_gold.png';
+  static const String badgeReadingHero = 'assets/brand/badges/png/reading_hero_gold.png';
+  static const String badgeListeningHero = 'assets/brand/badges/png/listening_hero_gold.png';
+  static const String badgeIeltsReady = 'assets/brand/badges/png/ielts_ready_gold.png';
+  static const String badgeGoetheReady = 'assets/brand/badges/png/goethe_ready_gold.png';
+  static const String badgeToeflReady = 'assets/brand/badges/png/toefl_ready_gold.png';
 
-  // Category icon paths (20)
-  static const String categoryGreetings = 'assets/images/categories/category_greetings.png';
-  static const String categoryTravel = 'assets/images/categories/category_travel.png';
-  static const String categoryFood = 'assets/images/categories/category_food.png';
-  static const String categoryShopping = 'assets/images/categories/category_shopping.png';
-  static const String categoryBusiness = 'assets/images/categories/category_business.png';
-  static const String categoryTechnology = 'assets/images/categories/category_technology.png';
-  static const String categoryHealth = 'assets/images/categories/category_health.png';
-  static const String categorySports = 'assets/images/categories/category_sports.png';
-  static const String categoryMusic = 'assets/images/categories/category_music.png';
-  static const String categoryMovies = 'assets/images/categories/category_movies.png';
-  static const String categoryLiterature = 'assets/images/categories/category_literature.png';
-  static const String categoryScience = 'assets/images/categories/category_science.png';
-  static const String categoryHistory = 'assets/images/categories/category_history.png';
-  static const String categoryArt = 'assets/images/categories/category_art.png';
-  static const String categoryFashion = 'assets/images/categories/category_fashion.png';
-  static const String categoryNature = 'assets/images/categories/category_nature.png';
-  static const String categoryEnvironment = 'assets/images/categories/category_environment.png';
-  static const String categoryEducation = 'assets/images/categories/category_education.png';
-  static const String categoryCulture = 'assets/images/categories/category_culture.png';
-  static const String categoryEmotions = 'assets/images/categories/category_emotions.png';
+  // XP level icons (assets/brand/xp-levels/)
+  static String xpLevelPath(int levelStart) {
+    final start = ((levelStart - 1) ~/ 10) * 10 + 1;
+    final end = start + 9;
+    return 'assets/brand/xp-levels/png/xp_level_${start}_$end.png';
+  }
 
-  // Animation paths (12 Lottie + 6 voice wave)
-  static const String animLoading = 'assets/animations/loading.json';
-  static const String animSuccess = 'assets/animations/success.json';
-  static const String animError = 'assets/animations/error.json';
-  static const String animConfetti = 'assets/animations/confetti.json';
-  static const String animLevelUp = 'assets/animations/level_up.json';
-  static const String animAchievement = 'assets/animations/achievement.json';
-  static const String animSpeaking = 'assets/animations/speaking.json';
-  static const String animListening = 'assets/animations/listening.json';
-  static const String animTyping = 'assets/animations/typing.json';
-  static const String animCelebration = 'assets/animations/celebration.json';
-  static const String animTransition = 'assets/animations/transition.json';
-  static const String animOnboarding = 'assets/animations/onboarding.json';
-  static const String voiceWave1 = 'assets/animations/voice_wave_1.json';
-  static const String voiceWave2 = 'assets/animations/voice_wave_2.json';
-  static const String voiceWave3 = 'assets/animations/voice_wave_3.json';
-  static const String voiceWave4 = 'assets/animations/voice_wave_4.json';
-  static const String voiceWave5 = 'assets/animations/voice_wave_5.json';
-  static const String voiceWave6 = 'assets/animations/voice_wave_6.json';
+  static const String xpLevel1 = 'assets/brand/xp-levels/png/xp_level_1_10.png';
+  static const String xpLevel2 = 'assets/brand/xp-levels/png/xp_level_11_20.png';
+  static const String xpLevel3 = 'assets/brand/xp-levels/png/xp_level_21_30.png';
+  static const String xpLevel4 = 'assets/brand/xp-levels/png/xp_level_31_40.png';
+  static const String xpLevel5 = 'assets/brand/xp-levels/png/xp_level_41_50.png';
+  static const String xpLevel6 = 'assets/brand/xp-levels/png/xp_level_51_60.png';
+  static const String xpLevel7 = 'assets/brand/xp-levels/png/xp_level_61_70.png';
+  static const String xpLevel8 = 'assets/brand/xp-levels/png/xp_level_71_80.png';
+  static const String xpLevel9 = 'assets/brand/xp-levels/png/xp_level_81_90.png';
+  static const String xpLevel10 = 'assets/brand/xp-levels/png/xp_level_91_100.png';
 
-  // Mascot paths (6 states)
-  static const String mascotDefault = 'assets/images/mascot/mascot_default.png';
-  static const String mascotHappy = 'assets/images/mascot/mascot_happy.png';
-  static const String mascotSad = 'assets/images/mascot/mascot_sad.png';
-  static const String mascotThinking = 'assets/images/mascot/mascot_thinking.png';
-  static const String mascotCelebrating = 'assets/images/mascot/mascot_celebrating.png';
-  static const String mascotSleeping = 'assets/images/mascot/mascot_sleeping.png';
+  // AI assistant avatar (assets/brand/ai-assistant/)
+  static const String aiIdle = 'assets/brand/ai-assistant/png/assistant_front_idle.png';
+  static const String aiTalking = 'assets/brand/ai-assistant/png/assistant_front_talking.png';
+  static const String aiListening = 'assets/brand/ai-assistant/png/assistant_front_listening.png';
+  static const String aiThinking = 'assets/brand/ai-assistant/png/assistant_front_thinking.png';
+  static const String aiSideIdle = 'assets/brand/ai-assistant/png/assistant_side_idle.png';
+  static const String aiIdleSvg = 'assets/brand/ai-assistant/svg/assistant_front_idle.svg';
+  static const String aiTalkingSvg = 'assets/brand/ai-assistant/svg/assistant_front_talking.svg';
+  static const String aiListeningSvg = 'assets/brand/ai-assistant/svg/assistant_front_listening.svg';
+  static const String aiThinkingSvg = 'assets/brand/ai-assistant/svg/assistant_front_thinking.svg';
+  static const String aiSideIdleSvg = 'assets/brand/ai-assistant/svg/assistant_side_idle.svg';
 
-  // Avatar path generator
-  static String avatarPath(String userId) => 'assets/images/avatars/avatar_$userId.png';
+  // Exam icons (assets/brand/exam-icons/)
+  static String examIconPath(String examCode) {
+    return 'assets/brand/exam-icons/png/exam_$examCode.png';
+  }
 
-  // Notification icon paths (7)
-  static const String notifBadge = 'assets/images/notifications/notif_badge.png';
-  static const String notifAchievement = 'assets/images/notifications/notif_achievement.png';
-  static const String notifReminder = 'assets/images/notifications/notif_reminder.png';
-  static const String notifFriend = 'assets/images/notifications/notif_friend.png';
-  static const String notifMessage = 'assets/images/notifications/notif_message.png';
-  static const String notifExam = 'assets/images/notifications/notif_exam.png';
-  static const String notifStreak = 'assets/images/notifications/notif_streak.png';
+  static const String examIelts = 'assets/brand/exam-icons/png/exam_ielts.png';
+  static const String examToefl = 'assets/brand/exam-icons/png/exam_toefl.png';
+  static const String examPte = 'assets/brand/exam-icons/png/exam_pte.png';
+  static const String examOet = 'assets/brand/exam-icons/png/exam_oet.png';
+  static const String examCelpip = 'assets/brand/exam-icons/png/exam_celpip.png';
+  static const String examCambridge = 'assets/brand/exam-icons/png/exam_cambridge.png';
+  static const String examGoethe = 'assets/brand/exam-icons/png/exam_goethe.png';
+  static const String examTestdaf = 'assets/brand/exam-icons/png/exam_testdaf.png';
+  static const String examDelf = 'assets/brand/exam-icons/png/exam_delf.png';
+  static const String examDalf = 'assets/brand/exam-icons/png/exam_dalf.png';
+  static const String examDele = 'assets/brand/exam-icons/png/exam_dele.png';
+  static const String examSiele = 'assets/brand/exam-icons/png/exam_siele.png';
+  static const String examJlpt = 'assets/brand/exam-icons/png/exam_jlpt.png';
+  static const String examTopik = 'assets/brand/exam-icons/png/exam_topik.png';
+  static const String examHsk = 'assets/brand/exam-icons/png/exam_hsk.png';
+  static const String examDuolingo = 'assets/brand/exam-icons/png/exam_duolingo.png';
+
+  // Language icons (assets/brand/language-icons/)
+  static String languageIconPath(String langCode) {
+    return 'assets/brand/language-icons/png/lang_$langCode.png';
+  }
+
+  static const String langEnglish = 'assets/brand/language-icons/png/lang_english.png';
+  static const String langGerman = 'assets/brand/language-icons/png/lang_german.png';
+  static const String langFrench = 'assets/brand/language-icons/png/lang_french.png';
+  static const String langSpanish = 'assets/brand/language-icons/png/lang_spanish.png';
+  static const String langJapanese = 'assets/brand/language-icons/png/lang_japanese.png';
+  static const String langKorean = 'assets/brand/language-icons/png/lang_korean.png';
+  static const String langChinese = 'assets/brand/language-icons/png/lang_chinese.png';
+  static const String langMalayalam = 'assets/brand/language-icons/png/lang_malayalam.png';
+  static const String langHindi = 'assets/brand/language-icons/png/lang_hindi.png';
+  static const String langArabic = 'assets/brand/language-icons/png/lang_arabic.png';
+  static const String langItalian = 'assets/brand/language-icons/png/lang_italian.png';
+  static const String langPortuguese = 'assets/brand/language-icons/png/lang_portuguese.png';
+
+  // Category icons (assets/brand/category-icons/)
+  static String categoryIconPath(String categoryCode) {
+    return 'assets/brand/category-icons/png/cat_$categoryCode.png';
+  }
+
+  static const String catVocabulary = 'assets/brand/category-icons/png/cat_vocabulary.png';
+  static const String catGrammar = 'assets/brand/category-icons/png/cat_grammar.png';
+  static const String catSpeaking = 'assets/brand/category-icons/png/cat_speaking.png';
+  static const String catWriting = 'assets/brand/category-icons/png/cat_writing.png';
+  static const String catReading = 'assets/brand/category-icons/png/cat_reading.png';
+  static const String catListening = 'assets/brand/category-icons/png/cat_listening.png';
+  static const String catTranslation = 'assets/brand/category-icons/png/cat_translation.png';
+  static const String catFlashcards = 'assets/brand/category-icons/png/cat_flashcards.png';
+  static const String catAiTutor = 'assets/brand/category-icons/png/cat_ai_tutor.png';
+  static const String catLiveClass = 'assets/brand/category-icons/png/cat_live_class.png';
+  static const String catVoiceCall = 'assets/brand/category-icons/png/cat_voice_call.png';
+  static const String catProgress = 'assets/brand/category-icons/png/cat_progress.png';
+  static const String catLeaderboard = 'assets/brand/category-icons/png/cat_leaderboard.png';
+  static const String catCalendar = 'assets/brand/category-icons/png/cat_calendar.png';
+  static const String catSettings = 'assets/brand/category-icons/png/cat_settings.png';
+  static const String catProfile = 'assets/brand/category-icons/png/cat_profile.png';
+  static const String catSubscription = 'assets/brand/category-icons/png/cat_subscription.png';
+  static const String catDownloads = 'assets/brand/category-icons/png/cat_downloads.png';
+  static const String catBookmarks = 'assets/brand/category-icons/png/cat_bookmarks.png';
+  static const String catHistory = 'assets/brand/category-icons/png/cat_history.png';
+
+  // Lottie animations (assets/brand/animations/)
+  static const String animLoading = 'assets/brand/animations/loading.json';
+  static const String animTyping = 'assets/brand/animations/typing.json';
+  static const String animAiThinking = 'assets/brand/animations/ai-thinking.json';
+  static const String animListening = 'assets/brand/animations/listening.json';
+  static const String animSpeaking = 'assets/brand/animations/speaking.json';
+  static const String animVoiceWave = 'assets/brand/animations/voice-wave.json';
+  static const String animLessonComplete = 'assets/brand/animations/lesson-complete.json';
+  static const String animBadgeUnlock = 'assets/brand/animations/badge-unlock.json';
+  static const String animXpIncrease = 'assets/brand/animations/xp-increase.json';
+  static const String animCorrectAnswer = 'assets/brand/animations/correct-answer.json';
+  static const String animWrongAnswer = 'assets/brand/animations/wrong-answer.json';
+  static const String animStreakFire = 'assets/brand/animations/streak-fire.json';
+
+  // Lottie confetti (assets/brand/animations/lottie/)
+  static const String animConfetti = 'assets/brand/animations/lottie/confetti.json';
+
+  // Voice wave animations (assets/brand/animations/voice-wave/)
+  static const String voiceWaveIdle = 'assets/brand/animations/voice-wave/voice_wave_idle.json';
+  static const String voiceWaveListening = 'assets/brand/animations/voice-wave/voice_wave_listening.json';
+  static const String voiceWaveSpeaking = 'assets/brand/animations/voice-wave/voice_wave_speaking.json';
+  static const String voiceWaveAiResponse = 'assets/brand/animations/voice-wave/voice_wave_ai_response.json';
+  static const String voiceWaveRecording = 'assets/brand/animations/voice-wave/voice_wave_recording.json';
+  static const String voiceWaveProcessing = 'assets/brand/animations/voice-wave/voice_wave_processing.json';
+  static const String voiceWaveDarkMode = 'assets/brand/animations/voice-wave/voice_wave_dark_mode.json';
+  static const String voiceWaveLightMode = 'assets/brand/animations/voice-wave/voice_wave_light_mode.json';
+
+  // Mascot paths (assets/brand/mascot/)
+  static const String mascotHappy = 'assets/brand/mascot/png/mascot_happy.png';
+  static const String mascotThinking = 'assets/brand/mascot/png/mascot_thinking.png';
+  static const String mascotCelebrating = 'assets/brand/mascot/png/mascot_celebrating.png';
+  static const String mascotListening = 'assets/brand/mascot/png/mascot_listening.png';
+  static const String mascotTeaching = 'assets/brand/mascot/png/mascot_teaching.png';
+  static const String mascotIdle = 'assets/brand/mascot/png/mascot_idle.png';
+  static const String mascotHappySvg = 'assets/brand/mascot/svg/mascot_happy.svg';
+  static const String mascotThinkingSvg = 'assets/brand/mascot/svg/mascot_thinking.svg';
+  static const String mascotCelebratingSvg = 'assets/brand/mascot/svg/mascot_celebrating.svg';
+  static const String mascotListeningSvg = 'assets/brand/mascot/svg/mascot_listening.svg';
+  static const String mascotTeachingSvg = 'assets/brand/mascot/svg/mascot_teaching.svg';
+
+  // Avatar paths (assets/brand/avatars/)
+  static String avatarPath(int avatarId) => 'assets/brand/avatars/png/avatar_$avatarId.png';
+  static String avatarSvgPath(int avatarId) => 'assets/brand/avatars/svg/avatar_$avatarId.svg';
+  static String maleAvatarPath(int avatarId) => 'assets/brand/avatars/png/avatar_m$avatarId.png';
+  static String femaleAvatarPath(int avatarId) => 'assets/brand/avatars/png/avatar_f$avatarId.png';
+
+  // Notification icons (assets/brand/notification-icons/)
+  static const String notifLessonReminder = 'assets/brand/notification-icons/png/notif_lesson_reminder.png';
+  static const String notifPracticeReminder = 'assets/brand/notification-icons/png/notif_practice_reminder.png';
+  static const String notifStreakReminder = 'assets/brand/notification-icons/png/notif_streak_reminder.png';
+  static const String notifSubscription = 'assets/brand/notification-icons/png/notif_subscription.png';
+  static const String notifAchievement = 'assets/brand/notification-icons/png/notif_achievement.png';
+  static const String notifExamReminder = 'assets/brand/notification-icons/png/notif_exam_reminder.png';
+
+  // Certificate paths (assets/brand/certificates/)
+  static const String certificateLight = 'assets/brand/certificates/png/certificate_light.png';
+  static const String certificateDark = 'assets/brand/certificates/png/certificate_dark.png';
+  static const String certificateLightSvg = 'assets/brand/certificates/svg/certificate_light.svg';
+  static const String certificateDarkSvg = 'assets/brand/certificates/svg/certificate_dark.svg';
+  static const String certificateTemplateSvg = 'assets/brand/certificates/certificate-template.svg';
+
+  // Marketing assets (assets/brand/marketing/)
+  static const String marketingBanner = 'assets/brand/marketing/png/marketing_banner.png';
+  static const String marketingBannerSvg = 'assets/brand/marketing/svg/marketing_banner.svg';
+  static const String heroBannerSvg = 'assets/brand/marketing/hero-banner.svg';
+  static const String featureGraphicSvg = 'assets/brand/marketing/feature-graphic.svg';
+  static const String googlePlayBadge = 'assets/brand/marketing/google-play-badge.svg';
+  static const String appStoreBadge = 'assets/brand/marketing/app-store-badge.svg';
+  static const String socialInstagram = 'assets/brand/marketing/social-instagram.svg';
+  static const String socialLinkedin = 'assets/brand/marketing/social-linkedin.svg';
 
   // ===========================================================================
   // ANIMATION DURATIONS (extends AppDuration)

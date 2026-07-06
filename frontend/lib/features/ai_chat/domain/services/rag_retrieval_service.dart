@@ -73,13 +73,13 @@ class RAGRetrievalService extends _$RAGRetrievalService {
 
       return (response as List).map((item) {
         return RAGResult(
-          id: item['id'],
+          id: item['id'] as String,
           type: 'conversation',
-          content: item['content'],
+          content: item['content'] as String,
           relevance: 0.8,
           metadata: {
-            'role': item['role'],
-            'timestamp': item['created_at'],
+            'role': item['role'] as String,
+            'timestamp': item['created_at'] as String,
           },
         );
       }).toList();
@@ -103,7 +103,7 @@ class RAGRetrievalService extends _$RAGRetrievalService {
 
       return (response as List).map((item) {
         return RAGResult(
-          id: item['id'],
+          id: item['id'] as String,
           type: 'vocabulary',
           content: '${item['word']}: ${item['definition']}',
           relevance: 0.9,
@@ -134,7 +134,7 @@ class RAGRetrievalService extends _$RAGRetrievalService {
         final content = item['content'];
         final description = content is Map ? content['introduction'] ?? '' : '';
         return RAGResult(
-          id: item['id'],
+          id: item['id'] as String,
           type: 'lesson',
           content: '${item['title']}: $description',
           relevance: 0.7,

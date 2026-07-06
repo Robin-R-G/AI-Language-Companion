@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ai_language_coach/shared/theme/app_theme.dart';
+import 'package:ai_language_coach/core/constants/design_tokens.dart';
+import '../../data/datasources/reading_remote_datasource.dart';
 import '../controllers/reading_controller.dart';
 
 class ReadingLessonScreen extends ConsumerStatefulWidget {
@@ -135,7 +137,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
     );
   }
 
-  Widget _buildLessonContent(dynamic lesson) {
+  Widget _buildLessonContent(ReadingLesson lesson) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -157,7 +159,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  lesson.title ?? 'Reading Lesson',
+                  lesson.title.isNotEmpty ? lesson.title : 'Reading Lesson',
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -167,9 +169,9 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    _buildMetaChip(Icons.book, '${lesson.wordCount ?? 0} words'),
+                    _buildMetaChip(Icons.book, '${lesson.wordCount} words'),
                     const SizedBox(width: 12),
-                    _buildMetaChip(Icons.school, lesson.cefrLevel ?? 'A1'),
+                    _buildMetaChip(Icons.school, lesson.cefrLevel),
                   ],
                 ),
               ],
@@ -193,7 +195,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
               border: Border.all(color: AppColors.border),
             ),
             child: Text(
-              lesson.passage ?? '',
+              lesson.passage,
               style: AppTextStyles.bodyLarge.copyWith(
                 height: 1.8,
               ),
@@ -203,7 +205,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
           const SizedBox(height: 24),
 
           // Vocabulary
-          if (lesson.vocabulary != null && lesson.vocabulary.isNotEmpty) ...[
+          if (lesson.vocabulary.isNotEmpty) ...[
             Text(
               'Key Vocabulary',
               style: AppTextStyles.headingMedium,
@@ -214,8 +216,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
           ],
 
           // Comprehension Questions
-          if (lesson.comprehensionQuestions != null &&
-              lesson.comprehensionQuestions.isNotEmpty) ...[
+          if (lesson.comprehensionQuestions.isNotEmpty) ...[
             Text(
               'Comprehension Questions',
               style: AppTextStyles.headingMedium,
@@ -295,7 +296,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
     );
   }
 
-  Widget _buildVocabularyItem(dynamic vocab) {
+  Widget _buildVocabularyItem(Map<String, dynamic> vocab) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -312,7 +313,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  vocab.word ?? '',
+                  (vocab['word'] as String?) ?? '',
                   style: AppTextStyles.bodyLarge.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.primary,
@@ -320,7 +321,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  vocab.definition ?? '',
+                  (vocab['definition'] as String?) ?? '',
                   style: AppTextStyles.bodyMedium,
                 ),
               ],
@@ -331,10 +332,10 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
     );
   }
 
-  Widget _buildQuestion(dynamic question, int index) {
-    final options = question.options as List? ?? [];
+  Widget _buildQuestion(Map<String, dynamic> question, int index) {
+    final options = (question['options'] as List<dynamic>?) ?? [];
     final selected = _selectedAnswers.length > index ? _selectedAnswers[index] : -1;
-    final correctIndex = question.correctIndex ?? 0;
+    final correctIndex = (question['correctIndex'] as num?)?.toInt() ?? 0;
     final showCorrect = _showResults;
 
     return Container(
@@ -361,7 +362,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            question.question ?? '',
+            (question['question'] as String?) ?? '',
             style: AppTextStyles.bodyLarge.copyWith(
               fontWeight: FontWeight.w500,
             ),
@@ -449,7 +450,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
               ),
             );
           }),
-          if (showCorrect && question.explanation != null) ...[
+          if (showCorrect && question['explanation'] != null) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(12),
@@ -463,7 +464,7 @@ class _ReadingLessonScreenState extends ConsumerState<ReadingLessonScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      question.explanation,
+                      (question['explanation'] as String?) ?? '',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.info,
                       ),

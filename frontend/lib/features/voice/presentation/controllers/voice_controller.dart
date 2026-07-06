@@ -3,19 +3,11 @@ import 'dart:typed_data';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/datasources/voice_remote_datasource.dart';
 import '../../data/voice_platform_service.dart';
-import '../../data/repositories/voice_repository_impl.dart';
+import '../../domain/repositories/voice_repository.dart';
+import '../../../../core/providers/repository_providers.dart';
+import '../providers/voice_providers.dart';
 
 part 'voice_controller.g.dart';
-
-@riverpod
-VoiceRepository voiceRepository(VoiceRepositoryRef ref) {
-  return VoiceRepositoryImpl();
-}
-
-@riverpod
-VoicePlatformService voicePlatformService(VoicePlatformServiceRef ref) {
-  return VoicePlatformService();
-}
 
 @riverpod
 class VoiceController extends _$VoiceController {

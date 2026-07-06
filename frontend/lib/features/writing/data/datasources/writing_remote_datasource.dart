@@ -28,15 +28,15 @@ class WritingEvaluation {
 
   factory WritingEvaluation.fromJson(Map<String, dynamic> json) {
     return WritingEvaluation(
-      estimatedBand: json['estimated_band'] ?? 'N/A',
-      grammarScore: json['grammar_score'] ?? 0,
-      vocabularyScore: json['vocabulary_score'] ?? 0,
-      organizationScore: json['organization_score'] ?? 0,
-      clarityScore: json['clarity_score'] ?? 0,
-      strengths: List<String>.from(json['strengths'] ?? []),
-      mistakes: List<String>.from(json['mistakes'] ?? []),
-      improvedVersion: json['improved_version'] ?? '',
-      recommendations: List<String>.from(json['recommendations'] ?? []),
+      estimatedBand: (json['estimated_band'] as String?) ?? 'N/A',
+      grammarScore: (json['grammar_score'] as num?)?.toInt() ?? 0,
+      vocabularyScore: (json['vocabulary_score'] as num?)?.toInt() ?? 0,
+      organizationScore: (json['organization_score'] as num?)?.toInt() ?? 0,
+      clarityScore: (json['clarity_score'] as num?)?.toInt() ?? 0,
+      strengths: (json['strengths'] as List<dynamic>?)?.cast<String>() ?? [],
+      mistakes: (json['mistakes'] as List<dynamic>?)?.cast<String>() ?? [],
+      improvedVersion: (json['improved_version'] as String?) ?? '',
+      recommendations: (json['recommendations'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 }
@@ -59,10 +59,10 @@ class WritingRemoteDataSourceImpl implements WritingRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        return Result.success(WritingEvaluation.fromJson(response.data['data']));
+        return Result.success(WritingEvaluation.fromJson(response.data['data'] as Map<String, dynamic>));
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Evaluation failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Evaluation failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Evaluation failed: ${e.message}'));
     } catch (e) {

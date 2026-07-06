@@ -6,40 +6,6 @@ part of 'chat_message.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ChatMessageImpl _$$ChatMessageImplFromJson(Map<String, dynamic> json) =>
-    _$ChatMessageImpl(
-      id: json['id'] as String,
-      role: json['role'] as String,
-      content: json['content'] as String,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-      grammarFeedback: json['grammarFeedback'] == null
-          ? null
-          : GrammarFeedback.fromJson(
-              json['grammarFeedback'] as Map<String, dynamic>,
-            ),
-      translation: json['translation'] == null
-          ? null
-          : TranslationData.fromJson(
-              json['translation'] as Map<String, dynamic>,
-            ),
-      tokenCount: (json['tokenCount'] as num?)?.toInt(),
-      latencyMs: (json['latencyMs'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$$ChatMessageImplToJson(_$ChatMessageImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'role': instance.role,
-      'content': instance.content,
-      'timestamp': instance.timestamp?.toIso8601String(),
-      'grammarFeedback': instance.grammarFeedback,
-      'translation': instance.translation,
-      'tokenCount': instance.tokenCount,
-      'latencyMs': instance.latencyMs,
-    };
-
 _$GrammarFeedbackImpl _$$GrammarFeedbackImplFromJson(
   Map<String, dynamic> json,
 ) => _$GrammarFeedbackImpl(

@@ -59,7 +59,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
 
   void _swipeCard(int direction) {
     final quality = direction > 0 ? 4 : 2; // 4=good, 2=hard
-    widget.onCardReviewed(widget.flashcards[_currentIndex]['id'], quality);
+    widget.onCardReviewed(widget.flashcards[_currentIndex]['id'] as String, quality);
 
     setState(() {
       _currentIndex++;
@@ -202,7 +202,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
                 label: 'Good',
                 color: AppColors.warning,
                 onTap: () {
-                  widget.onCardReviewed(card['id'], 3);
+                  widget.onCardReviewed(card['id'] as String, 3);
                   setState(() => _currentIndex++);
                 },
               ),
@@ -249,7 +249,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              card['word'] ?? '',
+              (card['word'] as String?) ?? '',
               style: GoogleFonts.poppins(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -258,7 +258,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
             ),
             if (card['pronunciation'] != null)
               Text(
-                card['pronunciation'],
+                (card['pronunciation'] as String?) ?? '',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.textSecondary,
                   fontStyle: FontStyle.italic,
@@ -297,7 +297,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                card['word'] ?? '',
+                (card['word'] as String?) ?? '',
                 style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -306,7 +306,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
               ),
               const SizedBox(height: 16),
               Text(
-                card['definition'] ?? '',
+                (card['definition'] as String?) ?? '',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -323,7 +323,7 @@ class _FlashcardDeckWidgetState extends ConsumerState<FlashcardDeckWidget>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  card['example'],
+                  (card['example'] as String?) ?? '',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontStyle: FontStyle.italic,
                   ),

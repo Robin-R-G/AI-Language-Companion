@@ -1,25 +1,14 @@
+// lib/features/ai_chat/domain/entities/chat_message.dart
+// Re-exports the shared ChatMessage model for feature-level access.
+export '../../../../shared/models/chat_message.dart'
+    show ChatMessage, AIConversation;
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chat_message.freezed.dart';
 part 'chat_message.g.dart';
 
-@freezed
-class ChatMessage with _$ChatMessage {
-  const factory ChatMessage({
-    required String id,
-    required String role,
-    required String content,
-    DateTime? timestamp,
-    GrammarFeedback? grammarFeedback,
-    TranslationData? translation,
-    int? tokenCount,
-    int? latencyMs,
-  }) = _ChatMessage;
-
-  factory ChatMessage.fromJson(Map<String, dynamic> json) =>
-      _$ChatMessageFromJson(json);
-}
-
+/// Feature-specific grammar feedback entity used by AI chat.
 @freezed
 class GrammarFeedback with _$GrammarFeedback {
   const factory GrammarFeedback({
@@ -36,6 +25,7 @@ class GrammarFeedback with _$GrammarFeedback {
       _$GrammarFeedbackFromJson(json);
 }
 
+/// Feature-specific translation data entity used by AI chat.
 @freezed
 class TranslationData with _$TranslationData {
   const factory TranslationData({

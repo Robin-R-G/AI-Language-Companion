@@ -6,42 +6,6 @@ part of 'voice_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$voiceRepositoryHash() => r'7a42405c8bc53e84afdd1ce379896219ad2f3b37';
-
-/// See also [voiceRepository].
-@ProviderFor(voiceRepository)
-final voiceRepositoryProvider = AutoDisposeProvider<VoiceRepository>.internal(
-  voiceRepository,
-  name: r'voiceRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$voiceRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef VoiceRepositoryRef = AutoDisposeProviderRef<VoiceRepository>;
-String _$voicePlatformServiceHash() =>
-    r'f1fd38f741f59ab88e1a1d53613ba242ce6d1961';
-
-/// See also [voicePlatformService].
-@ProviderFor(voicePlatformService)
-final voicePlatformServiceProvider =
-    AutoDisposeProvider<VoicePlatformService>.internal(
-      voicePlatformService,
-      name: r'voicePlatformServiceProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$voicePlatformServiceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef VoicePlatformServiceRef = AutoDisposeProviderRef<VoicePlatformService>;
 String _$voiceControllerHash() => r'14731aafa2fd1c6cd3f137eedac8048284afdf3e';
 
 /// See also [VoiceController].

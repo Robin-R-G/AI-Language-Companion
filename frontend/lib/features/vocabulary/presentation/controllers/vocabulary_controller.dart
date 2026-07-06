@@ -1,16 +1,11 @@
 // lib/features/vocabulary/presentation/controllers/vocabulary_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/datasources/vocabulary_remote_datasource.dart';
-import '../../data/repositories/vocabulary_repository_impl.dart';
+import '../../domain/repositories/vocabulary_repository.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../shared/models/vocabulary_word.dart';
 
 part 'vocabulary_controller.g.dart';
-
-@riverpod
-VocabularyRepository vocabularyRepository(VocabularyRepositoryRef ref) {
-  return VocabularyRepositoryImpl();
-}
 
 @riverpod
 class VocabularyController extends _$VocabularyController {

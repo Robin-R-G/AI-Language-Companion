@@ -20,7 +20,7 @@ SELECT
   s.current_streak,
   s.longest_streak,
   s.last_active_date,
-  up.onboarding_created_at,
+  up.created_at AS onboarding_created_at,
   up.onboarding_completed
 FROM user_profiles up
 LEFT JOIN user_goals ug ON ug.user_id = up.auth_user_id

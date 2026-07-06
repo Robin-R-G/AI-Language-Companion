@@ -32,7 +32,7 @@ class VocabularyRemoteDataSourceImpl implements VocabularyRemoteDataSource {
           .limit(20);
 
       final words = (response as List)
-          .map((json) => VocabularyHistory.fromJson(json))
+          .map((json) => VocabularyHistory.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return Result.success(words);
@@ -61,7 +61,7 @@ class VocabularyRemoteDataSourceImpl implements VocabularyRemoteDataSource {
           .select()
           .single();
 
-      return Result.success(VocabularyHistory.fromJson(response));
+      return Result.success(VocabularyHistory.fromJson(response as Map<String, dynamic>));
     } catch (e) {
       return Result.error(DatabaseFailure('Failed to save review: $e'));
     }
@@ -78,7 +78,7 @@ class VocabularyRemoteDataSourceImpl implements VocabularyRemoteDataSource {
           .limit(100);
 
       final words = (response as List)
-          .map((json) => VocabularyHistory.fromJson(json))
+          .map((json) => VocabularyHistory.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return Result.success(words);

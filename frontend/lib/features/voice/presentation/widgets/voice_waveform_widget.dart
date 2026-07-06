@@ -11,7 +11,7 @@ class VoiceWaveformWidget extends AnimatedWidget {
     super.key,
     required this.isActive,
     required this.animation,
-  });
+  }) : super(listenable: animation);
 
   @override
   Widget build(BuildContext context) {

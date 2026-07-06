@@ -26,8 +26,9 @@ void main() {
       expect(fakeAuth.currentUser, isNull);
 
       final signUpResult = await fakeAuth.signUp(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
+        name: TestConstants.testUserDisplayName,
       );
       expect(signUpResult.isSuccess, isTrue);
       expect(fakeAuth.currentUser, isNotNull);
@@ -43,8 +44,8 @@ void main() {
 
     test('subscription upgrade flow', () async {
       await fakeAuth.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       final plansResult = await fakeSubscription.getPlans();
@@ -72,8 +73,8 @@ void main() {
 
     test('auth state persists across operations', () async {
       await fakeAuth.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
       expect(fakeAuth.currentUser, isNotNull);
 
@@ -99,8 +100,8 @@ void main() {
   group('Data Flow Integration', () {
     test('user profile data matches across services', () async {
       await fakeAuth.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       final user = fakeAuth.currentUser!;

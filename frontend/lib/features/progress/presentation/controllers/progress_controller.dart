@@ -21,7 +21,7 @@ class ProgressDashboardController extends _$ProgressDashboardController {
     }
 
     try {
-      final results = await Future.wait([
+      final results = await Future.wait<dynamic>([
         Supabase.instance.client
             .from('user_progress')
             .select()

@@ -1,16 +1,11 @@
 // lib/features/lessons/presentation/controllers/lessons_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../data/datasources/lessons_remote_datasource.dart';
-import '../../data/repositories/lessons_repository_impl.dart';
+import '../../domain/repositories/lessons_repository.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../shared/models/lesson.dart';
 
 part 'lessons_controller.g.dart';
-
-@riverpod
-LessonsRepository lessonsRepository(LessonsRepositoryRef ref) {
-  return LessonsRepositoryImpl();
-}
 
 @riverpod
 class LessonsController extends _$LessonsController {

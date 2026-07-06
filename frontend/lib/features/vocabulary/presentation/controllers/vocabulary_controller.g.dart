@@ -6,25 +6,6 @@ part of 'vocabulary_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$vocabularyRepositoryHash() =>
-    r'07326ff6221eb443abcb58de0ac18a241ece0280';
-
-/// See also [vocabularyRepository].
-@ProviderFor(vocabularyRepository)
-final vocabularyRepositoryProvider =
-    AutoDisposeProvider<VocabularyRepository>.internal(
-      vocabularyRepository,
-      name: r'vocabularyRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$vocabularyRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef VocabularyRepositoryRef = AutoDisposeProviderRef<VocabularyRepository>;
 String _$vocabularyControllerHash() =>
     r'09be3edd594760483fb4c208dea8565732bbe275';
 

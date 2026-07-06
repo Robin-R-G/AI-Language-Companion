@@ -6,13 +6,16 @@
   <title>AI Language Coach - Brand Asset Catalog</title>
   <style>
     :root {
-      --color-primary: #4F46E5;
+      --color-primary: #2563EB;
+      --color-secondary: #7C3AED;
+      --color-tertiary: #06B6D4;
       --color-background: #F8FAFC;
       --color-surface: #FFFFFF;
       --color-border: #E2E8F0;
       --color-text: #0F172A;
       --color-text-muted: #64748B;
     }
+    * { box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background-color: var(--color-background);
@@ -25,19 +28,9 @@
       border-bottom: 1px solid var(--color-border);
       padding-bottom: 20px;
     }
-    h1 {
-      margin: 0 0 10px 0;
-      color: var(--color-primary);
-      font-size: 32px;
-    }
-    .subtitle {
-      margin: 0;
-      color: var(--color-text-muted);
-      font-size: 18px;
-    }
-    .section {
-      margin-bottom: 60px;
-    }
+    h1 { margin: 0 0 10px 0; color: var(--color-primary); font-size: 32px; }
+    .subtitle { margin: 0; color: var(--color-text-muted); font-size: 18px; }
+    .section { margin-bottom: 60px; }
     .section-title {
       font-size: 22px;
       border-bottom: 2px solid var(--color-primary);
@@ -62,9 +55,7 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s;
     }
-    .card:hover {
-      transform: translateY(-4px);
-    }
+    .card:hover { transform: translateY(-4px); }
     .card img {
       max-width: 100%;
       height: auto;
@@ -74,204 +65,140 @@
       border-radius: 8px;
       padding: 8px;
     }
-    .card.dark-bg img {
-      background: #0F172A;
-    }
-    .card.large-items img {
-      max-height: 240px;
-    }
+    .card.dark-bg img { background: #0F172A; }
+    .card.large-items img { max-height: 240px; }
     .card-title {
       font-size: 14px;
       font-weight: 600;
       margin: 0 0 8px 0;
       word-break: break-all;
     }
-    .formats {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-    }
-    .badge-fmt {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-    }
+    .formats { display: flex; justify-content: center; gap: 6px; }
+    .badge-fmt { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
     .badge-svg { background: #E0F2FE; color: #0369A1; }
     .badge-png { background: #DCFCE7; color: #15803D; }
     .badge-webp { background: #F3E8FF; color: #6B21A8; }
+    .count { color: var(--color-text-muted); font-size: 14px; margin-top: 8px; }
   </style>
 </head>
 <body>
 
   <header>
     <h1>AI Language Coach</h1>
-    <p class="subtitle">Brand Asset Catalog - Developer Ready Vectors & Images</p>
+    <p class="subtitle">Brand Asset Catalog - Developer Ready Vectors &amp; Images</p>
   </header>
 
   <!-- 1. Logo Suite -->
   <div class="section">
-    <h2 class="section-title">1. Logo Suite</h2>
+    <h2 class="section-title">1. Logo Suite (6 variants)</h2>
     <div class="grid">
       <div class="card">
         <img src="logo/svg/logo-icon.svg" alt="Icon">
         <div class="card-title">logo-icon</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card">
         <img src="logo/svg/logo-full.svg" alt="Full">
         <div class="card-title">logo-full</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card">
         <img src="logo/svg/logo-horizontal.svg" alt="Horizontal">
         <div class="card-title">logo-horizontal</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card">
         <img src="logo/svg/logo-vertical.svg" alt="Vertical">
         <div class="card-title">logo-vertical</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card">
         <img src="logo/svg/logo-monochrome.svg" alt="Monochrome">
         <div class="card-title">logo-monochrome</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card">
         <img src="logo/svg/favicon.svg" alt="Favicon">
         <div class="card-title">favicon</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
     </div>
   </div>
 
   <!-- 2. Splash Screen -->
   <div class="section">
-    <h2 class="section-title">2. Splash Screen & Mockups</h2>
+    <h2 class="section-title">2. Splash Screen &amp; Marketing</h2>
     <div class="grid large-items">
       <div class="card large-items dark-bg">
         <img src="splash/svg/splash_illustration.svg" alt="Splash">
         <div class="card-title">splash_illustration</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card large-items">
         <img src="marketing/svg/marketing_banner.svg" alt="Banner">
         <div class="card-title">marketing_banner</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
+      </div>
+      <div class="card large-items dark-bg">
+        <img src="marketing/website-hero.svg" alt="Website Hero">
+        <div class="card-title">website-hero</div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span></div>
+      </div>
+      <div class="card large-items">
+        <img src="marketing/device-mockup.svg" alt="Device Mockup">
+        <div class="card-title">device-mockup</div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span></div>
       </div>
     </div>
   </div>
 
   <!-- 3. Onboarding -->
   <div class="section">
-    <h2 class="section-title">3. Onboarding Illustrations</h2>
+    <h2 class="section-title">3. Onboarding Illustrations (4 screens)</h2>
     <div class="grid large-items">
       <div class="card large-items">
         <img src="onboarding/svg/onboarding_1.svg" alt="Screen 1">
         <div class="card-title">onboarding_1 (Welcome)</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card large-items">
         <img src="onboarding/svg/onboarding_2.svg" alt="Screen 2">
         <div class="card-title">onboarding_2 (Voice Call)</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card large-items">
         <img src="onboarding/svg/onboarding_3.svg" alt="Screen 3">
         <div class="card-title">onboarding_3 (Vocabulary)</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
       <div class="card large-items">
         <img src="onboarding/svg/onboarding_4.svg" alt="Screen 4">
         <div class="card-title">onboarding_4 (Exam Prep)</div>
-        <div class="formats">
-          <span class="badge-fmt badge-svg">SVG</span>
-          <span class="badge-fmt badge-png">PNG</span>
-          <span class="badge-fmt badge-webp">WebP</span>
-        </div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span><span class="badge-fmt badge-webp">WebP</span></div>
       </div>
     </div>
   </div>
 
   <!-- 4. Mascot & AI Assistant -->
   <div class="section">
-    <h2 class="section-title">4. Mascot Emotions & Assistant</h2>
+    <h2 class="section-title">4. Mascot Emotions &amp; AI Assistant (11 states)</h2>
     <div class="grid">
-      <div class="card">
-        <img src="mascot/svg/mascot_happy.svg" alt="Happy">
-        <div class="card-title">mascot_happy</div>
-      </div>
-      <div class="card">
-        <img src="mascot/svg/mascot_thinking.svg" alt="Thinking">
-        <div class="card-title">mascot_thinking</div>
-      </div>
-      <div class="card">
-        <img src="mascot/svg/mascot_celebrating.svg" alt="Celebrating">
-        <div class="card-title">mascot_celebrating</div>
-      </div>
-      <div class="card">
-        <img src="mascot/svg/mascot_listening.svg" alt="Listening">
-        <div class="card-title">mascot_listening</div>
-      </div>
-      <div class="card">
-        <img src="mascot/svg/mascot_teaching.svg" alt="Teaching">
-        <div class="card-title">mascot_teaching</div>
-      </div>
-      <div class="card">
-        <img src="ai-assistant/svg/assistant_front_idle.svg" alt="AI Assistant">
-        <div class="card-title">assistant_front_idle</div>
-      </div>
+      <div class="card"><img src="mascot/svg/mascot_happy.svg" alt="Happy"><div class="card-title">mascot_happy</div></div>
+      <div class="card"><img src="mascot/svg/mascot_thinking.svg" alt="Thinking"><div class="card-title">mascot_thinking</div></div>
+      <div class="card"><img src="mascot/svg/mascot_celebrating.svg" alt="Celebrating"><div class="card-title">mascot_celebrating</div></div>
+      <div class="card"><img src="mascot/svg/mascot_listening.svg" alt="Listening"><div class="card-title">mascot_listening</div></div>
+      <div class="card"><img src="mascot/svg/mascot_teaching.svg" alt="Teaching"><div class="card-title">mascot_teaching</div></div>
+      <div class="card"><img src="ai-assistant/svg/assistant_front_idle.svg" alt="AI Idle"><div class="card-title">assistant_idle</div></div>
+      <div class="card"><img src="ai-assistant/svg/assistant_front_talking.svg" alt="AI Talking"><div class="card-title">assistant_talking</div></div>
+      <div class="card"><img src="ai-assistant/svg/assistant_front_listening.svg" alt="AI Listening"><div class="card-title">assistant_listening</div></div>
+      <div class="card"><img src="ai-assistant/svg/assistant_front_thinking.svg" alt="AI Thinking"><div class="card-title">assistant_thinking</div></div>
+      <div class="card"><img src="ai-assistant/svg/assistant_side_idle.svg" alt="AI Side"><div class="card-title">assistant_side_idle</div></div>
     </div>
   </div>
 
   <!-- 5. Empty States -->
   <div class="section">
-    <h2 class="section-title">5. Empty States</h2>
+    <h2 class="section-title">5. Empty States (8 variants)</h2>
     <div class="grid">
       <div class="card"><img src="empty-states/svg/no_lessons.svg" alt=""><div class="card-title">no_lessons</div></div>
       <div class="card"><img src="empty-states/svg/no_vocabulary.svg" alt=""><div class="card-title">no_vocabulary</div></div>
@@ -284,9 +211,49 @@
     </div>
   </div>
 
-  <!-- 6. Avatars Preview -->
+  <!-- 6. Achievement Badges -->
   <div class="section">
-    <h2 class="section-title">6. Avatars (120 Unique Combinations Generated)</h2>
+    <h2 class="section-title">6. Achievement Badges (45 tiered variants)</h2>
+    <div class="grid">
+      <div class="card"><img src="badges/svg/first_lesson_gold.svg" alt=""><div class="card-title">first_lesson_gold</div></div>
+      <div class="card"><img src="badges/svg/streak_7_gold.svg" alt=""><div class="card-title">streak_7_gold</div></div>
+      <div class="card"><img src="badges/svg/streak_30_gold.svg" alt=""><div class="card-title">streak_30_gold</div></div>
+      <div class="card"><img src="badges/svg/words_100_gold.svg" alt=""><div class="card-title">words_100_gold</div></div>
+      <div class="card"><img src="badges/svg/words_500_gold.svg" alt=""><div class="card-title">words_500_gold</div></div>
+      <div class="card"><img src="badges/svg/words_1000_gold.svg" alt=""><div class="card-title">words_1000_gold</div></div>
+      <div class="card"><img src="badges/svg/grammar_master_gold.svg" alt=""><div class="card-title">grammar_master_gold</div></div>
+      <div class="card"><img src="badges/svg/pronunciation_expert_gold.svg" alt=""><div class="card-title">pronunciation_expert_gold</div></div>
+      <div class="card"><img src="badges/svg/speaking_champion_gold.svg" alt=""><div class="card-title">speaking_champion_gold</div></div>
+      <div class="card"><img src="badges/svg/writing_expert_gold.svg" alt=""><div class="card-title">writing_expert_gold</div></div>
+      <div class="card"><img src="badges/svg/reading_hero_gold.svg" alt=""><div class="card-title">reading_hero_gold</div></div>
+      <div class="card"><img src="badges/svg/listening_hero_gold.svg" alt=""><div class="card-title">listening_hero_gold</div></div>
+      <div class="card"><img src="badges/svg/ielts_ready_gold.svg" alt=""><div class="card-title">ielts_ready_gold</div></div>
+      <div class="card"><img src="badges/svg/goethe_ready_gold.svg" alt=""><div class="card-title">goethe_ready_gold</div></div>
+      <div class="card"><img src="badges/svg/toefl_ready_gold.svg" alt=""><div class="card-title">toefl_ready_gold</div></div>
+    </div>
+    <p class="count">15 badges x 3 tiers (Gold, Silver, Bronze) = 45 total variants with SVG, PNG (1x/2x/3x), WebP</p>
+  </div>
+
+  <!-- 7. XP Level Icons -->
+  <div class="section">
+    <h2 class="section-title">7. XP Level Icons (10 tiers)</h2>
+    <div class="grid">
+      <div class="card"><img src="xp-levels/svg/xp_level_1_10.svg" alt=""><div class="card-title">xp_level_1_10</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_11_20.svg" alt=""><div class="card-title">xp_level_11_20</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_21_30.svg" alt=""><div class="card-title">xp_level_21_30</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_31_40.svg" alt=""><div class="card-title">xp_level_31_40</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_41_50.svg" alt=""><div class="card-title">xp_level_41_50</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_51_60.svg" alt=""><div class="card-title">xp_level_51_60</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_61_70.svg" alt=""><div class="card-title">xp_level_61_70</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_71_80.svg" alt=""><div class="card-title">xp_level_71_80</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_81_90.svg" alt=""><div class="card-title">xp_level_81_90</div></div>
+      <div class="card"><img src="xp-levels/svg/xp_level_91_100.svg" alt=""><div class="card-title">xp_level_91_100</div></div>
+    </div>
+  </div>
+
+  <!-- 8. Avatars -->
+  <div class="section">
+    <h2 class="section-title">8. Avatars (120 unique)</h2>
     <div class="grid">
       <div class="card"><img src="avatars/svg/avatar_1.svg" alt=""><div class="card-title">avatar_1</div></div>
       <div class="card"><img src="avatars/svg/avatar_2.svg" alt=""><div class="card-title">avatar_2</div></div>
@@ -297,36 +264,154 @@
       <div class="card"><img src="avatars/svg/avatar_7.svg" alt=""><div class="card-title">avatar_7</div></div>
       <div class="card"><img src="avatars/svg/avatar_8.svg" alt=""><div class="card-title">avatar_8</div></div>
     </div>
-    <p style="text-align: center; color: var(--color-text-muted); margin-top: 20px;">... and 112 more unique generated avatars in the assets folder.</p>
+    <p class="count">120 unique avatars (4 skin tones x 5 hair colors x 6 shirt colors x 5 hair styles) with SVG, PNG, WebP</p>
   </div>
 
-  <!-- 7. Languages & Exams -->
+  <!-- 9. Languages & Exams -->
   <div class="section">
-    <h2 class="section-title">7. Languages & Exams</h2>
+    <h2 class="section-title">9. Language Icons (12) &amp; Exam Icons (16)</h2>
     <div class="grid">
       <div class="card"><img src="language-icons/svg/lang_english.svg" alt=""><div class="card-title">lang_english</div></div>
       <div class="card"><img src="language-icons/svg/lang_german.svg" alt=""><div class="card-title">lang_german</div></div>
+      <div class="card"><img src="language-icons/svg/lang_french.svg" alt=""><div class="card-title">lang_french</div></div>
       <div class="card"><img src="language-icons/svg/lang_spanish.svg" alt=""><div class="card-title">lang_spanish</div></div>
       <div class="card"><img src="language-icons/svg/lang_japanese.svg" alt=""><div class="card-title">lang_japanese</div></div>
+      <div class="card"><img src="language-icons/svg/lang_korean.svg" alt=""><div class="card-title">lang_korean</div></div>
+      <div class="card"><img src="language-icons/svg/lang_chinese.svg" alt=""><div class="card-title">lang_chinese</div></div>
+      <div class="card"><img src="language-icons/svg/lang_malayalam.svg" alt=""><div class="card-title">lang_malayalam</div></div>
+      <div class="card"><img src="language-icons/svg/lang_hindi.svg" alt=""><div class="card-title">lang_hindi</div></div>
+      <div class="card"><img src="language-icons/svg/lang_arabic.svg" alt=""><div class="card-title">lang_arabic</div></div>
+      <div class="card"><img src="language-icons/svg/lang_italian.svg" alt=""><div class="card-title">lang_italian</div></div>
+      <div class="card"><img src="language-icons/svg/lang_portuguese.svg" alt=""><div class="card-title">lang_portuguese</div></div>
       <div class="card"><img src="exam-icons/svg/exam_ielts.svg" alt=""><div class="card-title">exam_ielts</div></div>
       <div class="card"><img src="exam-icons/svg/exam_toefl.svg" alt=""><div class="card-title">exam_toefl</div></div>
       <div class="card"><img src="exam-icons/svg/exam_goethe.svg" alt=""><div class="card-title">exam_goethe</div></div>
       <div class="card"><img src="exam-icons/svg/exam_jlpt.svg" alt=""><div class="card-title">exam_jlpt</div></div>
+      <div class="card"><img src="exam-icons/svg/exam_delf.svg" alt=""><div class="card-title">exam_delf</div></div>
+      <div class="card"><img src="exam-icons/svg/exam_pte.svg" alt=""><div class="card-title">exam_pte</div></div>
+      <div class="card"><img src="exam-icons/svg/exam_oet.svg" alt=""><div class="card-title">exam_oet</div></div>
+      <div class="card"><img src="exam-icons/svg/exam_topik.svg" alt=""><div class="card-title">exam_topik</div></div>
     </div>
   </div>
 
-  <!-- 8. Certificates -->
+  <!-- 10. Category Icons -->
   <div class="section">
-    <h2 class="section-title">8. Completion Certificates</h2>
+    <h2 class="section-title">10. Category Icons (20)</h2>
+    <div class="grid">
+      <div class="card"><img src="category-icons/svg/cat_vocabulary.svg" alt=""><div class="card-title">vocabulary</div></div>
+      <div class="card"><img src="category-icons/svg/cat_grammar.svg" alt=""><div class="card-title">grammar</div></div>
+      <div class="card"><img src="category-icons/svg/cat_speaking.svg" alt=""><div class="card-title">speaking</div></div>
+      <div class="card"><img src="category-icons/svg/cat_writing.svg" alt=""><div class="card-title">writing</div></div>
+      <div class="card"><img src="category-icons/svg/cat_reading.svg" alt=""><div class="card-title">reading</div></div>
+      <div class="card"><img src="category-icons/svg/cat_listening.svg" alt=""><div class="card-title">listening</div></div>
+      <div class="card"><img src="category-icons/svg/cat_translation.svg" alt=""><div class="card-title">translation</div></div>
+      <div class="card"><img src="category-icons/svg/cat_flashcards.svg" alt=""><div class="card-title">flashcards</div></div>
+      <div class="card"><img src="category-icons/svg/cat_ai_tutor.svg" alt=""><div class="card-title">ai_tutor</div></div>
+      <div class="card"><img src="category-icons/svg/cat_live_class.svg" alt=""><div class="card-title">live_class</div></div>
+      <div class="card"><img src="category-icons/svg/cat_voice_call.svg" alt=""><div class="card-title">voice_call</div></div>
+      <div class="card"><img src="category-icons/svg/cat_progress.svg" alt=""><div class="card-title">progress</div></div>
+      <div class="card"><img src="category-icons/svg/cat_leaderboard.svg" alt=""><div class="card-title">leaderboard</div></div>
+      <div class="card"><img src="category-icons/svg/cat_calendar.svg" alt=""><div class="card-title">calendar</div></div>
+      <div class="card"><img src="category-icons/svg/cat_settings.svg" alt=""><div class="card-title">settings</div></div>
+      <div class="card"><img src="category-icons/svg/cat_profile.svg" alt=""><div class="card-title">profile</div></div>
+      <div class="card"><img src="category-icons/svg/cat_subscription.svg" alt=""><div class="card-title">subscription</div></div>
+      <div class="card"><img src="category-icons/svg/cat_downloads.svg" alt=""><div class="card-title">downloads</div></div>
+      <div class="card"><img src="category-icons/svg/cat_bookmarks.svg" alt=""><div class="card-title">bookmarks</div></div>
+      <div class="card"><img src="category-icons/svg/cat_history.svg" alt=""><div class="card-title">history</div></div>
+    </div>
+  </div>
+
+  <!-- 11. Certificates -->
+  <div class="section">
+    <h2 class="section-title">11. Completion Certificates (Light &amp; Dark)</h2>
     <div class="grid large-items">
       <div class="card large-items">
         <img src="certificates/svg/certificate_light.svg" alt="Light Certificate">
         <div class="card-title">certificate_light</div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span></div>
       </div>
       <div class="card large-items dark-bg">
         <img src="certificates/svg/certificate_dark.svg" alt="Dark Certificate">
         <div class="card-title">certificate_dark</div>
+        <div class="formats"><span class="badge-fmt badge-svg">SVG</span><span class="badge-fmt badge-png">PNG</span></div>
       </div>
+    </div>
+  </div>
+
+  <!-- 12. Notifications -->
+  <div class="section">
+    <h2 class="section-title">12. Notification Icons (7)</h2>
+    <div class="grid">
+      <div class="card"><img src="notification-icons/svg/notif_lesson_reminder.svg" alt=""><div class="card-title">lesson_reminder</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_practice_reminder.svg" alt=""><div class="card-title">practice_reminder</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_streak_reminder.svg" alt=""><div class="card-title">streak_reminder</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_subscription.svg" alt=""><div class="card-title">subscription</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_achievement.svg" alt=""><div class="card-title">achievement</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_exam_reminder.svg" alt=""><div class="card-title">exam_reminder</div></div>
+      <div class="card"><img src="notification-icons/svg/notif_general.svg" alt=""><div class="card-title">general</div></div>
+    </div>
+  </div>
+
+  <!-- 13. Marketing -->
+  <div class="section">
+    <h2 class="section-title">13. Marketing Assets</h2>
+    <div class="grid">
+      <div class="card"><img src="marketing/google-play-badge.svg" alt=""><div class="card-title">google-play-badge</div></div>
+      <div class="card"><img src="marketing/app-store-badge.svg" alt=""><div class="card-title">app-store-badge</div></div>
+      <div class="card"><img src="marketing/hero-banner.svg" alt=""><div class="card-title">hero-banner</div></div>
+      <div class="card"><img src="marketing/feature-graphic.svg" alt=""><div class="card-title">feature-graphic</div></div>
+      <div class="card"><img src="marketing/social-instagram.svg" alt=""><div class="card-title">social-instagram</div></div>
+      <div class="card"><img src="marketing/social-linkedin.svg" alt=""><div class="card-title">social-linkedin</div></div>
+      <div class="card"><img src="marketing/social-facebook.svg" alt=""><div class="card-title">social-facebook</div></div>
+      <div class="card"><img src="marketing/social-twitter_x.svg" alt=""><div class="card-title">social-twitter_x</div></div>
+      <div class="card"><img src="marketing/producthunt.svg" alt=""><div class="card-title">producthunt</div></div>
+    </div>
+  </div>
+
+  <!-- 14. Lottie Animations -->
+  <div class="section">
+    <h2 class="section-title">14. Lottie Animations (14 core + 13 Lottie + 8 voice wave)</h2>
+    <div class="grid">
+      <div class="card"><div class="card-title">loading.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">typing.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">ai-thinking.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">listening.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">speaking.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">lesson-complete.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">badge-unlock.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">xp-increase.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">correct-answer.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">wrong-answer.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">streak-fire.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">voice-wave.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+      <div class="card"><div class="card-title">lottie/confetti.json</div><div class="formats"><span class="badge-fmt badge-svg">Lottie</span></div></div>
+    </div>
+  </div>
+
+  <!-- 15. Sound Effects -->
+  <div class="section">
+    <h2 class="section-title">15. Sound Effects (11 sounds x WAV + MP3)</h2>
+    <div class="grid">
+      <div class="card"><div class="card-title">button_tap</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">success</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">error</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">badge_unlock</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">xp_gain</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">streak_fire</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">lesson_complete</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">notification</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">voice_start</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">voice_stop</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+      <div class="card"><div class="card-title">mic_enabled</div><div class="formats"><span class="badge-fmt badge-png">WAV</span><span class="badge-fmt badge-webp">MP3</span></div></div>
+    </div>
+  </div>
+
+  <!-- 16. Design Tokens -->
+  <div class="section">
+    <h2 class="section-title">16. Design System Tokens</h2>
+    <div class="grid">
+      <div class="card"><div class="card-title">tokens.json</div><div class="formats"><span class="badge-fmt badge-svg">JSON</span></div></div>
+      <div class="card"><div class="card-title">tokens.css</div><div class="formats"><span class="badge-fmt badge-png">CSS</span></div></div>
     </div>
   </div>
 

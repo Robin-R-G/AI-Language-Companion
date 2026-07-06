@@ -109,7 +109,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primaryDark],
+                colors: [AppColors.primary, AppColors.primary600],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

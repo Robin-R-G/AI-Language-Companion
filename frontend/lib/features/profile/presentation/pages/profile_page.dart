@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,9 @@ import '../../../../app/router.dart';
 import '../../../../app/app.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/storage/local_storage.dart';
+import '../../../../shared/models/user_profile.dart';
 import '../controllers/profile_controller.dart';
+import 'avatar_picker_page.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +18,10 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
+  int? _selectedAvatarId;
+  String? _selectedAvatarPath;
+  bool _isLocalFile = false;
+
   @override
   void initState() {
     super.initState();
@@ -23,6 +30,81 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       ref.read(progressControllerProvider.notifier).loadProgress();
       ref.read(streakControllerProvider.notifier).loadStreak();
     });
+  }
+
+  Future<void> _openAvatarPicker() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AvatarPickerPage(
+          currentAvatarId: _selectedAvatarId,
+          currentAvatarPath: _isLocalFile ? _selectedAvatarPath : null,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedAvatarId = result['avatarId'] as int?;
+        _selectedAvatarPath = result['avatarPath'] as String?;
+        _isLocalFile = result['isLocalFile'] as bool? ?? false;
+      });
+    }
+  }
+
+  Widget _buildAvatar(String? avatarUrl) {
+    // Local file from gallery
+    if (_isLocalFile && _selectedAvatarPath != null) {
+      return ClipOval(
+        child: Image.file(
+          File(_selectedAvatarPath!),
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    // Pre-made avatar asset
+    if (_selectedAvatarPath != null && !_isLocalFile) {
+      return ClipOval(
+        child: Image.asset(
+          _selectedAvatarPath!,
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Icon(
+            Icons.person,
+            size: 56,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      );
+    }
+
+    // Network image from profile
+    if (avatarUrl != null && avatarUrl.isNotEmpty) {
+      return ClipOval(
+        child: Image.network(
+          avatarUrl,
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Icon(
+            Icons.person,
+            size: 56,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      );
+    }
+
+    // Default fallback
+    return Icon(
+      Icons.person,
+      size: 56,
+      color: Theme.of(context).colorScheme.primary,
+    );
   }
 
   @override
@@ -56,14 +138,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader(AsyncValue profileState) {
+  Widget _buildProfileHeader(AsyncValue<UserProfile?> profileState) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: profileState.when(
           data: (profile) {
             final name = profile?.fullName ?? 'Learner';
-            final level = profile?.level ?? 1;
+            final level = profile?.proficiencyLevel ?? 'A1';
             final avatarUrl = profile?.avatarUrl;
 
             return Column(
@@ -75,39 +157,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       backgroundColor: Theme.of(
                         context,
                       ).colorScheme.primary.withOpacity(0.1),
-                      child: avatarUrl != null
-                          ? ClipOval(
-                              child: Image.network(
-                                avatarUrl,
-                                width: 96,
-                                height: 96,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.person,
-                                  size: 56,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            )
-                          : Icon(
-                              Icons.person,
-                              size: 56,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                      child: _buildAvatar(avatarUrl),
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(AppSpacing.xs),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 16,
-                          color: Colors.white,
+                      child: GestureDetector(
+                        onTap: _openAvatarPicker,
+                        child: Container(
+                          padding: const EdgeInsets.all(AppSpacing.xs),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),

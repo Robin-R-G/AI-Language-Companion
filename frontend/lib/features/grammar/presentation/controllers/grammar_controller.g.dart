@@ -6,24 +6,6 @@ part of 'grammar_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$grammarRepositoryHash() => r'beb52c024f55f296919c210970d9f8ff42950368';
-
-/// See also [grammarRepository].
-@ProviderFor(grammarRepository)
-final grammarRepositoryProvider =
-    AutoDisposeProvider<GrammarRepository>.internal(
-      grammarRepository,
-      name: r'grammarRepositoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$grammarRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GrammarRepositoryRef = AutoDisposeProviderRef<GrammarRepository>;
 String _$grammarControllerHash() => r'23d131dde9d65da1abf2afe56c288830e6137f64';
 
 /// See also [GrammarController].

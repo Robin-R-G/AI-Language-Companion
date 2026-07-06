@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:ai_language_coach/core/errors/failure.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
 import 'package:ai_language_coach/features/auth/domain/repositories/auth_repository.dart';
-import 'package:ai_language_coach/features/auth/domain/entities/user.dart';
+import 'package:ai_language_coach/features/auth/domain/entities/auth_user.dart';
 import 'package:ai_language_coach/core/services/connectivity_service.dart';
 import '../../test_utils/fake_services.dart';
 import '../../test_utils/test_constants.dart';
@@ -25,8 +25,9 @@ void main() {
   group('Authentication Flow', () {
     test('should sign up with valid credentials', () async {
       final result = await fakeAuthRepository.signUp(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
+        name: TestConstants.testUserDisplayName,
       );
 
       expect(result.isSuccess, isTrue);
@@ -36,8 +37,8 @@ void main() {
 
     test('should sign in with valid credentials', () async {
       final result = await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       expect(result.isSuccess, isTrue);
@@ -46,8 +47,8 @@ void main() {
 
     test('should sign out successfully', () async {
       await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
       expect(fakeAuthRepository.currentUser, isNotNull);
 
@@ -62,8 +63,8 @@ void main() {
       fakeAuthRepository.authStateChanges.listen(states.add);
 
       await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
       await fakeAuthRepository.signOut();
 
@@ -74,8 +75,8 @@ void main() {
       fakeAuthRepository.setShouldFail(true);
 
       final result = await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        'wrong_password',
+        email: TestConstants.testUserEmail,
+        password: 'wrong_password',
       );
 
       expect(result.isFailure, isTrue);
@@ -86,8 +87,9 @@ void main() {
       fakeAuthRepository.setShouldFail(true);
 
       final result = await fakeAuthRepository.signUp(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
+        name: TestConstants.testUserDisplayName,
       );
 
       expect(result.isFailure, isTrue);
@@ -101,8 +103,8 @@ void main() {
 
     test('should map user data correctly after sign in', () async {
       final result = await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       final user = result.value;
@@ -116,8 +118,8 @@ void main() {
       expect(fakeAuthRepository.currentUser, isNull);
 
       await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       expect(fakeAuthRepository.currentUser, isNotNull);
@@ -125,8 +127,8 @@ void main() {
 
     test('should clear user on sign out', () async {
       await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       await fakeAuthRepository.signOut();
@@ -142,8 +144,8 @@ void main() {
       fakeAuthRepository.authStateChanges.listen(states2.add);
 
       await fakeAuthRepository.signIn(
-        TestConstants.testUserEmail,
-        TestConstants.testUserPassword,
+        email: TestConstants.testUserEmail,
+        password: TestConstants.testUserPassword,
       );
 
       expect(states1, [true]);

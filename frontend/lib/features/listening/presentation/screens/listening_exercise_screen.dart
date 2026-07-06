@@ -5,6 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ai_language_coach/shared/theme/app_theme.dart';
+import 'package:ai_language_coach/core/constants/design_tokens.dart';
+import '../../data/datasources/listening_remote_datasource.dart';
 import '../controllers/listening_controller.dart';
 
 class ListeningExerciseScreen extends ConsumerStatefulWidget {
@@ -139,7 +141,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
     );
   }
 
-  Widget _buildExerciseContent(dynamic exercise) {
+  Widget _buildExerciseContent(ListeningExercise exercise) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -161,7 +163,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  exercise.title ?? 'Listening Exercise',
+                  exercise.title.isNotEmpty ? exercise.title : 'Listening Exercise',
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -171,9 +173,9 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    _buildMetaChip(Icons.school, exercise.cefrLevel ?? 'A1'),
+                    _buildMetaChip(Icons.school, exercise.cefrLevel),
                     const SizedBox(width: 12),
-                    _buildMetaChip(Icons.speed, exercise.speedNotes ?? 'normal'),
+                    _buildMetaChip(Icons.speed, exercise.speedNotes),
                   ],
                 ),
               ],
@@ -257,7 +259,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  exercise.script ?? '',
+                  exercise.script,
                   style: AppTextStyles.bodyMedium.copyWith(
                     height: 1.6,
                   ),
@@ -269,7 +271,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
           const SizedBox(height: 24),
 
           // Gap Fill Exercise
-          if (exercise.gapFill != null && exercise.gapFill.isNotEmpty) ...[
+          if (exercise.gapFill.isNotEmpty) ...[
             Text(
               'Gap Fill',
               style: AppTextStyles.headingMedium,
@@ -284,8 +286,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
           ],
 
           // Comprehension Questions
-          if (exercise.comprehensionQuestions != null &&
-              exercise.comprehensionQuestions.isNotEmpty) ...[
+          if (exercise.comprehensionQuestions.isNotEmpty) ...[
             Text(
               'Comprehension Questions',
               style: AppTextStyles.headingMedium,
@@ -347,7 +348,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
 
   Widget _buildGapFillItem(Map<String, dynamic> gap, int index) {
     final answer = _gapFillAnswers[index] ?? '';
-    final correctAnswer = gap['answer'] ?? '';
+    final correctAnswer = (gap['answer'] as String?) ?? '';
     final showCorrect = _showResults;
     final isCorrect = answer.toLowerCase() == correctAnswer.toLowerCase();
 
@@ -376,7 +377,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
               ),
               Expanded(
                 child: Text(
-                  gap['sentence'] ?? '',
+                  (gap['sentence'] as String?) ?? '',
                   style: AppTextStyles.bodyMedium,
                 ),
               ),
@@ -427,10 +428,10 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
     );
   }
 
-  Widget _buildQuestion(dynamic question, int index) {
-    final options = question.options as List? ?? [];
+  Widget _buildQuestion(Map<String, dynamic> question, int index) {
+    final options = (question['options'] as List<dynamic>?) ?? [];
     final selected = _selectedAnswers.length > index ? _selectedAnswers[index] : -1;
-    final correctIndex = question.correctIndex ?? 0;
+    final correctIndex = (question['correctIndex'] as num?)?.toInt() ?? 0;
     final showCorrect = _showResults;
 
     return Container(
@@ -449,7 +450,7 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            question.question ?? '',
+            (question['question'] as String?) ?? '',
             style: AppTextStyles.bodyLarge.copyWith(
               fontWeight: FontWeight.w500,
             ),

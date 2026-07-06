@@ -6,30 +6,35 @@ part of 'voice_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$voiceRepositoryHash() => r'972551c3ab38c41050ec53f5c5f4e4a23e595ad6';
+String _$voicePlatformServiceHash() =>
+    r'f1fd38f741f59ab88e1a1d53613ba242ce6d1961';
 
-/// See also [voiceRepository].
-@ProviderFor(voiceRepository)
-final voiceRepositoryProvider = AutoDisposeProvider<VoiceRepository>.internal(
-  voiceRepository,
-  name: r'voiceRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$voiceRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+/// See also [voicePlatformService].
+@ProviderFor(voicePlatformService)
+final voicePlatformServiceProvider =
+    AutoDisposeProvider<VoicePlatformService>.internal(
+      voicePlatformService,
+      name: r'voicePlatformServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$voicePlatformServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef VoiceRepositoryRef = AutoDisposeProviderRef<VoiceRepository>;
+typedef VoicePlatformServiceRef = AutoDisposeProviderRef<VoicePlatformService>;
 String _$currentVoiceSessionHash() =>
-    r'3354eda14217e52ae722083abc84c29c69a40ad0';
+    r'9c629f6affd917a96f85f6bcda66d4bd1585ee8e';
 
 /// See also [CurrentVoiceSession].
 @ProviderFor(CurrentVoiceSession)
 final currentVoiceSessionProvider =
-    AutoDisposeNotifierProvider<CurrentVoiceSession, VoiceSession?>.internal(
+    AutoDisposeNotifierProvider<
+      CurrentVoiceSession,
+      VoiceSessionResult?
+    >.internal(
       CurrentVoiceSession.new,
       name: r'currentVoiceSessionProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -39,46 +44,6 @@ final currentVoiceSessionProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$CurrentVoiceSession = AutoDisposeNotifier<VoiceSession?>;
-String _$pronunciationScoreStateHash() =>
-    r'5033d3a6f82b77f4525ea07fa8f383a4ecff5a7e';
-
-/// See also [PronunciationScoreState].
-@ProviderFor(PronunciationScoreState)
-final pronunciationScoreStateProvider =
-    AutoDisposeNotifierProvider<
-      PronunciationScoreState,
-      PronunciationScore?
-    >.internal(
-      PronunciationScoreState.new,
-      name: r'pronunciationScoreStateProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$pronunciationScoreStateHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$PronunciationScoreState = AutoDisposeNotifier<PronunciationScore?>;
-String _$voiceSessionsHistoryHash() =>
-    r'43fea295d39e4f532ac48050f0d8363d5daf20e9';
-
-/// See also [VoiceSessionsHistory].
-@ProviderFor(VoiceSessionsHistory)
-final voiceSessionsHistoryProvider =
-    AutoDisposeNotifierProvider<
-      VoiceSessionsHistory,
-      List<VoiceSession>
-    >.internal(
-      VoiceSessionsHistory.new,
-      name: r'voiceSessionsHistoryProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$voiceSessionsHistoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$VoiceSessionsHistory = AutoDisposeNotifier<List<VoiceSession>>;
+typedef _$CurrentVoiceSession = AutoDisposeNotifier<VoiceSessionResult?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -7,7 +7,7 @@ part of 'rag_retrieval_service.dart';
 // **************************************************************************
 
 String _$rAGRetrievalServiceHash() =>
-    r'dc97452dd2613f766b589170252556a5e0490ef7';
+    r'7b4aca5c5761c3c36fde9357c39f89c073d34da9';
 
 /// See also [RAGRetrievalService].
 @ProviderFor(RAGRetrievalService)

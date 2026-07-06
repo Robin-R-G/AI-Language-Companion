@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:ai_language_coach/core/errors/result.dart';
 import 'package:ai_language_coach/core/errors/failure.dart';
-import 'package:ai_language_coach/features/auth/domain/entities/user.dart';
+import 'package:ai_language_coach/features/auth/domain/entities/auth_user.dart';
 import 'package:ai_language_coach/features/auth/domain/repositories/auth_repository.dart';
 import 'package:ai_language_coach/features/subscription/domain/entities/subscription.dart';
 import 'package:ai_language_coach/features/subscription/domain/repositories/subscription_repository.dart';
@@ -14,6 +14,8 @@ class FakeAuthRepository implements AuthRepository {
       StreamController<bool>.broadcast();
   AuthUser? _user;
   bool _shouldFail = false;
+
+  AuthUser? get currentUser => _user;
 
   void setAuthenticated(AuthUser user) {
     _user = user;
@@ -287,4 +289,6 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     if (_shouldFail) return const Result.error(PaymentFailure('Check failed'));
     return Result.success(_currentPlan == 'premium');
   }
+
+  void dispose() {}
 }

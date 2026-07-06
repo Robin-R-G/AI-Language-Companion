@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/design_tokens.dart';
+import '../../core/constants/design_tokens.dart';
 
 /// Loading components for the AI Language Coach application.
 /// Follows the Flutter Component Library specification.

@@ -91,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
           .eq('auth_user_id', user.id)
           .maybeSingle();
 
-      return Result.success(response?['onboarding_completed'] ?? false);
+      return Result.success((response?['onboarding_completed'] as bool?) ?? false);
     } catch (e) {
       return Result.error(DatabaseFailure('Failed to check onboarding: $e'));
     }

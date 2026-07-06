@@ -7,7 +7,7 @@ part of 'progress_controller.dart';
 // **************************************************************************
 
 String _$progressDashboardControllerHash() =>
-    r'1649d215bed822697f46828b9ff14f5971793583';
+    r'1f391355d6601b77b691d38c4aff452c825a63fc';
 
 /// See also [ProgressDashboardController].
 @ProviderFor(ProgressDashboardController)

@@ -10,8 +10,8 @@ class ProfileUpdate extends _$ProfileUpdate {
 
   Future<void> updateProfile(Map<String, dynamic> updates) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(profileRepositoryProvider);
-    final result = await repo.updateProfile(updates);
+    final repo = ref.read(profileRepositoryInstProvider);
+    final result = await repo.updateProfile('', updates);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (_) => state = const AsyncValue.data(null),
@@ -20,8 +20,8 @@ class ProfileUpdate extends _$ProfileUpdate {
 
   Future<void> uploadAvatar(String filePath) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(profileRepositoryProvider);
-    final result = await repo.uploadAvatar(filePath);
+    final repo = ref.read(profileRepositoryInstProvider);
+    final result = await repo.deleteAccount('');
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (_) => state = const AsyncValue.data(null),

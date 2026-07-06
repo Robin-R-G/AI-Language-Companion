@@ -15,6 +15,7 @@ class MockAIProvider {
 
     return ChatMessage(
       id: 'mock_${DateTime.now().millisecondsSinceEpoch}',
+      conversationId: 'mock_conv',
       role: 'assistant',
       content: 'This is a mock AI response to: "$userMessage"',
       timestamp: DateTime.now(),
@@ -54,6 +55,7 @@ class MockAIProvider {
 ChatMessage createTestUserMessage({String? content}) {
   return ChatMessage(
     id: 'test_user_${DateTime.now().millisecondsSinceEpoch}',
+    conversationId: 'test_conv',
     role: 'user',
     content: content ?? 'Test user message',
     timestamp: DateTime.now(),
@@ -63,6 +65,7 @@ ChatMessage createTestUserMessage({String? content}) {
 ChatMessage createTestAssistantMessage({String? content}) {
   return ChatMessage(
     id: 'test_assistant_${DateTime.now().millisecondsSinceEpoch}',
+    conversationId: 'test_conv',
     role: 'assistant',
     content: content ?? 'Test assistant response',
     timestamp: DateTime.now(),

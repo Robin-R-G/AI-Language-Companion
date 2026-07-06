@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:livekit_client/livekit_client.dart';
+import 'package:livekit_client/livekit_client.dart' as lk hide Platform;
 import 'package:dio/dio.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient, Supabase;
 
 class VoicePlatformService {
   final Dio _dio;
   final SupabaseClient _client;
-  Room? _room;
-  LocalAudioTrack? _localAudioTrack;
+  lk.Room? _room;
+  lk.LocalAudioTrack? _localAudioTrack;
   bool _isConnected = false;
   bool _isMuted = false;
 
@@ -18,32 +18,33 @@ class VoicePlatformService {
 
   bool get isConnected => _isConnected;
   bool get isMuted => _isMuted;
-  Room? get room => _room;
+  lk.Room? get room => _room;
 
-  Stream<ParticipantEvent>? get participantEvents =>
-      _room?.events.where((e) => e is ParticipantEvent).cast<ParticipantEvent>();
+  Stream<lk.ParticipantEvent>? get participantEvents =>
+      _room?.events.streamCtrl.stream.where((e) => e is lk.ParticipantEvent).cast<lk.ParticipantEvent>();
 
-  Stream<RoomEvent>? get roomEvents => _room?.events;
+  Stream<lk.RoomEvent>? get roomEvents => _room?.events.streamCtrl.stream;
 
   Future<void> connect({
     required String sessionId,
     required String token,
     required String livekitUrl,
   }) async {
-    _room = Room();
+    _room = lk.Room();
 
     _room!.events.listen((event) {
-      if (event is RoomConnectedEvent) {
+      if (event is lk.RoomConnectedEvent) {
         _isConnected = true;
-      } else if (event is RoomDisconnectedEvent) {
+      } else if (event is lk.RoomDisconnectedEvent) {
         _isConnected = false;
       }
     });
 
-    _room!.events.where((e) => e is TrackEvent).listen((event) {
-      if (event is TrackSubscribedEvent) {
-        final track = event.track;
-        if (track is RemoteAudioTrack) {
+    _room!.events.on<lk.TrackEvent>((event) {
+      final subscribedEvent = event as lk.TrackSubscribedEvent?;
+      if (subscribedEvent != null) {
+        final track = subscribedEvent.track;
+        if (track is lk.RemoteAudioTrack) {
           _onRemoteAudioTrack(track);
         }
       }
@@ -52,14 +53,9 @@ class VoicePlatformService {
     await _room!.connect(
       livekitUrl,
       token,
-      roomOptions: const RoomOptions(
+      roomOptions: const lk.RoomOptions(
         adaptiveStream: true,
         dynacast: true,
-        audioCaptureDefaults: AudioCaptureDefaults(
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        ),
       ),
     );
 
@@ -71,7 +67,6 @@ class VoicePlatformService {
 
   Future<void> disconnect() async {
     if (_localAudioTrack != null) {
-      await _room?.localParticipant?.unpublishTrack(_localAudioTrack!);
       await _localAudioTrack?.stop();
       _localAudioTrack = null;
     }
@@ -123,7 +118,7 @@ class VoicePlatformService {
       );
 
       if (response.data['success'] == true) {
-        return TranscriptionResult.fromJson(response.data['data']);
+        return TranscriptionResult.fromJson(response.data['data'] as Map<String, dynamic>);
       }
 
       return TranscriptionResult(
@@ -161,7 +156,7 @@ class VoicePlatformService {
       );
 
       if (response.data['success'] == true) {
-        return PronunciationAnalysis.fromJson(response.data['data']);
+        return PronunciationAnalysis.fromJson(response.data['data'] as Map<String, dynamic>);
       }
 
       return PronunciationAnalysis.empty();
@@ -194,18 +189,12 @@ class VoicePlatformService {
     }
   }
 
-  Future<LocalAudioTrack> _createAudioTrack() async {
-    return LocalAudioTrack.create(
-      AudioCaptureDefaults(
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      ),
-    );
+  Future<lk.LocalAudioTrack> _createAudioTrack() async {
+    return lk.LocalAudioTrack.create();
   }
 
-  void _onRemoteAudioTrack(RemoteAudioTrack track) {
-    track.audioReceiver.start();
+  void _onRemoteAudioTrack(lk.RemoteAudioTrack track) {
+    track.start();
   }
 }
 
@@ -224,11 +213,11 @@ class TranscriptionResult {
 
   factory TranscriptionResult.fromJson(Map<String, dynamic> json) {
     return TranscriptionResult(
-      text: json['text'] ?? '',
-      confidence: (json['confidence'] ?? 0).toDouble(),
-      language: json['language'] ?? 'en',
+      text: (json['text'] as String?) ?? '',
+      confidence: ((json['confidence'] as num?) ?? 0).toDouble(),
+      language: (json['language'] as String?) ?? 'en',
       words: json['words'] != null
-          ? (json['words'] as List).map((w) => WordTiming.fromJson(w)).toList()
+          ? (json['words'] as List).map((w) => WordTiming.fromJson(w as Map<String, dynamic>)).toList()
           : null,
     );
   }
@@ -249,10 +238,10 @@ class WordTiming {
 
   factory WordTiming.fromJson(Map<String, dynamic> json) {
     return WordTiming(
-      word: json['word'] ?? '',
-      start: (json['start'] ?? 0).toDouble(),
-      end: (json['end'] ?? 0).toDouble(),
-      confidence: (json['confidence'] ?? 0).toDouble(),
+      word: (json['word'] as String?) ?? '',
+      start: ((json['start'] as num?) ?? 0).toDouble(),
+      end: ((json['end'] as num?) ?? 0).toDouble(),
+      confidence: ((json['confidence'] as num?) ?? 0).toDouble(),
     );
   }
 }
@@ -286,16 +275,16 @@ class PronunciationAnalysis {
 
   factory PronunciationAnalysis.fromJson(Map<String, dynamic> json) {
     return PronunciationAnalysis(
-      overallScore: (json['overall_score'] ?? 0).toDouble(),
-      clarity: (json['clarity'] ?? 0).toDouble(),
-      fluency: (json['fluency'] ?? 0).toDouble(),
-      prosody: (json['prosody'] ?? 0).toDouble(),
+      overallScore: ((json['overall_score'] as num?) ?? 0).toDouble(),
+      clarity: ((json['clarity'] as num?) ?? 0).toDouble(),
+      fluency: ((json['fluency'] as num?) ?? 0).toDouble(),
+      prosody: ((json['prosody'] as num?) ?? 0).toDouble(),
       wordFeedbacks: json['word_feedbacks'] != null
           ? (json['word_feedbacks'] as List)
-              .map((w) => WordFeedback.fromJson(w))
+              .map((w) => WordFeedback.fromJson(w as Map<String, dynamic>))
               .toList()
           : [],
-      suggestion: json['suggestion'],
+      suggestion: json['suggestion'] as String?,
     );
   }
 }
@@ -315,10 +304,10 @@ class WordFeedback {
 
   factory WordFeedback.fromJson(Map<String, dynamic> json) {
     return WordFeedback(
-      word: json['word'] ?? '',
-      score: (json['score'] ?? 0).toDouble(),
-      issue: json['issue'],
-      suggestion: json['suggestion'],
+      word: (json['word'] as String?) ?? '',
+      score: ((json['score'] as num?) ?? 0).toDouble(),
+      issue: json['issue'] as String?,
+      suggestion: json['suggestion'] as String?,
     );
   }
 }

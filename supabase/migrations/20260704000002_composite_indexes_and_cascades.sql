@@ -1,32 +1,34 @@
 -- 20260704000002_composite_indexes_and_cascades.sql
 -- Adds composite indexes for common query patterns and cascade deletes
 
+ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user';
+
 ----------------------------------------------------
 -- COMPOSITE INDEXES
 ----------------------------------------------------
 
-create index concurrently if not exists idx_messages_conversation_created
+create index if not exists idx_messages_conversation_created
 on chat_messages(conversation_id, created_at);
 
-create index concurrently if not exists idx_lesson_progress_user_completed
+create index if not exists idx_lesson_progress_user_completed
 on lesson_progress(user_id, completed_at);
 
-create index concurrently if not exists idx_vocab_user_next_review
+create index if not exists idx_vocab_user_next_review
 on vocabulary_history(user_id, next_review);
 
-create index concurrently if not exists idx_achievements_user_unlocked
+create index if not exists idx_achievements_user_unlocked
 on achievements(user_id, unlocked_at);
 
-create index concurrently if not exists idx_voice_user_created
+create index if not exists idx_voice_user_created
 on voice_sessions(user_id, created_at);
 
-create index concurrently if not exists idx_notifications_user_read
+create index if not exists idx_notifications_user_read
 on notifications(user_id, is_read, created_at);
 
-create index concurrently if not exists idx_mock_exams_user_created
+create index if not exists idx_mock_exams_user_created
 on mock_exams(user_id, created_at);
 
-create index concurrently if not exists idx_analytics_events_user_created
+create index if not exists idx_analytics_events_user_created
 on analytics_events(user_id, created_at);
 
 ----------------------------------------------------

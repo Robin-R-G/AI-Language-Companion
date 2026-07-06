@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ai_language_coach/shared/theme/app_theme.dart';
+import 'package:ai_language_coach/core/constants/design_tokens.dart';
+import '../../data/datasources/dashboard_remote_datasource.dart';
 import '../controllers/home_controller.dart';
 
 class StudyPlannerWidget extends ConsumerWidget {
@@ -15,9 +17,23 @@ class StudyPlannerWidget extends ConsumerWidget {
 
     return dashboardState.when(
       data: (data) {
-        final activities = data['today_activities'] as List? ?? [];
-        final estimatedMinutes = data['estimated_minutes'] as int? ?? 0;
-        final focusArea = data['focus_area'] as String? ?? 'Grammar';
+        if (data == null) {
+          return _buildEmptyState();
+        }
+
+        final recommendations = data.recommendations;
+        final estimatedMinutes = data.todayMinutes;
+        final focusArea = recommendations.isNotEmpty ? recommendations.first : 'Grammar';
+
+        final activities = <Map<String, dynamic>>[
+          for (final entry in data.skills.entries)
+            {
+              'type': entry.key,
+              'title': entry.key[0].toUpperCase() + entry.key.substring(1),
+              'estimated_minutes': ((entry.value as num) * 0.5).toInt().clamp(5, 30),
+              'completed': (entry.value as num) >= 70,
+            },
+        ];
 
         if (activities.isEmpty) {
           return _buildEmptyState();
@@ -38,7 +54,7 @@ class StudyPlannerWidget extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withAlpha(25),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -61,7 +77,7 @@ class StudyPlannerWidget extends ConsumerWidget {
             const SizedBox(height: 16),
             ...activities.asMap().entries.map((entry) {
               final activity = entry.value;
-              return _buildActivityCard(activity);
+              return _buildActivityCard(activity, activities.length);
             }),
           ],
         );
@@ -104,7 +120,7 @@ class StudyPlannerWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityCard(Map<String, dynamic> activity) {
+  Widget _buildActivityCard(Map<String, dynamic> activity, int totalActivities) {
     final type = activity['type'] as String? ?? '';
     final title = activity['title'] as String? ?? '';
     final minutes = activity['estimated_minutes'] as int? ?? 0;
@@ -128,11 +144,11 @@ class StudyPlannerWidget extends ConsumerWidget {
         break;
       case 'writing':
         icon = Icons.edit;
-        color = AppColors.writing;
+        color = AppColors.writingColor;
         break;
       case 'reading':
         icon = Icons.menu_book;
-        color = AppColors.reading;
+        color = AppColors.readingColor;
         break;
       case 'listening':
         icon = Icons.hearing;
@@ -148,7 +164,7 @@ class StudyPlannerWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: completed
-            ? AppColors.success.withOpacity(0.05)
+            ? AppColors.success.withAlpha(13)
             : AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
@@ -161,7 +177,7 @@ class StudyPlannerWidget extends ConsumerWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withAlpha(25),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -192,6 +208,6 @@ class StudyPlannerWidget extends ConsumerWidget {
             Icon(Icons.check_circle, color: AppColors.success, size: 20),
         ],
       ),
-    ).animate().fadeIn(delay: Duration(milliseconds: 100 * (activities.length - 1)));
+    ).animate().fadeIn(delay: Duration(milliseconds: 100 * totalActivities));
   }
 }

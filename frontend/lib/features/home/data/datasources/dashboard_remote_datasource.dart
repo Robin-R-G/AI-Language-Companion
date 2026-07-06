@@ -67,17 +67,17 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
       );
 
       return Result.success(DashboardData(
-        xp: progress?['xp'] ?? 0,
-        level: progress?['level'] ?? 1,
-        streak: streak?['current_streak'] ?? 0,
+        xp: (progress?['xp'] as num?)?.toInt() ?? 0,
+        level: (progress?['level'] as num?)?.toInt() ?? 1,
+        streak: (streak?['current_streak'] as num?)?.toInt() ?? 0,
         weeklyProgress: _buildWeeklyProgress(lessons),
         skills: {
-          'grammar': progress?['grammar_score'] ?? 0,
-          'speaking': progress?['speaking_score'] ?? 0,
-          'writing': progress?['writing_score'] ?? 0,
-          'vocabulary': progress?['vocabulary_score'] ?? 0,
-          'reading': progress?['reading_score'] ?? 0,
-          'listening': progress?['listening_score'] ?? 0,
+          'grammar': (progress?['grammar_score'] as num?)?.toInt() ?? 0,
+          'speaking': (progress?['speaking_score'] as num?)?.toInt() ?? 0,
+          'writing': (progress?['writing_score'] as num?)?.toInt() ?? 0,
+          'vocabulary': (progress?['vocabulary_score'] as num?)?.toInt() ?? 0,
+          'reading': (progress?['reading_score'] as num?)?.toInt() ?? 0,
+          'listening': (progress?['listening_score'] as num?)?.toInt() ?? 0,
         },
         recommendations: _buildRecommendations(progress),
         todayMinutes: totalWeeklyMinutes,
@@ -111,16 +111,16 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
     final recommendations = <String>[];
     if (progress == null) return ['Start your first lesson!'];
 
-    if ((progress['grammar_score'] ?? 0) < 50) {
+    if (((progress['grammar_score'] as num?) ?? 0) < 50) {
       recommendations.add('Review grammar fundamentals');
     }
-    if ((progress['vocabulary_score'] ?? 0) < 50) {
+    if (((progress['vocabulary_score'] as num?) ?? 0) < 50) {
       recommendations.add('Practice daily vocabulary');
     }
-    if ((progress['speaking_score'] ?? 0) < 50) {
+    if (((progress['speaking_score'] as num?) ?? 0) < 50) {
       recommendations.add('Try a speaking session');
     }
-    if ((progress['writing_score'] ?? 0) < 50) {
+    if (((progress['writing_score'] as num?) ?? 0) < 50) {
       recommendations.add('Write a short essay');
     }
 

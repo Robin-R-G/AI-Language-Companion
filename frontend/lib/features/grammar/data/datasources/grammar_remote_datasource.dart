@@ -24,13 +24,13 @@ class GrammarResult {
 
   factory GrammarResult.fromJson(Map<String, dynamic> json) {
     return GrammarResult(
-      isCorrect: json['is_correct'] ?? true,
-      original: json['original'] ?? '',
-      corrected: json['corrected'] ?? '',
-      explanation: json['explanation'] ?? '',
-      explanationMalayalam: json['explanation_malayalam'] ?? '',
-      category: json['category'] ?? 'General',
-      examples: List<String>.from(json['examples'] ?? []),
+      isCorrect: (json['is_correct'] as bool?) ?? true,
+      original: (json['original'] as String?) ?? '',
+      corrected: (json['corrected'] as String?) ?? '',
+      explanation: (json['explanation'] as String?) ?? '',
+      explanationMalayalam: (json['explanation_malayalam'] as String?) ?? '',
+      category: (json['category'] as String?) ?? 'General',
+      examples: (json['examples'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 }
@@ -65,10 +65,10 @@ class GrammarRemoteDataSourceImpl implements GrammarRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        return Result.success(GrammarResult.fromJson(response.data['data']));
+        return Result.success(GrammarResult.fromJson(response.data['data'] as Map<String, dynamic>));
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Grammar check failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Grammar check failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Grammar check failed: ${e.message}'));
     } catch (e) {

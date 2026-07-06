@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/providers/repository_providers.dart';
-import '../../domain/entities/lesson.dart';
+import '../../../../shared/models/lesson.dart';
 
 part 'lesson_providers.g.dart';
 
@@ -11,7 +11,7 @@ class LessonsList extends _$LessonsList {
 
   Future<void> loadLessons({String? category, String? difficulty}) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(lessonRepositoryProvider);
+    final repo = ref.read(lessonsRepositoryProvider);
     final result = await repo.getLessons(
       category: category,
       difficulty: difficulty,
@@ -30,8 +30,8 @@ class LessonDetail extends _$LessonDetail {
 
   Future<void> loadLesson(String id) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(lessonRepositoryProvider);
-    final result = await repo.getLessonById(id);
+    final repo = ref.read(lessonsRepositoryProvider);
+    final result = await repo.getLesson(id);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (lesson) => state = AsyncValue.data(lesson),
@@ -39,8 +39,13 @@ class LessonDetail extends _$LessonDetail {
   }
 
   Future<void> completeLesson(String lessonId, int score) async {
-    final repo = ref.read(lessonRepositoryProvider);
-    final result = await repo.completeLesson(lessonId, score);
+    final userId = 'current_user';
+    final repo = ref.read(lessonsRepositoryProvider);
+    final result = await repo.completeLesson(
+      userId: userId,
+      lessonId: lessonId,
+      score: score,
+    );
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (_) => loadLesson(lessonId),

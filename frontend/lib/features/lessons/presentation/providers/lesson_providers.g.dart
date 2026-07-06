@@ -6,7 +6,7 @@ part of 'lesson_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lessonsListHash() => r'14447e2041d01ded2cf63cfae90d20725a029bfb';
+String _$lessonsListHash() => r'360e819358947b29488e868cc544ef76ece2817c';
 
 /// See also [LessonsList].
 @ProviderFor(LessonsList)
@@ -22,7 +22,7 @@ final lessonsListProvider =
     );
 
 typedef _$LessonsList = AutoDisposeNotifier<AsyncValue<List<Lesson>>>;
-String _$lessonDetailHash() => r'830c2319afdfbc8627a55c6e2b12939832ce5e3b';
+String _$lessonDetailHash() => r'91b0beef19544644772e80e9f9e9a58a5fb93516';
 
 /// See also [LessonDetail].
 @ProviderFor(LessonDetail)

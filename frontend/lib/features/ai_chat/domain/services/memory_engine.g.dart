@@ -6,7 +6,7 @@ part of 'memory_engine.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$memoryEngineHash() => r'bc3adba976330c0b2a1da7c7550ce963dffadf87';
+String _$memoryEngineHash() => r'4e8dc8302c144817a16bd4a89dc3168545b79427';
 
 /// See also [MemoryEngine].
 @ProviderFor(MemoryEngine)

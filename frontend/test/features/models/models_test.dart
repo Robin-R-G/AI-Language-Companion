@@ -294,6 +294,7 @@ void main() {
     test('fromJson with nested GrammarFeedback', () {
       final msg = ChatMessage.fromJson({
         'id': 'msg_1',
+        'conversationId': 'conv_1',
         'role': 'assistant',
         'content': 'Hello!',
         'timestamp': '2026-07-04T10:00:00.000',
@@ -306,19 +307,20 @@ void main() {
       });
       expect(msg.role, 'assistant');
       expect(msg.grammarFeedback, isNotNull);
-      expect(msg.grammarFeedback!.isCorrect, false);
-      expect(msg.grammarFeedback!.corrected, 'He goes');
+      expect(msg.grammarFeedback!['isCorrect'], false);
+      expect(msg.grammarFeedback!['corrected'], 'He goes');
     });
 
     test('fromJson with nested TranslationData', () {
       final msg = ChatMessage.fromJson({
         'id': 'msg_2',
+        'conversationId': 'conv_1',
         'role': 'user',
         'content': 'Hello',
-        'translation': {'translation': 'ഹലോ', 'pronunciation': 'həlō'},
+        'translation': 'ഹലോ',
       });
       expect(msg.translation, isNotNull);
-      expect(msg.translation!.translation, 'ഹലോ');
+      expect(msg.translation, 'ഹലോ');
     });
   });
 

@@ -89,7 +89,7 @@ class _GrammarFeedback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCorrect = feedback['is_correct'] ?? true;
+    final isCorrect = (feedback['is_correct'] as bool?) ?? true;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -124,7 +124,7 @@ class _GrammarFeedback extends StatelessWidget {
             const SizedBox(height: 4),
             if (feedback['corrected'] != null)
               Text(
-                feedback['corrected'],
+                (feedback['corrected'] as String?) ?? '',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
@@ -132,7 +132,7 @@ class _GrammarFeedback extends StatelessWidget {
               ),
             if (feedback['explanation'] != null)
               Text(
-                feedback['explanation'],
+                (feedback['explanation'] as String?) ?? '',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

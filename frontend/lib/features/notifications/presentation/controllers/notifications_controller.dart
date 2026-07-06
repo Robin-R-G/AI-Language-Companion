@@ -29,7 +29,7 @@ class NotificationsController extends _$NotificationsController {
           .limit(50);
 
       final notifications = (response as List)
-          .map((json) => Notification.fromJson(json))
+          .map((json) => Notification.fromJson(json as Map<String, dynamic>))
           .toList();
 
       state = AsyncValue.data(notifications);

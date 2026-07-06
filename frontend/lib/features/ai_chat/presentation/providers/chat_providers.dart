@@ -24,6 +24,7 @@ class ChatMessages extends _$ChatMessages {
       state = messages
           .map((m) => domain.ChatMessage(
                 id: m.id,
+                conversationId: conversationId,
                 role: m.role,
                 content: m.content,
                 timestamp: m.timestamp,
@@ -38,6 +39,7 @@ class ChatMessages extends _$ChatMessages {
     final repo = ref.read(chatRepositoryProvider);
     final userMsg = domain.ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
+      conversationId: conversationId,
       role: 'user',
       content: message,
       timestamp: DateTime.now(),
@@ -53,6 +55,7 @@ class ChatMessages extends _$ChatMessages {
         ...state,
         domain.ChatMessage(
           id: reply.id,
+          conversationId: conversationId,
           role: reply.role,
           content: reply.content,
           timestamp: reply.timestamp,

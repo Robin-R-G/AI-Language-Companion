@@ -1,7 +1,7 @@
 // lib/features/voice/data/datasources/voice_remote_datasource.dart
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide MultipartFile;
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 import '../../../../shared/models/exam.dart';
@@ -21,10 +21,10 @@ class VoiceSessionResult {
 
   factory VoiceSessionResult.fromJson(Map<String, dynamic> json) {
     return VoiceSessionResult(
-      sessionId: json['session_id'] ?? '',
-      token: json['token'] ?? '',
-      roomId: json['room_id'] ?? '',
-      livekitUrl: json['livekit_url'] ?? '',
+      sessionId: (json['session_id'] as String?) ?? '',
+      token: (json['token'] as String?) ?? '',
+      roomId: (json['room_id'] as String?) ?? '',
+      livekitUrl: (json['livekit_url'] as String?) ?? '',
     );
   }
 }
@@ -85,9 +85,9 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
         (failure) => Result.error(failure),
         (tokenData) => Result.success(VoiceSessionResult(
           sessionId: userId,
-          token: tokenData['token'] ?? '',
+          token: (tokenData['token'] as String?) ?? '',
           roomId: roomId,
-          livekitUrl: tokenData['livekit_url'] ?? '',
+          livekitUrl: (tokenData['livekit_url'] as String?) ?? '',
         )),
       );
     } catch (e) {
@@ -142,10 +142,10 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        return Result.success(response.data['data']);
+        return Result.success(response.data['data'] as Map<String, dynamic>);
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Token generation failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Token generation failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Token generation failed: ${e.message}'));
     }
@@ -173,10 +173,10 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        return Result.success(response.data['data']);
+        return Result.success(response.data['data'] as Map<String, dynamic>);
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Transcription failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Transcription failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Transcription failed: ${e.message}'));
     }
@@ -204,10 +204,10 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        return Result.success(response.data['data']);
+        return Result.success(response.data['data'] as Map<String, dynamic>);
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Pronunciation analysis failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Pronunciation analysis failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Pronunciation analysis failed: ${e.message}'));
     }

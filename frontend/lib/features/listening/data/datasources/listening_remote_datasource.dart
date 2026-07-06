@@ -22,12 +22,12 @@ class ListeningExercise {
 
   factory ListeningExercise.fromJson(Map<String, dynamic> json) {
     return ListeningExercise(
-      script: json['script'] ?? '',
-      title: json['title'] ?? '',
-      cefrLevel: json['cefr_level'] ?? 'A1',
-      gapFill: List<Map<String, dynamic>>.from(json['gap_fill'] ?? []),
-      comprehensionQuestions: List<Map<String, dynamic>>.from(json['comprehension_questions'] ?? []),
-      speedNotes: json['speed_notes'] ?? 'normal',
+      script: (json['script'] as String?) ?? '',
+      title: (json['title'] as String?) ?? '',
+      cefrLevel: (json['cefr_level'] as String?) ?? 'A1',
+      gapFill: (json['gap_fill'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [],
+      comprehensionQuestions: (json['comprehension_questions'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [],
+      speedNotes: (json['speed_notes'] as String?) ?? 'normal',
     );
   }
 }
@@ -54,11 +54,11 @@ class ListeningRemoteDataSourceImpl implements ListeningRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        final output = response.data['data']['output'];
+        final output = response.data['data']['output'] as Map<String, dynamic>;
         return Result.success(ListeningExercise.fromJson(output));
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Exercise generation failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Exercise generation failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Exercise generation failed: ${e.message}'));
     } catch (e) {

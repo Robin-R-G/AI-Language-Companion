@@ -39,6 +39,7 @@ dependencies:
   shimmer: ^3.0.0
   confetti: ^0.7.0
   fl_chart: ^0.70.2
+  image_picker: ^1.1.2
 
   # Utils
   intl: ^0.20.2
@@ -98,9 +99,124 @@ flutter:
   uses-material-design: true
 
   assets:
+    # Legacy asset dirs
     - assets/icons/
     - assets/illustrations/
     - assets/animations/
+
+    # Brand assets — Logo
+    - assets/brand/logo/svg/
+    - assets/brand/logo/png/
+
+    # Brand assets — Splash
+    - assets/brand/splash/svg/
+    - assets/brand/splash/png/
+
+    # Brand assets — Onboarding
+    - assets/brand/onboarding/svg/
+    - assets/brand/onboarding/png/
+
+    # Brand assets — Empty States
+    - assets/brand/empty-states/svg/
+    - assets/brand/empty-states/png/
+
+    # Brand assets — Achievement Badges
+    - assets/brand/badges/svg/
+    - assets/brand/badges/png/
+
+    # Brand assets — XP Level Icons
+    - assets/brand/xp-levels/svg/
+    - assets/brand/xp-levels/png/
+
+    # Brand assets — Avatars
+    - assets/brand/avatars/svg/
+    - assets/brand/avatars/png/
+
+    # Brand assets — AI Assistant
+    - assets/brand/ai-assistant/svg/
+    - assets/brand/ai-assistant/png/
+
+    # Brand assets — Exam Icons
+    - assets/brand/exam-icons/svg/
+    - assets/brand/exam-icons/png/
+
+    # Brand assets — Language Icons
+    - assets/brand/language-icons/svg/
+    - assets/brand/language-icons/png/
+
+    # Brand assets — Category Icons
+    - assets/brand/category-icons/svg/
+    - assets/brand/category-icons/png/
+
+    # Brand assets — Notification Icons
+    - assets/brand/notification-icons/svg/
+    - assets/brand/notification-icons/png/
+
+    # Brand assets — Certificates
+    - assets/brand/certificates/svg/
+    - assets/brand/certificates/png/
+
+    # Brand assets — Marketing
+    - assets/brand/marketing/svg/
+    - assets/brand/marketing/png/
+
+    # Brand assets — Mascot
+    - assets/brand/mascot/svg/
+    - assets/brand/mascot/png/
+
+    # Brand assets — Animations (Lottie JSON)
+    - assets/brand/animations/loading.json
+    - assets/brand/animations/typing.json
+    - assets/brand/animations/ai-thinking.json
+    - assets/brand/animations/listening.json
+    - assets/brand/animations/speaking.json
+    - assets/brand/animations/voice-wave.json
+    - assets/brand/animations/lesson-complete.json
+    - assets/brand/animations/badge-unlock.json
+    - assets/brand/animations/xp-increase.json
+    - assets/brand/animations/correct-answer.json
+    - assets/brand/animations/wrong-answer.json
+    - assets/brand/animations/streak-fire.json
+    - assets/brand/animations/voice-wave-idle.json
+    - assets/brand/animations/voice-wave-listening.json
+    - assets/brand/animations/lottie/confetti.json
+    - assets/brand/animations/lottie/loading.json
+    - assets/brand/animations/lottie/ai_thinking.json
+    - assets/brand/animations/lottie/badge_unlock.json
+    - assets/brand/animations/lottie/correct_answer.json
+    - assets/brand/animations/lottie/lesson_complete.json
+    - assets/brand/animations/lottie/listening.json
+    - assets/brand/animations/lottie/speaking.json
+    - assets/brand/animations/lottie/streak_fire.json
+    - assets/brand/animations/lottie/typing.json
+    - assets/brand/animations/lottie/voice_wave.json
+    - assets/brand/animations/lottie/wrong_answer.json
+    - assets/brand/animations/lottie/xp_increase.json
+    - assets/brand/animations/voice-wave/voice_wave_idle.json
+    - assets/brand/animations/voice-wave/voice_wave_listening.json
+    - assets/brand/animations/voice-wave/voice_wave_speaking.json
+    - assets/brand/animations/voice-wave/voice_wave_ai_response.json
+    - assets/brand/animations/voice-wave/voice_wave_recording.json
+    - assets/brand/animations/voice-wave/voice_wave_processing.json
+    - assets/brand/animations/voice-wave/voice_wave_dark_mode.json
+    - assets/brand/animations/voice-wave/voice_wave_light_mode.json
+
+    # Brand assets — Sounds (UI SFX)
+    - assets/brand/sounds/button_tap.wav
+    - assets/brand/sounds/success.wav
+    - assets/brand/sounds/error.wav
+    - assets/brand/sounds/badge_unlock.wav
+    - assets/brand/sounds/xp_gain.wav
+    - assets/brand/sounds/streak_fire.wav
+    - assets/brand/sounds/lesson_complete.wav
+    - assets/brand/sounds/notification.wav
+    - assets/brand/sounds/voice_start.wav
+    - assets/brand/sounds/voice_stop.wav
+    - assets/brand/sounds/mic_enabled.wav
+
+    # Brand assets — Design Tokens
+    - assets/brand/design-tokens/tokens.json
+    - assets/brand/design-tokens/tokens.css
 
   fonts:
     - family: Inter

@@ -24,13 +24,13 @@ class ReadingLesson {
 
   factory ReadingLesson.fromJson(Map<String, dynamic> json) {
     return ReadingLesson(
-      passage: json['passage'] ?? '',
-      title: json['title'] ?? '',
-      wordCount: json['word_count'] ?? 0,
-      cefrLevel: json['cefr_level'] ?? 'A1',
-      vocabulary: List<Map<String, dynamic>>.from(json['vocabulary'] ?? []),
-      comprehensionQuestions: List<Map<String, dynamic>>.from(json['comprehension_questions'] ?? []),
-      culturalNotes: json['cultural_notes'] ?? '',
+      passage: (json['passage'] as String?) ?? '',
+      title: (json['title'] as String?) ?? '',
+      wordCount: (json['word_count'] as num?)?.toInt() ?? 0,
+      cefrLevel: (json['cefr_level'] as String?) ?? 'A1',
+      vocabulary: (json['vocabulary'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [],
+      comprehensionQuestions: (json['comprehension_questions'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [],
+      culturalNotes: (json['cultural_notes'] as String?) ?? '',
     );
   }
 }
@@ -57,11 +57,11 @@ class ReadingRemoteDataSourceImpl implements ReadingRemoteDataSource {
       );
 
       if (response.data['success'] == true) {
-        final output = response.data['data']['output'];
+        final output = response.data['data']['output'] as Map<String, dynamic>;
         return Result.success(ReadingLesson.fromJson(output));
       }
 
-      return Result.error(NetworkFailure(response.data['message'] ?? 'Lesson generation failed'));
+      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Lesson generation failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Lesson generation failed: ${e.message}'));
     } catch (e) {

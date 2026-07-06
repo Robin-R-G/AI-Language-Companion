@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/design_tokens.dart';
+import '../../core/constants/design_tokens.dart';
 
 /// Gamification widgets for the AI Language Coach application.
 /// Follows the Flutter Component Library specification.

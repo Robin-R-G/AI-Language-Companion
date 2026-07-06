@@ -25,6 +25,11 @@ import '../features/writing/presentation/pages/writing_page.dart';
 import '../features/notifications/presentation/pages/notifications_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/subscription/presentation/pages/subscription_page.dart';
+import '../features/wallet/presentation/pages/wallet_page.dart';
+import '../features/referral/presentation/pages/referral_page.dart';
+import '../features/tutor/presentation/pages/tutor_marketplace_page.dart';
+import '../features/affiliate/presentation/pages/affiliate_marketplace_page.dart';
+import '../features/profile/presentation/pages/certificate_page.dart';
 import '../shared/widgets/main_scaffold.dart';
 
 /// Route names for named navigation.
@@ -54,6 +59,11 @@ class RouteNames {
   static const String notifications = '/notifications';
   static const String settings = '/settings';
   static const String subscription = '/subscription';
+  static const String wallet = '/wallet';
+  static const String referral = '/referral';
+  static const String tutors = '/tutors';
+  static const String affiliates = '/affiliates';
+  static const String certificates = '/certificates';
 }
 
 /// Custom page transition builder.
@@ -302,6 +312,36 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) =>
             AppPageTransitions.slideUp(context, state, const EditProfilePage()),
+      ),
+      GoRoute(
+        path: RouteNames.wallet,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const WalletPage()),
+      ),
+      GoRoute(
+        path: RouteNames.referral,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const ReferralPage()),
+      ),
+      GoRoute(
+        path: RouteNames.tutors,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const TutorMarketplacePage()),
+      ),
+      GoRoute(
+        path: RouteNames.affiliates,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const AffiliateMarketplacePage()),
+      ),
+      GoRoute(
+        path: RouteNames.certificates,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const CertificatePage()),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

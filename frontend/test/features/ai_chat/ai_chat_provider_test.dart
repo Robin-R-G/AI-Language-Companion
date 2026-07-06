@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:ai_language_coach/core/errors/failure.dart';
 import 'package:ai_language_coach/core/errors/result.dart';
-import 'package:ai_language_coach/features/ai_chat/domain/entities/chat_message.dart';
+import 'package:ai_language_coach/shared/models/chat_message.dart';
 import 'package:ai_language_coach/features/ai_chat/domain/repositories/chat_repository.dart';
 
 class MockChatRepository extends Mock implements ChatRepository {}
@@ -36,14 +36,14 @@ void main() {
     });
 
     test('should handle send message failure', () async {
-      when(() => mockChatRepository.sendMessage(any(), any()))
+      when(() => mockChatRepository.sendMessage(conversationId: any(named: 'conversationId'), message: any(named: 'message')))
           .thenAnswer(
         (_) async => Result.error(ServerFailure('Network error')),
       );
 
       final result = await mockChatRepository.sendMessage(
-        'conv_001',
-        'Hello',
+        conversationId: 'conv_001',
+        message: 'Hello',
       );
 
       expect(result.isFailure, isTrue);
@@ -51,27 +51,27 @@ void main() {
     });
 
     test('should send message successfully', () async {
-      when(() => mockChatRepository.sendMessage(any(), any()))
+      when(() => mockChatRepository.sendMessage(conversationId: any(named: 'conversationId'), message: any(named: 'message')))
           .thenAnswer(
-        (_) async => Result.success(ChatMessage(id: '1', role: 'assistant', content: 'How do I use present perfect?')),
+        (_) async => Result.success(ChatMessage(id: '1', conversationId: 'conv_001', role: 'assistant', content: 'How do I use present perfect?')),
       );
 
       final result = await mockChatRepository.sendMessage(
-        'conv_001',
-        'How do I use present perfect?',
+        conversationId: 'conv_001',
+        message: 'How do I use present perfect?',
       );
 
       expect(result.isSuccess, isTrue);
     });
 
     test('should create conversation successfully', () async {
-      when(() => mockChatRepository.createConversation(any()))
-          .thenAnswer((_) async => const Result.success('conv_new'));
+      when(() => mockChatRepository.createConversation(title: any(named: 'title')))
+          .thenAnswer((_) async => Result.success(AIConversation(id: 'conv_new', userId: 'user_1', title: 'Test', provider: 'openai', model: 'gpt-4')));
 
-      final result = await mockChatRepository.createConversation('Test Title');
+      final result = await mockChatRepository.createConversation(title: 'Test Title');
 
       expect(result.isSuccess, isTrue);
-      expect(result.value, 'conv_new');
+      expect(result.value.id, 'conv_new');
     });
   });
 }

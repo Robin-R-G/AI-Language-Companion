@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="mockBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EFF6FF"/>
+    </linearGradient>
+    <linearGradient id="mockAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="800" fill="url(#mockBg)"/>
+  
+  <!-- Phone 1 (center) -->
+  <g transform="translate(420, 50)">
+    <rect width="360" height="700" rx="40" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+    <rect x="14" y="14" width="332" height="672" rx="34" fill="#F8FAFC"/>
+    <!-- Status bar -->
+    <text x="40" y="44" font-family="Inter, sans-serif" font-size="12" fill="#0F172A">9:41</text>
+    <rect x="280" y="36" width="40" height="12" rx="4" fill="#0F172A"/>
+    <!-- App header -->
+    <rect x="28" y="60" width="304" height="44" rx="10" fill="url(#mockAccent)"/>
+    <text x="180" y="86" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">AI Language Coach</text>
+    <!-- Voice conversation screen -->
+    <g transform="translate(28, 120)">
+      <!-- AI avatar -->
+      <circle cx="152" cy="40" r="30" fill="#2563EB" opacity="0.1"/>
+      <circle cx="152" cy="40" r="22" fill="#2563EB"/>
+      <rect x="140" y="34" width="24" height="16" rx="4" fill="#FFFFFF"/>
+      <circle cx="148" cy="40" r="2" fill="#2563EB"/>
+      <circle cx="158" cy="40" r="2" fill="#2563EB"/>
+      
+      <!-- Voice wave -->
+      <g transform="translate(32, 80)">
+        <rect x="0" y="8" width="6" height="16" rx="3" fill="#22C55E"/>
+        <rect x="12" y="0" width="6" height="32" rx="3" fill="#2563EB"/>
+        <rect x="24" y="6" width="6" height="20" rx="3" fill="#7C3AED"/>
+        <rect x="36" y="2" width="6" height="28" rx="3" fill="#06B6D4"/>
+        <rect x="48" y="10" width="6" height="12" rx="3" fill="#F59E0B"/>
+        <rect x="60" y="4" width="6" height="24" rx="3" fill="#2563EB"/>
+        <rect x="72" y="8" width="6" height="16" rx="3" fill="#22C55E"/>
+        <rect x="84" y="0" width="6" height="32" rx="3" fill="#EC4899"/>
+        <rect x="96" y="6" width="6" height="20" rx="3" fill="#7C3AED"/>
+        <rect x="108" y="10" width="6" height="12" rx="3" fill="#14B8A6"/>
+        <rect x="120" y="2" width="6" height="28" rx="3" fill="#2563EB"/>
+        <rect x="132" y="8" width="6" height="16" rx="3" fill="#22C55E"/>
+        <rect x="144" y="4" width="6" height="24" rx="3" fill="#F59E0B"/>
+        <rect x="156" y="0" width="6" height="32" rx="3" fill="#7C3AED"/>
+        <rect x="168" y="6" width="6" height="20" rx="3" fill="#06B6D4"/>
+        <rect x="180" y="10" width="6" height="12" rx="3" fill="#2563EB"/>
+        <rect x="192" y="2" width="6" height="28" rx="3" fill="#22C55E"/>
+        <rect x="204" y="8" width="6" height="16" rx="3" fill="#7C3AED"/>
+      </g>
+      
+      <!-- Transcript -->
+      <rect x="0" y="120" width="260" height="36" rx="10" fill="#F1F5F9"/>
+      <text x="16" y="142" font-family="Inter, sans-serif" font-size="11" fill="#64748B">"Tell me about your hometown..."</text>
+      
+      <!-- Chat bubbles -->
+      <rect x="100" y="170" width="200" height="32" rx="10" fill="#F1F5F9"/>
+      <rect x="0" y="212" width="180" height="32" rx="10" fill="#2563EB"/>
+      <text x="16" y="232" font-family="Inter, sans-serif" font-size="11" fill="#FFFFFF">My hometown is beautiful...</text>
+      
+      <!-- Action buttons -->
+      <g transform="translate(0, 260)">
+        <rect width="80" height="40" rx="20" fill="#F1F5F9"/>
+        <text x="40" y="25" font-family="Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Mute</text>
+        <rect x="100" width="80" height="40" rx="20" fill="#EF4444"/>
+        <text x="140" y="25" font-family="Inter, sans-serif" font-size="10" fill="#FFFFFF" text-anchor="middle">End</text>
+        <rect x="200" width="80" height="40" rx="20" fill="#F1F5F9"/>
+        <text x="240" y="25" font-family="Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Speaker</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Phone 2 (left, rotated) -->
+  <g transform="translate(100, 120) rotate(-8, 140, 300)" opacity="0.7">
+    <rect width="280" height="560" rx="32" fill="#1E293B" stroke="#475569" stroke-width="1.5"/>
+    <rect x="12" y="12" width="256" height="536" rx="26" fill="#F8FAFC"/>
+    <rect x="22" y="22" width="236" height="36" rx="8" fill="#7C3AED"/>
+    <text x="140" y="44" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Vocabulary Review</text>
+    <!-- Flashcard -->
+    <rect x="22" y="72" width="236" height="160" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+    <text x="140" y="130" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#0F172A" text-anchor="middle">Confidence</text>
+    <text x="140" y="158" font-family="Inter, sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">/ˈkɒnfɪdəns/</text>
+    <text x="140" y="190" font-family="Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Tap to reveal meaning</text>
+    <!-- Rating buttons -->
+    <g transform="translate(22, 248)">
+      <rect width="72" height="36" rx="8" fill="#FEE2E2"/>
+      <text x="36" y="23" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#EF4444" text-anchor="middle">Hard</text>
+      <rect x="82" width="72" height="36" rx="8" fill="#FEF3C7"/>
+      <text x="118" y="23" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#F59E0B" text-anchor="middle">Good</text>
+      <rect x="164" width="72" height="36" rx="8" fill="#DCFCE7"/>
+      <text x="200" y="23" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#22C55E" text-anchor="middle">Easy</text>
+    </g>
+  </g>
+  
+  <!-- Phone 3 (right, rotated) -->
+  <g transform="translate(820, 100) rotate(8, 140, 300)" opacity="0.7">
+    <rect width="280" height="560" rx="32" fill="#1E293B" stroke="#475569" stroke-width="1.5"/>
+    <rect x="12" y="12" width="256" height="536" rx="26" fill="#F8FAFC"/>
+    <rect x="22" y="22" width="236" height="36" rx="8" fill="#22C55E"/>
+    <text x="140" y="44" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Dashboard</text>
+    <!-- Stats grid -->
+    <g transform="translate(22, 72)">
+      <rect width="112" height="70" rx="10" fill="#EFF6FF"/>
+      <text x="56" y="30" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#2563EB" text-anchor="middle">7.5</text>
+      <text x="56" y="50" font-family="Inter, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">IELTS Band</text>
+      <rect x="124" width="112" height="70" rx="10" fill="#F0FDF4"/>
+      <text x="180" y="30" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#22C55E" text-anchor="middle">5</text>
+      <text x="180" y="50" font-family="Inter, sans-serif" font-size="9" fill="#64748B" text-anchor="middle">Day Streak</text>
+    </g>
+    <!-- Chart area -->
+    <rect x="22" y="160" width="236" height="120" rx="10" fill="#F1F5F9"/>
+    <text x="140" y="225" font-family="Inter, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Weekly Progress Chart</text>
+    <!-- Badge row -->
+    <g transform="translate(22, 300)">
+      <circle cx="24" cy="24" r="20" fill="#F59E0B" opacity="0.2"/>
+      <text x="24" y="28" font-family="Inter, sans-serif" font-size="16" text-anchor="middle">🏆</text>
+      <circle cx="72" cy="24" r="20" fill="#22C55E" opacity="0.2"/>
+      <text x="72" y="28" font-family="Inter, sans-serif" font-size="16" text-anchor="middle">🔥</text>
+      <circle cx="120" cy="24" r="20" fill="#2563EB" opacity="0.2"/>
+      <text x="120" y="28" font-family="Inter, sans-serif" font-size="16" text-anchor="middle">📚</text>
+      <circle cx="168" cy="24" r="20" fill="#7C3AED" opacity="0.2"/>
+      <text x="168" y="28" font-family="Inter, sans-serif" font-size="16" text-anchor="middle">🎤</text>
+    </g>
+  </g>
+  
+  <!-- Center label -->
+  <text x="600" y="780" font-family="Inter, sans-serif" font-size="14" fill="#94A3B8" text-anchor="middle">Multi-screen app experience — Voice, Vocabulary, Progress</text>
+</svg>

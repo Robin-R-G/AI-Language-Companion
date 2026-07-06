@@ -6,6 +6,7 @@ void main() {
     test('fromJson with all fields', () {
       final json = {
         'id': 'msg_001',
+        'conversationId': 'conv_001',
         'role': 'user',
         'content': 'Hello, how are you?',
         'timestamp': '2026-07-04T10:00:00Z',
@@ -18,29 +19,25 @@ void main() {
           'category': 'Tense',
           'examples': ['I went to school yesterday.'],
         },
-        'translation': {
-          'translation': 'നമസ്കാരം, എങ്ങനെയുണ്ട്?',
-          'pronunciation': 'Namaskaram, enganeyundu?',
-          'alternativeExpressions': {'casual': 'Hi!', 'formal': 'Good day!'},
-          'explanation': 'Common greeting',
-        },
+        'translation': 'നമസ്കാരം, എങ്ങനെയുണ്ട്?',
         'tokenCount': 25,
         'latencyMs': 500,
       };
 
       final message = ChatMessage.fromJson(json);
       expect(message.id, equals('msg_001'));
+      expect(message.conversationId, equals('conv_001'));
       expect(message.role, equals('user'));
       expect(message.content, equals('Hello, how are you?'));
       expect(message.grammarFeedback, isNotNull);
-      expect(message.grammarFeedback!.isCorrect, isFalse);
+      expect(message.grammarFeedback!['isCorrect'], isFalse);
       expect(
-        message.grammarFeedback!.original,
+        message.grammarFeedback!['original'],
         equals('Yesterday I go school.'),
       );
       expect(message.translation, isNotNull);
       expect(
-        message.translation!.translation,
+        message.translation,
         equals('നമസ്കാരം, എങ്ങനെയുണ്ട്?'),
       );
       expect(message.tokenCount, equals(25));
@@ -48,7 +45,7 @@ void main() {
     });
 
     test('fromJson with minimal fields', () {
-      final json = {'id': 'msg_002', 'role': 'assistant', 'content': 'Hello!'};
+      final json = {'id': 'msg_002', 'conversationId': 'conv_001', 'role': 'assistant', 'content': 'Hello!'};
 
       final message = ChatMessage.fromJson(json);
       expect(message.id, equals('msg_002'));
@@ -57,13 +54,14 @@ void main() {
       expect(message.timestamp, isNull);
       expect(message.grammarFeedback, isNull);
       expect(message.translation, isNull);
-      expect(message.tokenCount, isNull);
+      expect(message.tokenCount, equals(0));
       expect(message.latencyMs, isNull);
     });
 
     test('serialization roundtrip', () {
       const original = ChatMessage(
         id: 'msg_003',
+        conversationId: 'conv_001',
         role: 'user',
         content: 'Test message',
         tokenCount: 10,
@@ -73,6 +71,7 @@ void main() {
       final restored = ChatMessage.fromJson(json);
 
       expect(restored.id, equals(original.id));
+      expect(restored.conversationId, equals(original.conversationId));
       expect(restored.role, equals(original.role));
       expect(restored.content, equals(original.content));
       expect(restored.tokenCount, equals(original.tokenCount));

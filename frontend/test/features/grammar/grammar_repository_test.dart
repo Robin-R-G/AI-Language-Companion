@@ -1,87 +1,64 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/grammar/data/repositories/grammar_repository_impl.dart';
+import 'package:ai_language_coach/features/grammar/data/datasources/grammar_remote_datasource.dart';
+import 'package:ai_language_coach/core/errors/result.dart';
+import 'package:ai_language_coach/core/errors/failure.dart';
 import '../../mocks/mocks.dart';
 
+class MockGrammarRemoteDataSource extends Mock implements GrammarRemoteDataSource {}
+
 void main() {
-  late MockDio mockDio;
+  late MockGrammarRemoteDataSource mockDataSource;
   late GrammarRepositoryImpl repository;
 
   setUp(() {
-    mockDio = MockDio();
-    repository = GrammarRepositoryImpl(dio: mockDio);
+    mockDataSource = MockGrammarRemoteDataSource();
+    repository = GrammarRepositoryImpl(remoteDataSource: mockDataSource);
   });
 
   group('GrammarRepositoryImpl', () {
     test('checkGrammar returns correction on success', () async {
-      final response = MockResponse();
-      when(() => response.data).thenReturn({
-        'id': 'gc_1',
-        'originalText': 'He go to school',
-        'correctedText': 'He goes to school',
-        'explanation': 'Subject-verb agreement',
-      });
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => response);
+      when(() => mockDataSource.checkGrammar(any())).thenAnswer((_) async => Result.success(
+        const GrammarResult(
+          isCorrect: false,
+          original: 'He go to school',
+          corrected: 'He goes to school',
+          explanation: 'Subject-verb agreement',
+          explanationMalayalam: '',
+          category: 'grammar',
+          examples: [],
+        ),
+      ));
 
       final result = await repository.checkGrammar('He go to school');
       expect(result.isSuccess, true);
-      expect(result.value.correctedText, 'He goes to school');
+      expect(result.value.corrected, 'He goes to school');
     });
 
-    test('checkGrammar with language', () async {
-      final response = MockResponse();
-      when(() => response.data).thenReturn({
-        'id': 'gc_1',
-        'originalText': 'text',
-        'correctedText': 'fixed',
-        'explanation': 'rule',
-      });
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => response);
-
-      await repository.checkGrammar('text', language: 'ml');
-      verify(
-        () => mockDio.post(
-          any(),
-          data: any(named: 'data', that: containsPair('language', 'ml')),
+    test('checkGrammar with nativeLanguage', () async {
+      when(() => mockDataSource.checkGrammar(any(), nativeLanguage: any(named: 'nativeLanguage'))).thenAnswer((_) async => Result.success(
+        const GrammarResult(
+          isCorrect: false,
+          original: 'text',
+          corrected: 'fixed',
+          explanation: 'rule',
+          explanationMalayalam: '',
+          category: 'General',
+          examples: [],
         ),
+      ));
+
+      await repository.checkGrammar('text', nativeLanguage: 'ml');
+      verify(
+        () => mockDataSource.checkGrammar('text', nativeLanguage: 'ml'),
       ).called(1);
     });
 
-    test('checkGrammar handles invalid format', () async {
-      final response = MockResponse();
-      when(() => response.data).thenReturn(42);
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => response);
-
-      final result = await repository.checkGrammar('text');
-      expect(result.isFailure, true);
-    });
-
-    test('getHistory returns list on success', () async {
-      final response = MockResponse();
-      when(() => response.data).thenReturn([]);
-      when(
-        () =>
-            mockDio.get(any(), queryParameters: any(named: 'queryParameters')),
-      ).thenAnswer((_) async => response);
-
-      final result = await repository.getHistory();
-      expect(result.isSuccess, true);
-    });
-
-    test('handles DioException', () async {
-      when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(),
-          message: 'AI service error',
-        ),
+    test('checkGrammar handles error', () async {
+      when(() => mockDataSource.checkGrammar(any())).thenAnswer((_) async =>
+        Result.error(NetworkFailure('Grammar check failed')),
       );
 
       final result = await repository.checkGrammar('text');

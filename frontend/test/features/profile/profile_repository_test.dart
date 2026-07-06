@@ -1,93 +1,65 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dio/dio.dart';
 
 import 'package:ai_language_coach/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:ai_language_coach/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:ai_language_coach/core/errors/result.dart';
+import 'package:ai_language_coach/core/errors/failure.dart';
+import 'package:ai_language_coach/shared/models/user_profile.dart';
 import '../../mocks/mocks.dart';
 
+class MockProfileDataSource extends Mock implements ProfileRemoteDataSource {}
+
 void main() {
-  late MockDio mockDio;
+  late MockProfileDataSource mockDataSource;
   late ProfileRepositoryImpl repository;
 
   setUp(() {
-    mockDio = MockDio();
-    repository = ProfileRepositoryImpl(dio: mockDio);
+    mockDataSource = MockProfileDataSource();
+    repository = ProfileRepositoryImpl(remoteDataSource: mockDataSource);
   });
 
   group('ProfileRepositoryImpl', () {
     test('updateProfile succeeds', () async {
-      when(
-        () => mockDio.put(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => MockResponse());
+      when(() => mockDataSource.updateProfile(
+        any(named: 'userId'),
+        any(named: 'updates'),
+      )).thenAnswer((_) async => Result.success(
+        const UserProfile(
+          id: 'up_1',
+          authUserId: 'user_1',
+          fullName: 'New Name',
+          nativeLanguage: 'Malayalam',
+          targetLanguage: 'en',
+          proficiencyLevel: 'B1',
+          targetExam: 'ielts',
+        ),
+      ));
 
-      final result = await repository.updateProfile({
+      final result = await repository.updateProfile('user_1', {
         'display_name': 'New Name',
       });
       expect(result.isSuccess, true);
       verify(
-        () => mockDio.put(
-          any(),
-          data: any(
-            named: 'data',
-            that: containsPair('display_name', 'New Name'),
-          ),
-        ),
+        () => mockDataSource.updateProfile('user_1', {'display_name': 'New Name'}),
       ).called(1);
     });
 
-    test('uploadAvatar returns url on success', () async {
-      final response = MockResponse();
-      when(
-        () => response.data,
-      ).thenReturn({'url': 'https://example.com/avatar.png'});
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => response);
-
-      final result = await repository.uploadAvatar('/path/to/file.png');
-      expect(result.isSuccess, true);
-      expect(result.value, 'https://example.com/avatar.png');
-    });
-
-    test('uploadAvatar handles invalid format', () async {
-      final response = MockResponse();
-      when(() => response.data).thenReturn({});
-      when(
-        () => mockDio.post(any(), data: any(named: 'data')),
-      ).thenAnswer((_) async => response);
-
-      final result = await repository.uploadAvatar('file.png');
-      expect(result.isFailure, true);
-    });
-
     test('deleteAccount succeeds', () async {
-      when(() => mockDio.delete(any())).thenAnswer((_) async => MockResponse());
+      when(() => mockDataSource.deleteAccount(any()))
+          .thenAnswer((_) async => const Result.success(null));
 
-      final result = await repository.deleteAccount();
+      final result = await repository.deleteAccount('user_1');
       expect(result.isSuccess, true);
     });
 
-    test('handles DioException on updateProfile', () async {
-      when(() => mockDio.put(any(), data: any(named: 'data'))).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(),
-          message: 'Database error',
-        ),
-      );
+    test('handles error on updateProfile', () async {
+      when(() => mockDataSource.updateProfile(
+        any(named: 'userId'),
+        any(named: 'updates'),
+      )).thenAnswer((_) async => Result.error(DatabaseFailure('Database error')));
 
-      final result = await repository.updateProfile({});
-      expect(result.isFailure, true);
-    });
-
-    test('handles DioException on uploadAvatar', () async {
-      when(() => mockDio.post(any(), data: any(named: 'data'))).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(),
-          message: 'Upload failed',
-        ),
-      );
-
-      final result = await repository.uploadAvatar('file.png');
+      final result = await repository.updateProfile('user_1', {});
       expect(result.isFailure, true);
     });
   });

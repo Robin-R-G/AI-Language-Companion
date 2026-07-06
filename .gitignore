@@ -1,6 +1,8 @@
-# Environment
-.env*
+# Environment — never commit secrets
+.env
+.env.*
 !.env.example
+!.env.sample
 
 # IDE
 .idea/
@@ -18,20 +20,43 @@ Thumbs.db
 node_modules/
 .pub-cache/
 
-# Build output
+# Dart / Flutter build artifacts
 build/
 dist/
 out/
+.dart_tool/
+**/.dart_tool/
+frontend/.dart_tool/
+admin/.dart_tool/
+**/.packages
+
+# Flutter generated platform code (auto-regenerated)
+frontend/linux/flutter/generated_plugin_registrant.cc
+frontend/linux/flutter/generated_plugins.cmake
+frontend/macos/Flutter/GeneratedPluginRegistrant.swift
+frontend/windows/flutter/generated_plugin_registrant.cc
+frontend/windows/flutter/generated_plugins.cmake
+
+# Supabase local dev temp state
+supabase/.temp/
 
 # Coverage
 coverage/
+**/.coverage/
+lcov.info
 
 # Fastlane
 frontend/fastlane/report.xml
 frontend/fastlane/test_output
 
-# Secrets
+# Secrets & credentials — NEVER commit
 **/*.keystore
 **/*.jks
 **/auth_keys.json
 **/service_account.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.p8
+**/*.p12
+**/*.cer
+**/*.mobileprovision
