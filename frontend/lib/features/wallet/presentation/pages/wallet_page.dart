@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/config/ad_config.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../core/services/ad_service.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../shared/widgets/ad_banner_widget.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
@@ -103,62 +106,83 @@ class _WalletPageState extends State<WalletPage> {
     }
   }
 
+  /// Shows a real AdMob rewarded ad via [AdService].
+  /// Credits are only awarded after the user watches the full ad.
   Future<void> _watchAdReward() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return const Center(
-          child: AppCard(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Playing Rewarded Ad Video...', style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-        );
+    final adService = AdService._instance;
+
+    if (!adService.isRewardedReady) {
+      // Show loading while we try to get the ad
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Loading ad, please wait a moment…'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    bool creditsAwarded = false;
+
+    final shown = await adService.showRewarded(
+      onRewarded: (amount) async {
+        creditsAwarded = true;
+        // The reward amount from AdMob may vary; we treat each view as 20 credits
+        const rewardCredits = 20;
+        try {
+          final user = _supabase.auth.currentUser;
+          if (user == null) return;
+
+          final wallet = await _supabase
+              .from('wallet')
+              .select()
+              .eq('user_id', user.id)
+              .single();
+          final newBalance = (wallet['balance'] as int) + rewardCredits;
+
+          await _supabase
+              .from('wallet')
+              .update({'balance': newBalance})
+              .eq('id', wallet['id']);
+
+          await _supabase.from('wallet_transactions').insert({
+            'wallet_id': wallet['id'],
+            'amount': rewardCredits,
+            'type': 'ad_reward',
+            'description': 'Watched Rewarded Video Ad',
+          });
+
+          await _loadWalletData();
+        } catch (e) {
+          // Offline fallback
+          setState(() {
+            _balance += rewardCredits;
+            _transactions.insert(0, {
+              'amount': rewardCredits,
+              'type': 'ad_reward',
+              'description': 'Watched Rewarded Video Ad',
+              'created_at': DateTime.now().toIso8601String(),
+            });
+          });
+        }
       },
     );
 
-    await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
-    Navigator.pop(context); // Dismiss ad player dialog
 
-    try {
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-
-      // Update wallet balance in DB
-      final wallet = await _supabase.from('wallet').select().eq('user_id', user.id).single();
-      final newBalance = (wallet['balance'] as int) + 20;
-
-      await _supabase.from('wallet').update({'balance': newBalance}).eq('id', wallet['id']);
-      await _supabase.from('wallet_transactions').insert({
-        'wallet_id': wallet['id'],
-        'amount': 20,
-        'type': 'ad_reward',
-        'description': 'Watched Rewarded Video Ad',
-      });
-
-      _loadWalletData();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('+20 AI Credits awarded!')));
-    } catch (e) {
-      // Mock update
-      setState(() {
-        _balance += 20;
-        _transactions.insert(0, {
-          'amount': 20,
-          'type': 'ad_reward',
-          'description': 'Watched Rewarded Video Ad (Mock)',
-          'created_at': DateTime.now().toIso8601String(),
-        });
-      });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('+20 Credits awarded offline!')));
+    if (shown && creditsAwarded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🎉 +20 AI Credits awarded!'),
+          backgroundColor: Color(0xff16a34a),
+        ),
+      );
+    } else if (!shown) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ad not available right now. Try again shortly.')),
+      );
     }
   }
+
 
   Future<void> _buyPackage(dynamic pkg) async {
     showDialog(

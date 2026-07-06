@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/constants/app_constants.dart';
+import '../core/services/ad_service.dart';
 import '../core/services/logger_service.dart';
 import '../core/storage/local_storage.dart' as core_storage;
 
@@ -54,6 +55,10 @@ Future<void> bootstrap() async {
     PurchasesConfiguration(AppConstants.revenueCatApiKey),
   );
   Logger.info('RevenueCat initialized');
+
+  // Initialize Google Mobile Ads (pre-loads rewarded ads)
+  await AdService._instance.initialize();
+  Logger.info('AdMob initialized');
 
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
