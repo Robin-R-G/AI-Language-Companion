@@ -38,7 +38,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     // Only render on mobile platforms
     if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
 
-    _ad = AdService._instance.createBannerAd(
+    _ad = AdService.instance.createBannerAd(
       size: widget.size,
       listener: BannerAdListener(
         onAdLoaded: (_) {

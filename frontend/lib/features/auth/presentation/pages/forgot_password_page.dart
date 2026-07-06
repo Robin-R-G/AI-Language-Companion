@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
 
 /// Forgot password page for password reset.
@@ -29,8 +30,9 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement actual password reset with Supabase Auth
-      await Future.delayed(const Duration(seconds: 2));
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        _emailController.text.trim(),
+      );
 
       if (mounted) {
         setState(() {

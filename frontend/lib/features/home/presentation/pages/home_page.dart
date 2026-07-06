@@ -338,6 +338,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
       ),
     );
+  }
+
   Widget _buildBusinessActions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,7 +363,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               onTap: () => context.push(RouteNames.wallet),
             ),
             _QuickActionCard(
-              icon: Icons.share_arrival_rounded,
+              icon: Icons.person_add_rounded,
               label: 'Referrals',
               color: Colors.orange,
               onTap: () => context.push(RouteNames.referral),

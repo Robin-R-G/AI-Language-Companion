@@ -7,7 +7,7 @@ part of 'vocabulary_controller.dart';
 // **************************************************************************
 
 String _$vocabularyControllerHash() =>
-    r'09be3edd594760483fb4c208dea8565732bbe275';
+    r'cb837e7ab903011302601ace756065ec17cc1e5c';
 
 /// See also [VocabularyController].
 @ProviderFor(VocabularyController)

@@ -23,6 +23,7 @@ enum AdLoadState { idle, loading, loaded, failed }
 class AdService {
   AdService._();
   static final AdService _instance = AdService._();
+  static AdService get instance => _instance;
 
   bool _initialized = false;
 

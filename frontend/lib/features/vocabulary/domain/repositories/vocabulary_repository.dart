@@ -10,4 +10,14 @@ abstract class VocabularyRepository {
     required int masteryScore,
   });
   Future<Result<List<VocabularyHistory>>> getHistory(String userId);
+  Future<Result<List<VocabularyWord>>> getVocabulary(String userId);
+  Future<Result<VocabularyWord>> addWord({
+    required String userId,
+    required String word,
+    required String definition,
+    String? exampleSentence,
+    String? language,
+    String? cefrLevel,
+    String? category,
+  });
 }

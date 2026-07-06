@@ -30,12 +30,15 @@ class ChatMessages extends _$ChatMessages {
                 timestamp: m.timestamp,
                 tokenCount: m.tokenCount,
                 latencyMs: m.latencyMs,
+                grammarFeedback: m.grammarFeedback,
+                translation: m.translation,
               ))
           .toList();
     });
   }
 
-  Future<void> sendMessage(String conversationId, String message) async {
+  Future<void> sendMessage(String conversationId, String message,
+      {String? language, String? examType}) async {
     final repo = ref.read(chatRepositoryProvider);
     final userMsg = domain.ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -46,24 +49,61 @@ class ChatMessages extends _$ChatMessages {
     );
     state = [...state, userMsg];
 
+    // Placeholder for streaming AI response
+    final aiMsgId = '${DateTime.now().millisecondsSinceEpoch}_ai';
+    final aiPlaceholder = domain.ChatMessage(
+      id: aiMsgId,
+      conversationId: conversationId,
+      role: 'assistant',
+      content: '',
+      timestamp: DateTime.now(),
+    );
+    state = [...state, aiPlaceholder];
+
     final result = await repo.sendMessage(
       conversationId: conversationId,
       message: message,
+      stream: true,
+      language: language,
+      examType: examType,
+      onChunk: (chunk) {
+        // Append each chunk to the placeholder for real-time display
+        final current = [...state];
+        final idx = current.indexWhere((m) => m.id == aiMsgId);
+        if (idx != -1) {
+          current[idx] = current[idx].copyWith(
+            content: current[idx].content + chunk,
+          );
+          state = current;
+        }
+      },
     );
-    result.fold((_) {}, (reply) {
-      state = [
-        ...state,
-        domain.ChatMessage(
-          id: reply.id,
-          conversationId: conversationId,
-          role: reply.role,
-          content: reply.content,
-          timestamp: reply.timestamp,
-          tokenCount: reply.tokenCount,
-          latencyMs: reply.latencyMs,
-        ),
-      ];
-    });
+
+    result.fold(
+      (failure) {
+        // Remove placeholder on error
+        state = state.where((m) => m.id != aiMsgId).toList();
+      },
+      (reply) {
+        // Replace placeholder with the final persisted message
+        final current = [...state];
+        final idx = current.indexWhere((m) => m.id == aiMsgId);
+        if (idx != -1) {
+          current[idx] = domain.ChatMessage(
+            id: reply.id,
+            conversationId: conversationId,
+            role: reply.role,
+            content: reply.content,
+            timestamp: reply.timestamp,
+            tokenCount: reply.tokenCount,
+            latencyMs: reply.latencyMs,
+            grammarFeedback: reply.grammarFeedback,
+            translation: reply.translation,
+          );
+          state = current;
+        }
+      },
+    );
   }
 
   Future<String?> createConversation(String title) async {

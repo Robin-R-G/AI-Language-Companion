@@ -108,6 +108,14 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<Result<void>> resetPassword(String email) async {
+    if (_shouldFail) {
+      return const Result.error(AuthFailure('Failed to reset password'));
+    }
+    return const Result.success(null);
+  }
+
+  @override
   Stream<bool> get authStateChanges => _authController.stream;
 
   void dispose() => _authController.close();

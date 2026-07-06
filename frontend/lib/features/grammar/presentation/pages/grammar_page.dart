@@ -1,61 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
+import '../providers/grammar_providers.dart';
+import '../../data/datasources/grammar_remote_datasource.dart';
 
 /// Grammar screen showing error log, corrections, and practice.
-class GrammarPage extends StatefulWidget {
+class GrammarPage extends ConsumerStatefulWidget {
   const GrammarPage({super.key});
 
   @override
-  State<GrammarPage> createState() => _GrammarPageState();
+  ConsumerState<GrammarPage> createState() => _GrammarPageState();
 }
 
-class _GrammarPageState extends State<GrammarPage>
+class _GrammarPageState extends ConsumerState<GrammarPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _isLoading = false;
-  bool _hasError = false;
-
-  // Mock grammar errors
-  final List<Map<String, dynamic>> _grammarErrors = [
-    {
-      'original': 'Yesterday I go to school.',
-      'corrected': 'Yesterday I went to school.',
-      'rule': 'Past Simple Tense',
-      'explanation':
-          'Use "went" (past tense of "go") for actions completed in the past.',
-      'malayalam':
-          'കഴിഞ്ഞുപോയ കാര്യങ്ങൾ പറയാൻ "went" എന്ന ഭൂതകാല രൂപമാണ് ഉപയോഗിക്കേണ്ടത്.',
-      'date': 'Today',
-      'count': 5,
-    },
-    {
-      'original': 'She don\'t like coffee.',
-      'corrected': 'She doesn\'t like coffee.',
-      'rule': 'Subject-Verb Agreement',
-      'explanation':
-          'Third person singular subjects (she, he, it) use "doesn\'t" instead of "don\'t".',
-      'malayalam':
-          'She, he, it എന്നിവയ്ക്ക് "doesn\'t" ഉപയോഗിക്കണം, "don\'t" അല്ല.',
-      'date': 'Yesterday',
-      'count': 3,
-    },
-    {
-      'original': 'I have been to Paris last year.',
-      'corrected': 'I went to Paris last year.',
-      'rule': 'Present Perfect vs Past Simple',
-      'explanation':
-          'Use past simple with specific time expressions like "last year".',
-      'malayalam':
-          '"last year" പോലുള്ള നിശ്ചിത സമയ സൂചനകൾ ഉപയോഗിക്കുമ്പോൾ past simple ഉപയോഗിക്കണം.',
-      'date': '2 days ago',
-      'count': 2,
-    },
-  ];
+  final TextEditingController _textController = TextEditingController();
+  String? _selectedLanguage;
 
   @override
   void initState() {
@@ -64,21 +31,15 @@ class _GrammarPageState extends State<GrammarPage>
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    // Simulate loading
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() => _isLoading = false);
-    }
+  void _loadData() {
+    ref.read(grammarRulesProvider.notifier).load(language: _selectedLanguage);
+    ref.read(grammarPracticeHistoryProvider.notifier).load();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -102,55 +63,51 @@ class _GrammarPageState extends State<GrammarPage>
   }
 
   Widget _buildBody(ThemeData theme) {
-    if (_hasError) {
-      return ErrorView(onRetry: _loadData);
-    }
-
-    if (_isLoading) {
-      return _buildLoading(theme);
-    }
-
     return TabBarView(
       controller: _tabController,
       children: [_buildErrorLog(theme), _buildPracticeTab(theme)],
     );
   }
 
-  Widget _buildLoading(ThemeData theme) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSpacing.base),
-      itemCount: 5,
-      itemBuilder: (context, index) => const ShimmerCard(),
-    );
-  }
-
   Widget _buildErrorLog(ThemeData theme) {
-    if (_grammarErrors.isEmpty) {
-      return EmptyState(
-        icon: Icons.check_circle_outline,
-        title: 'No Grammar Errors',
-        message: 'Great job! You haven\'t made any grammar mistakes recently.',
-        actionLabel: 'Start Practicing',
-        onAction: () {
-          _tabController.animateTo(1);
-        },
-      );
-    }
+    final practiceState = ref.watch(grammarPracticeHistoryProvider);
 
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.base),
-        itemCount: _grammarErrors.length,
-        itemBuilder: (context, index) {
-          final error = _grammarErrors[index];
-          return _GrammarErrorCard(error: error);
-        },
+    return practiceState.when(
+      data: (practices) {
+        if (practices.isEmpty) {
+          return EmptyState(
+            icon: Icons.check_circle_outline,
+            title: 'No Grammar Errors',
+            message: "Great job! You haven't made any grammar mistakes recently.",
+            actionLabel: 'Start Practicing',
+            onAction: () {
+              _tabController.animateTo(1);
+            },
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async => _loadData(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            itemCount: practices.length,
+            itemBuilder: (context, index) {
+              final practice = practices[index];
+              return _PracticeCard(practice: practice);
+            },
+          ),
+        );
+      },
+      loading: () => _buildLoading(theme),
+      error: (error, _) => ErrorView(
+        onRetry: _loadData,
       ),
     );
   }
 
   Widget _buildPracticeTab(ThemeData theme) {
+    final rulesState = ref.watch(grammarRulesProvider);
+
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.base),
       children: [
@@ -195,151 +152,176 @@ class _GrammarPageState extends State<GrammarPage>
                 ],
               ),
               const SizedBox(height: AppSpacing.base),
-              AppButton(
-                label: 'Start Practice',
-                onPressed: () {},
-                icon: Icons.play_arrow_rounded,
+              TextField(
+                controller: _textController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Enter text to check grammar...',
+                  border: OutlineInputBorder(
+                    borderRadius: AppRadius.smAll,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.base),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedLanguage,
+                      hint: const Text('Language'),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('All')),
+                        DropdownMenuItem(value: 'en', child: Text('English')),
+                        DropdownMenuItem(value: 'ml', child: Text('Malayalam')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedLanguage = value;
+                        });
+                        _loadData();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  AppButton(
+                    label: 'Check Grammar',
+                    onPressed: () => _checkGrammar(),
+                    icon: Icons.send,
+                  ),
+                ],
               ),
             ],
           ),
         ),
         const SizedBox(height: AppSpacing.base),
         Text(
-          'Common Rules',
+          'Grammar Rules',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        const _RuleTile(
-          icon: Icons.timelapse,
-          title: 'Tenses',
-          subtitle: 'Past, Present, Future',
-          count: 12,
-        ),
-        const _RuleTile(
-          icon: Icons.person,
-          title: 'Subject-Verb Agreement',
-          subtitle: 'Singular and Plural subjects',
-          count: 8,
-        ),
-        const _RuleTile(
-          icon: Icons.article,
-          title: 'Articles & Determiners',
-          subtitle: 'a, an, the usage',
-          count: 6,
-        ),
-        const _RuleTile(
-          icon: Icons.compare_arrows,
-          title: 'Prepositions',
-          subtitle: 'in, on, at, by',
-          count: 10,
+        rulesState.when(
+          data: (rules) {
+            if (rules.isEmpty) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(AppSpacing.base),
+                  child: Text('No grammar rules found'),
+                ),
+              );
+            }
+
+            return Column(
+              children: rules.map((rule) => _RuleTile(rule: rule)).toList(),
+            );
+          },
+          loading: () => _buildLoading(theme),
+          error: (error, _) => Center(
+            child: Text('Error loading rules: $error'),
+          ),
         ),
       ],
     );
   }
+
+  Widget _buildLoading(ThemeData theme) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppSpacing.base),
+      itemCount: 5,
+      itemBuilder: (context, index) => const ShimmerCard(),
+    );
+  }
+
+  Future<void> _checkGrammar() async {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    await ref.read(grammarCheckProvider.notifier).check(
+      text,
+      language: _selectedLanguage,
+    );
+
+    final result = ref.read(grammarCheckProvider);
+    result.whenOrNull(
+      data: (grammarResult) {
+        if (grammarResult != null && !grammarResult.isCorrect) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Found grammar errors. Check the Error Log tab.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        } else if (grammarResult?.isCorrect == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Great! No grammar errors found.'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      },
+    );
+  }
 }
 
-class _GrammarErrorCard extends StatelessWidget {
-  final Map<String, dynamic> error;
+class _PracticeCard extends StatelessWidget {
+  final GrammarPractice practice;
 
-  const _GrammarErrorCard({required this.error});
+  const _PracticeCard({required this.practice});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppCard(
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(top: AppSpacing.sm),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              error['rule'] as String,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            RichText(
-              text: TextSpan(
-                style: theme.textTheme.bodyMedium,
-                children: [
-                  TextSpan(
-                    text: error['original'] as String,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationColor: AppColors.error,
-                      color: AppColors.error,
-                    ),
-                  ),
-                  const TextSpan(text: '  →  '),
-                  TextSpan(
-                    text: error['corrected'] as String,
-                    style: const TextStyle(
-                      color: AppColors.success,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.base),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withAlpha(77),
-              borderRadius: AppRadius.smAll,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            children: [
+              Icon(
+                practice.isCorrect ? Icons.check_circle : Icons.error,
+                color: practice.isCorrect ? AppColors.success : AppColors.error,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  practice.isCorrect ? 'Correct' : 'Needs Improvement',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: practice.isCorrect ? AppColors.success : AppColors.error,
+                  ),
+                ),
+              ),
+              Text(
+                _formatDate(practice.createdAt),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          RichText(
+            text: TextSpan(
+              style: theme.textTheme.bodyMedium,
               children: [
-                Text(
-                  'Explanation',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                TextSpan(
+                  text: practice.originalText,
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppColors.error,
+                    color: AppColors.error,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  error['explanation'] as String,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'Malayalam',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                const TextSpan(text: '  →  '),
+                TextSpan(
+                  text: practice.correctedText,
+                  style: const TextStyle(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w500,
                   ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  error['malayalam'] as String,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      '${error['date']} • ${error['count']} occurrences',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -348,20 +330,27 @@ class _GrammarErrorCard extends StatelessWidget {
       ),
     );
   }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
 }
 
 class _RuleTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final int count;
+  final GrammarRule rule;
 
-  const _RuleTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.count,
-  });
+  const _RuleTile({required this.rule});
 
   @override
   Widget build(BuildContext context) {
@@ -376,15 +365,19 @@ class _RuleTile extends StatelessWidget {
             color: theme.colorScheme.primary.withAlpha(25),
             borderRadius: AppRadius.smAll,
           ),
-          child: Icon(icon, color: theme.colorScheme.primary, size: 24),
+          child: Icon(
+            _getIconForCategory(rule.category),
+            color: theme.colorScheme.primary,
+            size: 24,
+          ),
         ),
         title: Text(
-          title,
+          rule.ruleName,
           style: theme.textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),
-        subtitle: Text(subtitle, style: theme.textTheme.bodySmall),
+        subtitle: Text(rule.description, style: theme.textTheme.bodySmall),
         trailing: Container(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.sm,
@@ -394,10 +387,35 @@ class _RuleTile extends StatelessWidget {
             color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: AppRadius.roundAll,
           ),
-          child: Text('$count', style: theme.textTheme.labelSmall),
+          child: Text(rule.cefrLevel, style: theme.textTheme.labelSmall),
         ),
-        onTap: () {},
+        onTap: () {
+          // Could navigate to rule details
+        },
       ),
     );
+  }
+
+  IconData _getIconForCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'tense':
+      case 'tenses':
+        return Icons.timelapse;
+      case 'subject-verb agreement':
+        return Icons.person;
+      case 'articles':
+      case 'determiners':
+        return Icons.article;
+      case 'prepositions':
+        return Icons.compare_arrows;
+      case 'vocabulary':
+        return Icons.book;
+      case 'pronouns':
+        return Icons.person_outline;
+      case 'verbs':
+        return Icons.bolt;
+      default:
+        return Icons.help_outline;
+    }
   }
 }

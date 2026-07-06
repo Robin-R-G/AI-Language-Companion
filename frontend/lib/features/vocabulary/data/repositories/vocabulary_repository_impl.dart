@@ -32,4 +32,30 @@ class VocabularyRepositoryImpl implements VocabularyRepository {
   Future<Result<List<VocabularyHistory>>> getHistory(String userId) {
     return _remoteDataSource.getHistory(userId);
   }
+
+  @override
+  Future<Result<List<VocabularyWord>>> getVocabulary(String userId) {
+    return _remoteDataSource.getVocabulary(userId);
+  }
+
+  @override
+  Future<Result<VocabularyWord>> addWord({
+    required String userId,
+    required String word,
+    required String definition,
+    String? exampleSentence,
+    String? language,
+    String? cefrLevel,
+    String? category,
+  }) {
+    return _remoteDataSource.addWord(
+      userId: userId,
+      word: word,
+      definition: definition,
+      exampleSentence: exampleSentence,
+      language: language,
+      cefrLevel: cefrLevel,
+      category: category,
+    );
+  }
 }

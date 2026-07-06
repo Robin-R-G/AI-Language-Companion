@@ -37,8 +37,8 @@ void main() {
       expect(result.value.corrected, 'He goes to school');
     });
 
-    test('checkGrammar with nativeLanguage', () async {
-      when(() => mockDataSource.checkGrammar(any(), nativeLanguage: any(named: 'nativeLanguage'))).thenAnswer((_) async => Result.success(
+    test('checkGrammar with language', () async {
+      when(() => mockDataSource.checkGrammar(any(), language: any(named: 'language'))).thenAnswer((_) async => Result.success(
         const GrammarResult(
           isCorrect: false,
           original: 'text',
@@ -50,9 +50,9 @@ void main() {
         ),
       ));
 
-      await repository.checkGrammar('text', nativeLanguage: 'ml');
+      await repository.checkGrammar('text', language: 'ml');
       verify(
-        () => mockDataSource.checkGrammar('text', nativeLanguage: 'ml'),
+        () => mockDataSource.checkGrammar('text', language: 'ml'),
       ).called(1);
     });
 

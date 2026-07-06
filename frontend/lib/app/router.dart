@@ -28,6 +28,9 @@ import '../features/subscription/presentation/pages/subscription_page.dart';
 import '../features/wallet/presentation/pages/wallet_page.dart';
 import '../features/referral/presentation/pages/referral_page.dart';
 import '../features/tutor/presentation/pages/tutor_marketplace_page.dart';
+import '../features/tutor/presentation/pages/tutor_dashboard_page.dart';
+import '../features/tutor/presentation/pages/tutor_registration_page.dart';
+import '../features/admin/presentation/pages/admin_finance_center_page.dart';
 import '../features/affiliate/presentation/pages/affiliate_marketplace_page.dart';
 import '../features/profile/presentation/pages/certificate_page.dart';
 import '../shared/widgets/main_scaffold.dart';
@@ -64,6 +67,29 @@ class RouteNames {
   static const String tutors = '/tutors';
   static const String affiliates = '/affiliates';
   static const String certificates = '/certificates';
+  static const String tutorDashboard = '/tutor-dashboard';
+  static const String tutorRegister = '/tutor-register';
+  static const String tutorAvailability = '/tutor-availability';
+  static const String tutorStudents = '/tutor-students';
+  static const String tutorReviews = '/tutor-reviews';
+  static const String tutorDocuments = '/tutor-documents';
+  static const String tutorEarnings = '/tutor-earnings';
+  static const String tutorWithdraw = '/tutor-withdraw';
+  static const String tutorWallet = '/tutor-wallet';
+  static const String tutorSchedule = '/tutor-schedule';
+  static const String tutorTax = '/tutor-tax';
+  static const String adminFinance = '/admin-finance';
+  static const String adminSettlements = '/admin-settlements';
+  static const String adminPayouts = '/admin-payouts';
+  static const String adminCommission = '/admin-commission';
+  static const String adminPricing = '/admin-pricing';
+  static const String adminDisputes = '/admin-disputes';
+  static const String adminAuditLogs = '/admin-audit-logs';
+  static const String adminCoupons = '/admin-coupons';
+  static const String adminForecasts = '/admin-forecasts';
+  static const String adminFeatureFlags = '/admin-feature-flags';
+  static const String paymentMethods = '/payment-methods';
+  static const String bookingConfirm = '/booking-confirm';
 }
 
 /// Custom page transition builder.
@@ -245,12 +271,12 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
         ),
       ),
       GoRoute(
-        path: RouteNames.lessonDetail,
+        path: '${RouteNames.lessonDetail}/:id',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) => AppPageTransitions.slideUp(
           context,
           state,
-          const LessonDetailPage(),
+          LessonDetailPage(lessonId: state.pathParameters['id']),
         ),
       ),
       GoRoute(
@@ -342,6 +368,26 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) =>
             AppPageTransitions.slideUp(context, state, const CertificatePage()),
+      ),
+      // Tutor Routes
+      GoRoute(
+        path: RouteNames.tutorDashboard,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const TutorDashboardPage()),
+      ),
+      GoRoute(
+        path: RouteNames.tutorRegister,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const TutorRegistrationPage()),
+      ),
+      // Admin Routes
+      GoRoute(
+        path: RouteNames.adminFinance,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            AppPageTransitions.slideUp(context, state, const AdminFinanceCenterPage()),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

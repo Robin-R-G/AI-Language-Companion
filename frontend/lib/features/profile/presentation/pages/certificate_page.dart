@@ -81,7 +81,7 @@ class _CertificatePageState extends State<CertificatePage> {
       await _supabase
           .from('certificates')
           .update({'paid_verification': true})
-          .eq('id', cert['id']);
+          .eq('id', cert['id'] as String);
 
       _loadCertificates();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Verification upgraded successfully!')));
@@ -117,8 +117,8 @@ class _CertificatePageState extends State<CertificatePage> {
   }
 
   Widget _buildCertificateCard(ThemeData theme, dynamic cert) {
-    final hasPaidVerify = cert['paid_verification'] ?? false;
-    final verifyUrl = 'https://ai-language-coach.com/verify/${cert['verify_code']}';
+    final hasPaidVerify = (cert['paid_verification'] as bool?) ?? false;
+    final verifyUrl = 'https://ai-language-coach.com/verify/${cert['verify_code'] as String}';
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.base),
@@ -133,18 +133,18 @@ class _CertificatePageState extends State<CertificatePage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(cert['title'], style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(cert['title'] as String, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text('Issued by ${cert['issuer']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text('Issued by ${cert['issuer'] as String}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(AppBorderRadius.base),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: Text(cert['grade'] ?? 'Passed', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                  child: Text((cert['grade'] as String?) ?? 'Passed', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
                 )
               ],
             ),
@@ -157,7 +157,7 @@ class _CertificatePageState extends State<CertificatePage> {
                   children: [
                     const Text('VERIFICATION CODE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 4),
-                    Text(cert['verify_code'], style: const TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text(cert['verify_code'] as String, style: const TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 13)),
                   ],
                 ),
                 Column(
@@ -192,7 +192,7 @@ class _CertificatePageState extends State<CertificatePage> {
               children: [
                 Expanded(
                   child: AppButton(
-                    text: 'View Verification Link',
+                    label: 'View Verification Link',
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -212,14 +212,14 @@ class _CertificatePageState extends State<CertificatePage> {
                         ),
                       );
                     },
-                    variant: AppButtonVariant.secondary,
+                    isSecondary: true,
                   ),
                 ),
                 if (!hasPaidVerify) ...[
                   const SizedBox(width: 12),
                   Expanded(
                     child: AppButton(
-                      text: 'Upgrade Verification (\$4.99)',
+                      label: 'Upgrade Verification (\$4.99)',
                       onPressed: () => _upgradeVerification(cert),
                     ),
                   )

@@ -45,7 +45,7 @@ class _ReferralPageState extends State<ReferralPage> {
       final topReferrers = await _supabase
           .from('user_profiles')
           .select('full_name, xp') // use xp as a proxy for referrals for mock simplicity
-          .order('xp', { 'ascending': false })
+          .order('xp', ascending: false)
           .limit(5);
 
       setState(() {
@@ -120,21 +120,21 @@ class _ReferralPageState extends State<ReferralPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Icon(Icons.share_arrival_rounded, color: theme.colorScheme.primary, size: 48),
+            Icon(Icons.person_add_rounded, color: theme.colorScheme.primary, size: 48),
             const SizedBox(height: 12),
             Text('Invite Friends & Earn Credits', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             const Text(
               'Share your unique referral code. When your friends register or subscribe, you both receive AI credits!',
               style: TextStyle(color: Colors.grey, fontSize: 13),
-              textAlign: Center,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: theme.colorScheme.background,
-                borderRadius: BorderRadius.circular(AppBorderRadius.base),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
               ),
               child: Row(
@@ -214,7 +214,7 @@ class _ReferralPageState extends State<ReferralPage> {
           }
 
           return ListTile(
-            title: Text(ref['referred_email']),
+            title: Text(ref['referred_email'] as String),
             subtitle: Row(
               children: [
                 Container(
@@ -244,7 +244,7 @@ class _ReferralPageState extends State<ReferralPage> {
           final entry = _leaderboard[index];
           final rank = index + 1;
           final isTop3 = rank <= 3;
-          final score = entry['referral_count'] ?? (entry['xp'] != null ? (entry['xp'] ~/ 100) : 0);
+          final score = (entry['referral_count'] as int?) ?? (entry['xp'] != null ? ((entry['xp'] as int) ~/ 100) : 0);
 
           return ListTile(
             leading: CircleAvatar(
@@ -257,7 +257,7 @@ class _ReferralPageState extends State<ReferralPage> {
                 ),
               ),
             ),
-            title: Text(entry['full_name'] ?? 'Anonymous'),
+            title: Text((entry['full_name'] as String?) ?? 'Anonymous'),
             trailing: Text('$score Invites', style: const TextStyle(fontWeight: FontWeight.bold)),
           );
         },

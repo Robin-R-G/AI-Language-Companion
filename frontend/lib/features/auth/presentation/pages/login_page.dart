@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/router.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../controllers/auth_controller.dart';
 
 /// Login page with email/password and social authentication.
 class LoginPage extends ConsumerStatefulWidget {
@@ -32,11 +33,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement actual login with Supabase Auth
-      await Future.delayed(const Duration(seconds: 2));
+      await ref.read(authControllerProvider.notifier).signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
+      final authState = ref.read(authControllerProvider);
       if (mounted) {
-        context.go(RouteNames.home);
+        if (authState.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login failed: ${authState.error}'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        } else if (authState.hasValue && authState.value != null) {
+          context.go(RouteNames.home);
+        }
       }
     } catch (e) {
       if (mounted) {

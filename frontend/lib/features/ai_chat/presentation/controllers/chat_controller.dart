@@ -38,34 +38,69 @@ class ChatController extends _$ChatController {
     );
   }
 
-  Future<void> sendMessage(String message) async {
+  Future<void> sendMessage(String message, {String? language, String? examType}) async {
     if (_conversationId == null) {
       await startConversation();
     }
 
     final currentMessages = state.value ?? [];
-    state = AsyncValue.data([
-      ...currentMessages,
-      ChatMessage(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        conversationId: _conversationId!,
-        role: 'user',
-        content: message,
-        timestamp: DateTime.now(),
-      ),
-    ]);
+    final userMsg = ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      conversationId: _conversationId!,
+      role: 'user',
+      content: message,
+      timestamp: DateTime.now(),
+    );
+    state = AsyncValue.data([...currentMessages, userMsg]);
+
+    // Placeholder for streaming AI response
+    final aiMsgId = '${DateTime.now().millisecondsSinceEpoch}_ai';
+    final aiPlaceholder = ChatMessage(
+      id: aiMsgId,
+      conversationId: _conversationId!,
+      role: 'assistant',
+      content: '',
+      timestamp: DateTime.now(),
+    );
+    state = AsyncValue.data([...state.value ?? [], aiPlaceholder]);
 
     final repository = ref.read(chatRepositoryProvider);
     final result = await repository.sendMessage(
       conversationId: _conversationId!,
       message: message,
+      stream: true,
+      language: language,
+      examType: examType,
+      onChunk: (chunk) {
+        final current = state.value ?? [];
+        final idx = current.indexWhere((m) => m.id == aiMsgId);
+        if (idx != -1) {
+          final updated = [...current];
+          updated[idx] = updated[idx].copyWith(
+            content: updated[idx].content + chunk,
+          );
+          state = AsyncValue.data(updated);
+        }
+      },
     );
 
     result.fold(
-      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (failure) {
+        // Remove placeholder on error
+        final current = state.value ?? [];
+        state = AsyncValue.data(
+          current.where((m) => m.id != aiMsgId).toList(),
+        );
+      },
       (reply) {
-        final messages = state.value ?? [];
-        state = AsyncValue.data([...messages, reply]);
+        // Replace placeholder with final message
+        final current = state.value ?? [];
+        final idx = current.indexWhere((m) => m.id == aiMsgId);
+        if (idx != -1) {
+          final updated = [...current];
+          updated[idx] = reply;
+          state = AsyncValue.data(updated);
+        }
       },
     );
   }

@@ -13,6 +13,9 @@ abstract class ChatRepository {
     required String conversationId,
     required String message,
     bool stream = false,
+    String? language,
+    String? examType,
+    void Function(String chunk)? onChunk,
   });
 
   Future<Result<List<ChatMessage>>> getMessages(String conversationId);

@@ -1,7 +1,6 @@
 // lib/features/vocabulary/presentation/controllers/vocabulary_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../domain/repositories/vocabulary_repository.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../shared/models/vocabulary_word.dart';
 
@@ -47,5 +46,28 @@ class VocabularyController extends _$VocabularyController {
 
     // Reload vocabulary after review
     await loadDailyVocabulary();
+  }
+
+  Future<void> addWord({
+    required String word,
+    required String definition,
+    String? exampleSentence,
+    String? language,
+    String? cefrLevel,
+    String? category,
+  }) async {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    final repository = ref.read(vocabularyRepositoryProvider);
+    await repository.addWord(
+      userId: userId,
+      word: word,
+      definition: definition,
+      exampleSentence: exampleSentence,
+      language: language,
+      cefrLevel: cefrLevel,
+      category: category,
+    );
   }
 }

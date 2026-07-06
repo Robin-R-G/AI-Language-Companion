@@ -51,8 +51,8 @@ class _WalletPageState extends State<WalletPage> {
       final txs = await _supabase
           .from('wallet_transactions')
           .select()
-          .eq('wallet_id', wallet['id'])
-          .order('created_at', { 'ascending': false });
+          .eq('wallet_id', wallet!['id'] as String)
+          .order('created_at', ascending: false);
 
       final pkgs = await _supabase
           .from('credit_packages')
@@ -60,7 +60,7 @@ class _WalletPageState extends State<WalletPage> {
           .eq('is_active', true);
 
       setState(() {
-        _balance = wallet['balance'] ?? 0;
+        _balance = (wallet?['balance'] as int?) ?? 0;
         _transactions = txs ?? [];
         _packages = pkgs ?? [];
         _isLoading = false;
@@ -109,7 +109,7 @@ class _WalletPageState extends State<WalletPage> {
   /// Shows a real AdMob rewarded ad via [AdService].
   /// Credits are only awarded after the user watches the full ad.
   Future<void> _watchAdReward() async {
-    final adService = AdService._instance;
+    final adService = AdService.instance;
 
     if (!adService.isRewardedReady) {
       // Show loading while we try to get the ad
@@ -142,7 +142,7 @@ class _WalletPageState extends State<WalletPage> {
           await _supabase
               .from('wallet')
               .update({'balance': newBalance})
-              .eq('id', wallet['id']);
+              .eq('id', wallet!['id'] as String);
 
           await _supabase.from('wallet_transactions').insert({
             'wallet_id': wallet['id'],
@@ -196,7 +196,7 @@ class _WalletPageState extends State<WalletPage> {
               children: [
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                Text('Simulating Store Purchase: ${pkg['name']}...', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('Simulating Store Purchase: ${pkg['name'] as String}...', style: const TextStyle(fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -215,27 +215,27 @@ class _WalletPageState extends State<WalletPage> {
       final wallet = await _supabase.from('wallet').select().eq('user_id', user.id).single();
       final newBalance = (wallet['balance'] as int) + (pkg['credits_amount'] as int);
 
-      await _supabase.from('wallet').update({'balance': newBalance}).eq('id', wallet['id']);
+      await _supabase.from('wallet').update({'balance': newBalance}).eq('id', wallet['id'] as String);
       await _supabase.from('wallet_transactions').insert({
-        'wallet_id': wallet['id'],
+        'wallet_id': wallet['id'] as String,
         'amount': pkg['credits_amount'],
         'type': 'purchase',
-        'description': 'Purchased package: ${pkg['name']}',
+        'description': 'Purchased package: ${pkg['name'] as String}',
       });
 
       _loadWalletData();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully purchased ${pkg['name']}!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully purchased ${pkg['name'] as String}!')));
     } catch (e) {
       setState(() {
         _balance += pkg['credits_amount'] as int;
         _transactions.insert(0, {
           'amount': pkg['credits_amount'],
           'type': 'purchase',
-          'description': 'Purchased package: ${pkg['name']} (Mock)',
+          'description': 'Purchased package: ${pkg['name'] as String} (Mock)',
           'created_at': DateTime.now().toIso8601String(),
         });
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully purchased ${pkg['name']} offline!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully purchased ${pkg['name'] as String} offline!')));
     }
   }
 
@@ -289,7 +289,7 @@ class _WalletPageState extends State<WalletPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Column(
           children: [
@@ -328,9 +328,8 @@ class _WalletPageState extends State<WalletPage> {
             ),
             const SizedBox(width: AppSpacing.base),
             AppButton(
-              text: 'Watch',
+              label: 'Watch',
               onPressed: _watchAdReward,
-              isCompact: true,
             )
           ],
         ),
@@ -355,13 +354,13 @@ class _WalletPageState extends State<WalletPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(pkg['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              Text(pkg['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 8),
-              Text('+${pkg['credits_amount']} Credits', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue)),
+              Text('+${pkg['credits_amount'] as int} Credits', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue)),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => _buyPackage(pkg),
-                child: Text('\$${(pkg['price_cents'] / 100).toStringAsFixed(2)}'),
+                child: Text('\$${((pkg['price_cents'] as int) / 100).toStringAsFixed(2)}'),
               )
             ],
           ),
@@ -382,7 +381,7 @@ class _WalletPageState extends State<WalletPage> {
       separatorBuilder: (context, index) => const Divider(),
       itemBuilder: (context, index) {
         final tx = _transactions[index];
-        final isGrant = tx['amount'] > 0;
+        final isGrant = (tx['amount'] as int) > 0;
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: isGrant ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
@@ -391,9 +390,9 @@ class _WalletPageState extends State<WalletPage> {
               color: isGrant ? Colors.green : Colors.red,
             ),
           ),
-          title: Text(tx['description'] ?? 'Transaction'),
+          title: Text((tx['description'] as String?) ?? 'Transaction'),
           subtitle: Text(
-            tx['created_at'] != null ? DateTime.parse(tx['created_at']).toLocal().toString().substring(0, 16) : '',
+            tx['created_at'] != null ? DateTime.parse(tx['created_at'] as String).toLocal().toString().substring(0, 16) : '',
             style: const TextStyle(fontSize: 11, color: Colors.grey),
           ),
           trailing: Text(

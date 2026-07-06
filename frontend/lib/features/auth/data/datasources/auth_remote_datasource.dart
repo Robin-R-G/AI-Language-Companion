@@ -22,6 +22,8 @@ abstract class AuthRemoteDataSource {
   Future<Result<User?>> getCurrentUser();
 
   Future<Result<Session?>> getCurrentSession();
+
+  Future<Result<void>> resetPassword(String email);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -109,6 +111,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return Result.success(session);
     } catch (e) {
       return Result.error(NetworkFailure('Failed to get session: $e'));
+    }
+  }
+
+  @override
+  Future<Result<void>> resetPassword(String email) async {
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      return const Result.success(null);
+    } on AuthException catch (e) {
+      return Result.error(AuthFailure(e.message));
+    } catch (e) {
+      return Result.error(NetworkFailure('Password reset failed: $e'));
     }
   }
 }

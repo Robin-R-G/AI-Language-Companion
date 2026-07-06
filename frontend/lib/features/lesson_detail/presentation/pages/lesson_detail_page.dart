@@ -1,72 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/error_view.dart';
+import '../../../../shared/models/lesson.dart';
+import '../../../lessons/presentation/providers/lesson_providers.dart';
+import '../../../lessons/presentation/controllers/lessons_controller.dart';
 
-/// Lesson Detail screen showing quiz questions and exercises.
-class LessonDetailPage extends StatefulWidget {
+/// Lesson Detail screen showing lesson content and exercises.
+class LessonDetailPage extends ConsumerStatefulWidget {
   final String? lessonId;
 
   const LessonDetailPage({super.key, this.lessonId});
 
   @override
-  State<LessonDetailPage> createState() => _LessonDetailPageState();
+  ConsumerState<LessonDetailPage> createState() => _LessonDetailPageState();
 }
 
-class _LessonDetailPageState extends State<LessonDetailPage> {
-  bool _isLoading = false;
-  bool _hasError = false;
+class _LessonDetailPageState extends ConsumerState<LessonDetailPage> {
   int _currentQuestion = 0;
   int? _selectedAnswer;
   bool _answered = false;
   bool _showExplanation = false;
-
-  final List<Map<String, dynamic>> _questions = [
-    {
-      'question': 'Choose the correct form: "She ___ to school every day."',
-      'options': ['go', 'goes', 'going', 'went'],
-      'correctIndex': 1,
-      'explanation':
-          'Third person singular subjects use "goes" in present simple tense.',
-      'malayalam': 'She എന്ന ഏകവചന വിഷയത്തിന് "goes" ഉപയോഗിക്കണം.',
-    },
-    {
-      'question': 'Which sentence is grammatically correct?',
-      'options': [
-        'I have been to Paris last year.',
-        'I went to Paris last year.',
-        'I go to Paris last year.',
-        'I am going to Paris last year.',
-      ],
-      'correctIndex': 1,
-      'explanation':
-          'Use past simple tense with specific past time expressions like "last year".',
-      'malayalam':
-          '"last year" എന്ന പ്രത്യേക സമയ സൂചനയ്ക്ക് past simple ഉപയോഗിക്കണം.',
-    },
-    {
-      'question': 'Fill in the blank: "There ___ many students in the class."',
-      'options': ['is', 'are', 'was', 'has'],
-      'correctIndex': 1,
-      'explanation': '"Students" is plural, so use "are".',
-      'malayalam': '"students" ബഹുവചനമാണ്, അതിനാൽ "are" ഉപയോഗിക്കണം.',
-    },
-  ];
+  final List<int?> _userAnswers = [];
 
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-    });
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) setState(() => _isLoading = false);
+    if (widget.lessonId != null) {
+      Future.microtask(() {
+        ref.read(lessonDetailProvider.notifier).loadLesson(widget.lessonId!);
+      });
+    }
   }
 
   void _selectAnswer(int index) {
@@ -74,52 +40,152 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     setState(() {
       _selectedAnswer = index;
       _answered = true;
+      if (_userAnswers.length <= _currentQuestion) {
+        _userAnswers.add(index);
+      } else {
+        _userAnswers[_currentQuestion] = index;
+      }
     });
   }
 
   void _nextQuestion() {
-    if (_currentQuestion < _questions.length - 1) {
+    final lessonState = ref.read(lessonDetailProvider);
+    final lesson = lessonState.valueOrNull;
+    if (lesson == null) return;
+
+    final quizzes = lesson.quizzes ?? [];
+    if (_currentQuestion < quizzes.length - 1) {
       setState(() {
         _currentQuestion++;
         _selectedAnswer = null;
         _answered = false;
         _showExplanation = false;
       });
+    } else {
+      _completeLesson();
+    }
+  }
+
+  Future<void> _completeLesson() async {
+    if (widget.lessonId == null) return;
+
+    final lessonState = ref.read(lessonDetailProvider);
+    final lesson = lessonState.valueOrNull;
+    if (lesson == null) return;
+
+    final quizzes = lesson.quizzes ?? [];
+    final totalQuestions = quizzes.length;
+    if (totalQuestions == 0) return;
+
+    int correctAnswers = 0;
+    for (int i = 0; i < totalQuestions; i++) {
+      final userAnswer = i < _userAnswers.length ? _userAnswers[i] : null;
+      if (userAnswer != null && userAnswer == quizzes[i].correctOptionIndex) {
+        correctAnswers++;
+      }
+    }
+
+    final score = ((correctAnswers / totalQuestions) * 100).round();
+
+    await ref.read(lessonDetailProvider.notifier).completeLesson(
+      widget.lessonId!,
+      score,
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lesson completed! Score: $score%'),
+          backgroundColor: AppColors.success,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final lessonState = ref.watch(lessonDetailProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Grammar Basics'),
+        title: Text(lessonState.valueOrNull?.title ?? 'Lesson'),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.base),
-            child: Center(
-              child: Text(
-                '${_currentQuestion + 1}/${_questions.length}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
+          lessonState.whenOrNull(
+            data: (lesson) => lesson != null
+                ? Padding(
+                    padding: const EdgeInsets.only(right: AppSpacing.base),
+                    child: Center(
+                      child: Text(
+                        '${_currentQuestion + 1}/${(lesson.quizzes ?? []).length}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+            loading: () => null,
+            error: (_, __) => null,
+          ) ?? const SizedBox.shrink(),
         ],
       ),
-      body: _buildBody(theme),
+      body: lessonState.when(
+        data: (lesson) {
+          if (lesson == null) return _buildEmptyState(theme);
+          return _buildLessonContent(theme, lesson);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => ErrorView(onRetry: () {
+          if (widget.lessonId != null) {
+            ref
+                .read(lessonDetailProvider.notifier)
+                .loadLesson(widget.lessonId!);
+          }
+        }),
+      ),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
-    if (_hasError) return ErrorView(onRetry: _loadData);
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+  Widget _buildEmptyState(ThemeData theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xxl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.school_outlined,
+              size: 80,
+              color: theme.colorScheme.primary.withOpacity(0.3),
+            ),
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              'Lesson not found',
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'This lesson may have been removed or is unavailable.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLessonContent(ThemeData theme, Lesson lesson) {
+    final quizzes = lesson.quizzes as List<dynamic>? ?? [];
+    if (quizzes.isEmpty) {
+      return _buildNoQuestionsState(theme, lesson);
     }
 
-    final question = _questions[_currentQuestion];
+    final question = quizzes[_currentQuestion];
 
     return Column(
       children: [
@@ -127,7 +193,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.base),
           child: LinearProgressIndicator(
-            value: (_currentQuestion + 1) / _questions.length,
+            value: (_currentQuestion + 1) / quizzes.length,
             minHeight: 4,
             borderRadius: AppRadius.smAll,
           ),
@@ -136,7 +202,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.base),
             children: [
-              // Difficulty badge
+              // Difficulty badge and category
               Row(
                 children: [
                   Container(
@@ -148,9 +214,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       color: AppColors.success.withAlpha(25),
                       borderRadius: AppRadius.smAll,
                     ),
-                    child: const Text(
-                      'Beginner',
-                      style: TextStyle(
+                    child: Text(
+                      lesson.difficulty,
+                      style: const TextStyle(
                         color: AppColors.success,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -159,7 +225,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    'Grammar',
+                    lesson.category,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -171,29 +237,28 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               // Question
               AppCard(
                 child: Text(
-                  question['question'] as String,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  question.question as String,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
               const SizedBox(height: AppSpacing.base),
 
               // Options
               ...List.generate(
-                (question['options'] as List).length,
+                (question.options as List).length,
                 (index) => _AnswerOption(
-                  text: (question['options'] as List)[index] as String,
+                  text: (question.options as List)[index] as String,
                   index: index,
                   isSelected: _selectedAnswer == index,
-                  isCorrect: index == question['correctIndex'],
+                  isCorrect: index == question.correctOptionIndex,
                   answered: _answered,
                   onTap: () => _selectAnswer(index),
                 ),
               ),
 
               // Explanation
-              if (_answered && _showExplanation) ...[
+              if (_answered && _showExplanation && question.explanation != null) ...[
                 const SizedBox(height: AppSpacing.base),
                 AppCard(
                   color: theme.colorScheme.primaryContainer.withAlpha(77),
@@ -219,16 +284,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        question['explanation'] as String,
+                        question.explanation as String,
                         style: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        question['malayalam'] as String,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontStyle: FontStyle.italic,
-                        ),
                       ),
                     ],
                   ),
@@ -258,7 +315,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: AppButton(
-                          label: _currentQuestion < _questions.length - 1
+                          label: _currentQuestion < quizzes.length - 1
                               ? 'Next Question'
                               : 'Complete Lesson',
                           onPressed: _nextQuestion,
@@ -272,6 +329,66 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ? () => setState(() => _answered = true)
                         : null,
                   ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNoQuestionsState(ThemeData theme, Lesson lesson) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withAlpha(25),
+                      borderRadius: AppRadius.smAll,
+                    ),
+                    child: Text(
+                      lesson.difficulty,
+                      style: const TextStyle(
+                        color: AppColors.success,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    lesson.category,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.base),
+              if (lesson.content != null)
+                AppCard(
+                  child: Text(
+                    lesson.content as String,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            child: AppButton(
+              label: 'Complete Lesson',
+              onPressed: _completeLesson,
+            ),
           ),
         ),
       ],

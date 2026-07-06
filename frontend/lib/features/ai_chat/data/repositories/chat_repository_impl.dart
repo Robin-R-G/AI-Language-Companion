@@ -28,11 +28,17 @@ class ChatRepositoryImpl implements ChatRepository {
     required String conversationId,
     required String message,
     bool stream = false,
+    String? language,
+    String? examType,
+    void Function(String chunk)? onChunk,
   }) {
     return _remoteDataSource.sendMessage(
       conversationId: conversationId,
       message: message,
       stream: stream,
+      language: language,
+      examType: examType,
+      onChunk: onChunk,
     );
   }
 

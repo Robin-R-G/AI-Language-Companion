@@ -98,7 +98,7 @@ class _AffiliateMarketplacePageState extends State<AffiliateMarketplacePage> {
         // Simulate a mock sale with a 25% conversion probability for demo purposes
         final shouldConvert = DateTime.now().millisecondsSinceEpoch % 4 == 0;
         if (shouldConvert) {
-          final commission = Math.round(product['price_cents'] * (product['commission_percent'] / 100));
+          final commission = Math.round((product['price_cents'] as int) * ((product['commission_percent'] as int) / 100));
           await _supabase.from('affiliate_sales').insert({
             'user_id': user.id,
             'product_id': product['id'],
@@ -152,7 +152,7 @@ class _AffiliateMarketplacePageState extends State<AffiliateMarketplacePage> {
         itemCount: _products.length,
         itemBuilder: (context, index) {
           final prod = _products[index];
-          final rate = prod['price_cents'] / 100;
+          final rate = (prod['price_cents'] as int) / 100;
 
           return AppCard(
             child: Padding(
@@ -165,9 +165,9 @@ class _AffiliateMarketplacePageState extends State<AffiliateMarketplacePage> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceVariant,
-                        borderRadius: BorderRadius.circular(AppBorderRadius.base),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                         image: DecorationImage(
-                          image: NetworkImage(prod['image_url']),
+                          image: NetworkImage(prod['image_url'] as String),
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -179,8 +179,8 @@ class _AffiliateMarketplacePageState extends State<AffiliateMarketplacePage> {
                     style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    prod['title'],
+                    Text(
+                      prod['title'] as String,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

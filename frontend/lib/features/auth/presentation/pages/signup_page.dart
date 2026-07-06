@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../app/router.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../controllers/auth_controller.dart';
 
 /// Signup page for new user registration.
 class SignupPage extends ConsumerStatefulWidget {
@@ -43,11 +45,39 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement actual signup with Supabase Auth
-      await Future.delayed(const Duration(seconds: 2));
+      await ref.read(authControllerProvider.notifier).signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
+      );
 
+      final authState = ref.read(authControllerProvider);
       if (mounted) {
-        context.go(RouteNames.onboarding);
+        if (authState.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Signup failed: ${authState.error}'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        } else if (authState.hasValue && authState.value != null) {
+          // Create user profile row
+          try {
+            final client = Supabase.instance.client;
+            final user = client.auth.currentUser;
+            if (user != null) {
+              await client.from('user_profiles').upsert({
+                'auth_user_id': user.id,
+                'full_name': _nameController.text.trim(),
+                'email': _emailController.text.trim(),
+                'onboarding_completed': false,
+              }, onConflict: 'auth_user_id');
+            }
+          } catch (_) {
+            // Profile creation can happen later
+          }
+          context.go(RouteNames.onboarding);
+        }
       }
     } catch (e) {
       if (mounted) {

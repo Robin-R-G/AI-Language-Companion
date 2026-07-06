@@ -21,4 +21,6 @@ abstract class AuthRepository {
   Future<Result<bool>> isOnboardingCompleted();
 
   Future<Result<void>> completeOnboarding();
+
+  Future<Result<void>> resetPassword(String email);
 }

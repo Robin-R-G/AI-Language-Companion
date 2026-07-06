@@ -111,7 +111,7 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
                     decoration: InputDecoration(
                       hintText: 'Search tutors or qualifications...',
                       prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppBorderRadius.base)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                     ),
                     onChanged: (val) => setState(() => _searchQuery = val),
                   ),
@@ -151,9 +151,9 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
 
   Widget _buildTutorCard(ThemeData theme, dynamic tutor) {
     final profile = tutor['user_profiles'] ?? {};
-    final name = profile['full_name'] ?? 'Tutor';
-    final avatar = profile['avatar_url'] ?? '';
-    final rate = tutor['price_per_hour_cents'] / 100;
+    final name = (profile['full_name'] as String?) ?? 'Tutor';
+    final avatar = (profile['avatar_url'] as String?) ?? '';
+    final rate = (tutor['price_per_hour_cents'] as int) / 100;
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.base),
@@ -182,7 +182,7 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(tutor['qualifications'] ?? 'ESL Certified Instructor', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text((tutor['qualifications'] ?? 'ESL Certified Instructor') as String, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -203,7 +203,7 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
               ],
             ),
             const Divider(height: 24),
-            Text(tutor['bio'] ?? 'Hello!', maxLines: 3, overflow: TextOverflow.ellipsis),
+            Text((tutor['bio'] ?? 'Hello!') as String, maxLines: 3, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -212,9 +212,8 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
                 Text('Speaks: ${(tutor['languages'] as List<dynamic>?)?.join(', ') ?? 'N/A'}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 const Spacer(),
                 AppButton(
-                  text: 'Book Consultation',
+                  label: 'Book Consultation',
                   onPressed: () => _showBookingDialog(tutor),
-                  isCompact: true,
                 )
               ],
             )
@@ -229,7 +228,7 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Book Session with ${tutor['user_profiles']['full_name']}'),
+          title: Text('Book Session with ${tutor['user_profiles']['full_name'] as String}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -243,7 +242,7 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.payments),
-                title: Text('Price: \$${(tutor['price_per_hour_cents'] / 100).toStringAsFixed(2)}'),
+                title: Text('Price: \$${((tutor['price_per_hour_cents'] as int) / 100).toStringAsFixed(2)}'),
                 subtitle: const Text('Equivalent to 150 AI Credits'),
               ),
             ],
@@ -291,7 +290,7 @@ class _LiveClassroomScreenState extends State<LiveClassroomScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final name = widget.tutor['user_profiles']['full_name'] ?? 'Tutor';
+    final name = (widget.tutor['user_profiles']['full_name'] as String?) ?? 'Tutor';
 
     return Scaffold(
       appBar: AppBar(
@@ -313,7 +312,7 @@ class _LiveClassroomScreenState extends State<LiveClassroomScreen> {
               margin: const EdgeInsets.all(AppSpacing.base),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 border: Border.all(color: theme.dividerColor.withOpacity(0.2)),
               ),
               child: Stack(
@@ -362,7 +361,7 @@ class _LiveClassroomScreenState extends State<LiveClassroomScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.black87,
-                        borderRadius: BorderRadius.circular(AppBorderRadius.base),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Stack(
                         children: [
@@ -381,7 +380,7 @@ class _LiveClassroomScreenState extends State<LiveClassroomScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.black87,
-                        borderRadius: BorderRadius.circular(AppBorderRadius.base),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Stack(
                         children: [
@@ -407,13 +406,13 @@ class _LiveClassroomScreenState extends State<LiveClassroomScreen> {
                 IconButton.filled(
                   onPressed: () => setState(() => _audioMuted = !_audioMuted),
                   icon: Icon(_audioMuted ? Icons.mic_off : Icons.mic),
-                  backgroundColor: _audioMuted ? Colors.red : theme.colorScheme.primary,
+                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(_audioMuted ? Colors.red : theme.colorScheme.primary)),
                 ),
                 const SizedBox(width: 24),
                 IconButton.filled(
                   onPressed: () => setState(() => _videoMuted = !_videoMuted),
                   icon: Icon(_videoMuted ? Icons.videocam_off : Icons.videocam),
-                  backgroundColor: _videoMuted ? Colors.red : theme.colorScheme.primary,
+                  style: ButtonStyle(backgroundColor: WidgetStateProperty.all(_videoMuted ? Colors.red : theme.colorScheme.primary)),
                 ),
                 const SizedBox(width: 24),
                 ElevatedButton.icon(

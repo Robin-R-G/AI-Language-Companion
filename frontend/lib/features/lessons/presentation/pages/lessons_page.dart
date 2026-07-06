@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../app/router.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../shared/models/lesson.dart';
+import '../controllers/lessons_controller.dart';
 
 /// Lessons page showing available courses and progress.
 class LessonsPage extends ConsumerStatefulWidget {
@@ -14,59 +18,20 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
   String _selectedCategory = 'All';
   String _selectedDifficulty = 'All';
 
-  // TODO: Replace with actual lesson data from repository
-  final List<_Lesson> _lessons = [
-    const _Lesson(
-      id: '1',
-      title: 'English Basics',
-      description: 'Introduction to everyday English',
-      category: 'Grammar',
-      difficulty: 'Beginner',
-      estimatedMinutes: 15,
-      xpReward: 100,
-      progress: 100,
-    ),
-    const _Lesson(
-      id: '2',
-      title: 'German A1 Greetings',
-      description: 'Learn common greetings',
-      category: 'Vocabulary',
-      difficulty: 'Beginner',
-      estimatedMinutes: 20,
-      xpReward: 120,
-      progress: 60,
-    ),
-    const _Lesson(
-      id: '3',
-      title: 'IELTS Writing Task 1',
-      description: 'Describe charts and graphs',
-      category: 'Writing',
-      difficulty: 'Intermediate',
-      estimatedMinutes: 30,
-      xpReward: 200,
-      progress: 0,
-    ),
-    const _Lesson(
-      id: '4',
-      title: 'Business English Email',
-      description: 'Write professional emails',
-      category: 'Writing',
-      difficulty: 'Advanced',
-      estimatedMinutes: 25,
-      xpReward: 180,
-      progress: 0,
-    ),
-    const _Lesson(
-      id: '5',
-      title: 'Daily Conversation',
-      description: 'Everyday dialogues and phrases',
-      category: 'Speaking',
-      difficulty: 'Beginner',
-      estimatedMinutes: 15,
-      xpReward: 100,
-      progress: 30,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadLessons();
+  }
+
+  void _loadLessons() {
+    final category = _selectedCategory == 'All' ? null : _selectedCategory;
+    final difficulty = _selectedDifficulty == 'All' ? null : _selectedDifficulty;
+    ref.read(lessonsControllerProvider.notifier).loadLessons(
+      category: category,
+      difficulty: difficulty,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +54,28 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
 
           // Lessons List
           Expanded(
-            child: _lessons.isEmpty ? _buildEmptyState() : _buildLessonsList(),
+            child: ref.watch(lessonsControllerProvider).when(
+              data: (lessons) => lessons.isEmpty
+                  ? _buildEmptyState()
+                  : _buildLessonsList(lessons),
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+              error: (error, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48),
+                    const SizedBox(height: AppSpacing.base),
+                    Text('Failed to load lessons'),
+                    const SizedBox(height: AppSpacing.sm),
+                    ElevatedButton(
+                      onPressed: _loadLessons,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -115,6 +101,7 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
             ],
             onSelected: (value) {
               setState(() => _selectedCategory = value);
+              _loadLessons();
             },
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -124,6 +111,7 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
             options: const ['All', 'Beginner', 'Intermediate', 'Advanced'],
             onSelected: (value) {
               setState(() => _selectedDifficulty = value);
+              _loadLessons();
             },
           ),
         ],
@@ -164,24 +152,15 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
     );
   }
 
-  Widget _buildLessonsList() {
-    final filteredLessons = _lessons.where((lesson) {
-      final categoryMatch =
-          _selectedCategory == 'All' || lesson.category == _selectedCategory;
-      final difficultyMatch =
-          _selectedDifficulty == 'All' ||
-          lesson.difficulty == _selectedDifficulty;
-      return categoryMatch && difficultyMatch;
-    }).toList();
-
+  Widget _buildLessonsList(List<Lesson> lessons) {
     return ListView.builder(
       padding: const EdgeInsets.all(AppSpacing.base),
-      itemCount: filteredLessons.length,
+      itemCount: lessons.length,
       itemBuilder: (context, index) {
         return _LessonCard(
-          lesson: filteredLessons[index],
+          lesson: lessons[index],
           onTap: () {
-            // TODO: Navigate to lesson detail
+            context.push('${RouteNames.lessonDetail}/${lessons[index].id}');
           },
         );
       },
@@ -189,39 +168,14 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
   }
 }
 
-class _Lesson {
-  final String id;
-  final String title;
-  final String description;
-  final String category;
-  final String difficulty;
-  final int estimatedMinutes;
-  final int xpReward;
-  final int progress;
-
-  const _Lesson({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.difficulty,
-    required this.estimatedMinutes,
-    required this.xpReward,
-    required this.progress,
-  });
-}
-
 class _LessonCard extends StatelessWidget {
-  final _Lesson lesson;
+  final Lesson lesson;
   final VoidCallback onTap;
 
   const _LessonCard({required this.lesson, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = lesson.progress == 100;
-    final isInProgress = lesson.progress > 0 && lesson.progress < 100;
-
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.base),
       child: InkWell(
@@ -259,30 +213,21 @@ class _LessonCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        Text(
-                          lesson.description,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withOpacity(0.6),
-                              ),
-                        ),
+                        if (lesson.content != null)
+                          Text(
+                            lesson.content!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                          ),
                       ],
                     ),
                   ),
-                  // Status Icon
-                  if (isCompleted)
-                    const Icon(Icons.check_circle, color: AppColors.success)
-                  else if (isInProgress)
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        value: lesson.progress / 100,
-                        strokeWidth: 3,
-                      ),
-                    ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -326,29 +271,8 @@ class _LessonCard extends StatelessWidget {
                       ).colorScheme.onSurface.withOpacity(0.5),
                     ),
                   ),
-                  const Spacer(),
-                  // XP Reward
-                  const Icon(Icons.star, size: 14, color: AppColors.warning),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    '+${lesson.xpReward} XP',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.warning,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ],
               ),
-              // Progress Bar (if in progress)
-              if (isInProgress) ...[
-                const SizedBox(height: AppSpacing.sm),
-                LinearProgressIndicator(
-                  value: lesson.progress / 100,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.primary.withOpacity(0.2),
-                ),
-              ],
             ],
           ),
         ),

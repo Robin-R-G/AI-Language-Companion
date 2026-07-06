@@ -57,7 +57,7 @@ Future<void> bootstrap() async {
   Logger.info('RevenueCat initialized');
 
   // Initialize Google Mobile Ads (pre-loads rewarded ads)
-  await AdService._instance.initialize();
+  await AdService.instance.initialize();
   Logger.info('AdMob initialized');
 
   // Set system UI overlay style

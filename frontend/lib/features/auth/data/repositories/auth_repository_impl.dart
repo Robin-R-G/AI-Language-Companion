@@ -115,6 +115,11 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Result<void>> resetPassword(String email) async {
+    return _remoteDataSource.resetPassword(email);
+  }
+
   AuthUser _mapUser(User user) {
     return AuthUser(
       id: user.id,

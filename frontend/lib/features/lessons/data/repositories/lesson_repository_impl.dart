@@ -1,15 +1,14 @@
-import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
-import '../../../../core/network/dio_client.dart';
 import '../../domain/entities/lesson.dart';
 import '../../domain/repositories/lesson_repository.dart';
 
 class LessonRepositoryImpl implements LessonRepository {
-  final Dio _dio;
+  final SupabaseClient _client;
 
-  LessonRepositoryImpl({DioClient? dioClient, Dio? dio})
-    : _dio = dio ?? dioClient?.client ?? DioClient().client;
+  LessonRepositoryImpl({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   @override
   Future<Result<List<Lesson>>> getLessons({
@@ -17,43 +16,39 @@ class LessonRepositoryImpl implements LessonRepository {
     String? difficulty,
   }) async {
     try {
-      final response = await _dio.get(
-        '/lesson-engine',
-        queryParameters: {'category': ?category, 'difficulty': ?difficulty},
-      );
-      final data = response.data;
-      if (data is List) {
-        return Result.success(
-          data.map((e) => Lesson.fromJson(e as Map<String, dynamic>)).toList(),
-        );
+      var query = _client.from('lessons').select();
+
+      if (category != null) {
+        query = query.eq('category', category);
       }
-      return const Result.error(ServerFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        ServerFailure(
-          e.message ?? 'Failed to fetch lessons',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
+      if (difficulty != null) {
+        query = query.eq('difficulty', difficulty);
+      }
+
+      final response = await query.order('title');
+
+      final lessons = (response as List)
+          .map((json) => Lesson.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      return Result.success(lessons);
+    } catch (e) {
+      return Result.error(NetworkFailure('Failed to load lessons: $e'));
     }
   }
 
   @override
   Future<Result<Lesson>> getLessonById(String id) async {
     try {
-      final response = await _dio.get('/lesson-engine/$id');
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(Lesson.fromJson(data));
-      }
-      return const Result.error(ServerFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        ServerFailure(
-          e.message ?? 'Failed to fetch lesson',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
+      final response = await _client
+          .from('lessons')
+          .select()
+          .eq('id', id)
+          .single();
+
+      return Result.success(Lesson.fromJson(response));
+    } catch (e) {
+      return Result.error(DatabaseFailure('Lesson not found: $e'));
     }
   }
 
@@ -63,22 +58,26 @@ class LessonRepositoryImpl implements LessonRepository {
     int score,
   ) async {
     try {
-      final response = await _dio.post(
-        '/lesson-engine/complete',
-        data: {'lesson_id': lessonId, 'score': score},
-      );
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return Result.success(data);
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) {
+        return const Result.error(AuthFailure('User not authenticated'));
       }
-      return const Result.error(ServerFailure('Invalid response format'));
-    } on DioException catch (e) {
-      return Result.error(
-        ServerFailure(
-          e.message ?? 'Failed to complete lesson',
-          code: e.response?.statusCode?.toString(),
-        ),
-      );
+
+      final response = await _client
+          .from('lesson_progress')
+          .upsert({
+            'user_id': userId,
+            'lesson_id': lessonId,
+            'completed': true,
+            'score': score,
+            'time_spent_seconds': 0,
+          })
+          .select()
+          .single();
+
+      return Result.success(response);
+    } catch (e) {
+      return Result.error(DatabaseFailure('Failed to complete lesson: $e'));
     }
   }
 }

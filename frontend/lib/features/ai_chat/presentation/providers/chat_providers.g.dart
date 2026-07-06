@@ -23,7 +23,7 @@ final chatRepositoryProvider = AutoDisposeProvider<ChatRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ChatRepositoryRef = AutoDisposeProviderRef<ChatRepository>;
-String _$chatMessagesHash() => r'813487d0ff954ffbe85a9b53db798be8f7db6696';
+String _$chatMessagesHash() => r'44e7701310def459c5abc19b0b402a8b770fdcc9';
 
 /// See also [ChatMessages].
 @ProviderFor(ChatMessages)
