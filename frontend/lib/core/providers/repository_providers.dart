@@ -33,6 +33,9 @@ import '../../features/subscription/domain/repositories/subscription_repository.
 import '../../features/ai_chat/data/repositories/chat_repository_impl.dart';
 import '../../features/ai_chat/domain/repositories/chat_repository.dart';
 
+import '../../features/voice/data/datasources/voice_remote_datasource.dart';
+import 'service_providers.dart';
+
 part 'repository_providers.g.dart';
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
@@ -95,7 +98,11 @@ WritingRepository writingRepository(WritingRepositoryRef ref) {
 
 @riverpod
 VoiceRepository voiceRepository(VoiceRepositoryRef ref) {
-  return VoiceRepositoryImpl();
+  final dio = ref.watch(dioClientProvider);
+  final client = ref.watch(supabaseClientProvider);
+  return VoiceRepositoryImpl(
+    remoteDataSource: VoiceRemoteDataSourceImpl(dio: dio, client: client),
+  );
 }
 
 // ─── Mock Exam ───────────────────────────────────────────────────────────────

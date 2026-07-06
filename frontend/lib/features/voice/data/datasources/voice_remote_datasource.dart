@@ -127,27 +127,25 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
     required String identity,
   }) async {
     try {
-      final response = await _dio.post(
-        '/voice-service/token',
-        data: {
+      final response = await _client.functions.invoke(
+        'voice-service/token',
+        body: {
           'sessionId': sessionId,
           'roomName': roomName,
           'identity': identity,
         },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${_client.auth.currentUser?.id}',
-          },
-        ),
       );
 
-      if (response.data['success'] == true) {
-        return Result.success(response.data['data'] as Map<String, dynamic>);
+      if (response.status == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        if (data['success'] == true) {
+          return Result.success((data['data'] as Map<String, dynamic>?) ?? {});
+        }
+        return Result.error(NetworkFailure(data['message'] as String? ?? 'Token generation failed'));
       }
-
-      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Token generation failed'));
-    } on DioException catch (e) {
-      return Result.error(NetworkFailure('Token generation failed: ${e.message}'));
+      return Result.error(NetworkFailure('Token generation failed with status ${response.status}'));
+    } catch (e) {
+      return Result.error(NetworkFailure('Token generation failed: $e'));
     }
   }
 
@@ -162,23 +160,21 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
         'language': language,
       });
 
+      // The configured Dio client already appends the active session token!
       final response = await _dio.post(
         '/voice-service/transcribe',
         data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${_client.auth.currentUser?.id}',
-          },
-        ),
       );
 
       if (response.data['success'] == true) {
-        return Result.success(response.data['data'] as Map<String, dynamic>);
+        return Result.success((response.data['data'] as Map<String, dynamic>?) ?? {});
       }
 
       return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Transcription failed'));
     } on DioException catch (e) {
       return Result.error(NetworkFailure('Transcription failed: ${e.message}'));
+    } catch (e) {
+      return Result.error(NetworkFailure('Transcription failed: $e'));
     }
   }
 
@@ -189,27 +185,25 @@ class VoiceRemoteDataSourceImpl implements VoiceRemoteDataSource {
     String language = 'en',
   }) async {
     try {
-      final response = await _dio.post(
-        '/voice-service/pronunciation',
-        data: {
+      final response = await _client.functions.invoke(
+        'voice-service/pronunciation',
+        body: {
           'transcript': transcript,
           'target': targetText,
           'language': language,
         },
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${_client.auth.currentUser?.id}',
-          },
-        ),
       );
 
-      if (response.data['success'] == true) {
-        return Result.success(response.data['data'] as Map<String, dynamic>);
+      if (response.status == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        if (data['success'] == true) {
+          return Result.success((data['data'] as Map<String, dynamic>?) ?? {});
+        }
+        return Result.error(NetworkFailure(data['message'] as String? ?? 'Pronunciation analysis failed'));
       }
-
-      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Pronunciation analysis failed'));
-    } on DioException catch (e) {
-      return Result.error(NetworkFailure('Pronunciation analysis failed: ${e.message}'));
+      return Result.error(NetworkFailure('Pronunciation analysis failed with status ${response.status}'));
+    } catch (e) {
+      return Result.error(NetworkFailure('Pronunciation analysis failed: $e'));
     }
   }
 }

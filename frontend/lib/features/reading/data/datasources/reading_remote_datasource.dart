@@ -1,5 +1,5 @@
 // lib/features/reading/data/datasources/reading_remote_datasource.dart
-import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 
@@ -40,30 +40,37 @@ abstract class ReadingRemoteDataSource {
 }
 
 class ReadingRemoteDataSourceImpl implements ReadingRemoteDataSource {
-  final Dio _dio;
+  final SupabaseClient _client;
 
-  ReadingRemoteDataSourceImpl({Dio? dio}) : _dio = dio ?? Dio();
+  ReadingRemoteDataSourceImpl({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   @override
   Future<Result<ReadingLesson>> generateLesson(String topic) async {
     try {
-      final response = await _dio.post(
-        '/agent-orchestrate',
-        data: {
+      final response = await _client.functions.invoke(
+        'agent-orchestrate',
+        body: {
           'action': 'route',
           'capability': 'reading',
           'input': topic,
         },
       );
 
-      if (response.data['success'] == true) {
-        final output = response.data['data']['output'] as Map<String, dynamic>;
-        return Result.success(ReadingLesson.fromJson(output));
+      if (response.status == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        if (data['success'] == true) {
+          final output = data['data']['output'] as Map<String, dynamic>;
+          return Result.success(ReadingLesson.fromJson(output));
+        }
+        return Result.error(
+          ServerFailure(data['message'] as String? ?? 'Lesson generation failed'),
+        );
       }
 
-      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Lesson generation failed'));
-    } on DioException catch (e) {
-      return Result.error(NetworkFailure('Lesson generation failed: ${e.message}'));
+      return Result.error(
+        ServerFailure('Lesson generation failed with status ${response.status}'),
+      );
     } catch (e) {
       return Result.error(NetworkFailure('Lesson generation failed: $e'));
     }

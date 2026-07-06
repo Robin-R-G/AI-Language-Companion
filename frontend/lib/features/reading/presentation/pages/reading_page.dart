@@ -1,108 +1,137 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
-import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
-import '../../../../core/widgets/shimmer_loading.dart';
+import '../controllers/reading_controller.dart';
+import '../../data/datasources/reading_remote_datasource.dart';
 
 /// Reading Practice screen with passages and comprehension questions.
-class ReadingPage extends StatefulWidget {
+class ReadingPage extends ConsumerStatefulWidget {
   const ReadingPage({super.key});
 
   @override
-  State<ReadingPage> createState() => _ReadingPageState();
+  ConsumerState<ReadingPage> createState() => _ReadingPageState();
 }
 
-class _ReadingPageState extends State<ReadingPage> {
-  bool _isLoading = false;
-  bool _hasError = false;
+class _ReadingPageState extends ConsumerState<ReadingPage> {
+  final TextEditingController _topicController = TextEditingController();
   bool _showQuiz = false;
-
-  final String _passage = '''
-The Benefits of Learning a New Language
-
-Learning a new language is one of the most rewarding intellectual endeavors one can undertake. Beyond the obvious practical advantages of communicating with a wider range of people, research has shown that bilingualism offers significant cognitive benefits.
-
-Studies at University College London found that people who speak more than one language have better memory, problem-solving skills, and creative thinking abilities. The mental exercise of switching between languages strengthens the brain's executive functions, much like physical exercise strengthens the body.
-
-Furthermore, learning a new language opens doors to different cultures and perspectives. When you learn a language, you also learn about the values, traditions, and ways of thinking of the people who speak it. This cultural awareness fosters empathy and global understanding.
-
-For students preparing for exams like IELTS or TOEFL, regular reading practice is essential. Reading comprehension requires not just vocabulary knowledge, but also the ability to understand context, make inferences, and identify the author's purpose and tone.
-''';
-
-  final List<Map<String, dynamic>> _questions = [
-    {
-      'question': 'What did the University College London study find?',
-      'options': [
-        'Bilingual people earn more money',
-        'Bilingual people have better cognitive skills',
-        'Learning languages is easy',
-        'Only children can learn languages',
-      ],
-      'correctIndex': 1,
-    },
-    {
-      'question':
-          'According to the passage, how does learning a language help culturally?',
-      'options': [
-        'It helps you travel cheaper',
-        'It opens doors to different cultures and perspectives',
-        'It guarantees a job',
-        'It makes you smarter than others',
-      ],
-      'correctIndex': 1,
-    },
-  ];
+  final Map<int, int> _selectedAnswers = {};
+  bool _quizChecked = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
+  void dispose() {
+    _topicController.dispose();
+    super.dispose();
   }
 
-  Future<void> _loadData() async {
+  void _generateLesson() {
+    final topic = _topicController.text.trim();
+    if (topic.isEmpty) return;
+    ref.read(readingControllerProvider.notifier).generateLesson(topic);
     setState(() {
-      _isLoading = true;
-      _hasError = false;
+      _showQuiz = false;
+      _selectedAnswers.clear();
+      _quizChecked = false;
     });
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final state = ref.watch(readingControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reading Practice'),
-        actions: [
-          TextButton(
-            onPressed: () => setState(() => _showQuiz = !_showQuiz),
-            child: Text(_showQuiz ? 'Passage' : 'Quiz'),
-          ),
-        ],
+        actions: state.whenOrNull(
+              data: (lesson) {
+                if (lesson == null) return null;
+                return [
+                  TextButton(
+                    onPressed: () => setState(() => _showQuiz = !_showQuiz),
+                    child: Text(
+                      _showQuiz ? 'Passage' : 'Quiz',
+                      style: TextStyle(color: theme.colorScheme.onSurface),
+                    ),
+                  )
+                ];
+              },
+            ) ??
+            [],
       ),
-      body: _buildBody(theme),
+      body: _buildBody(theme, state),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
-    if (_hasError) return ErrorView(onRetry: _loadData);
-    if (_isLoading) {
-      return ListView.builder(
-        padding: const EdgeInsets.all(AppSpacing.base),
-        itemCount: 5,
-        itemBuilder: (context, index) => const ShimmerCard(),
-      );
-    }
-
-    if (_showQuiz) return _buildQuiz(theme);
-    return _buildPassage(theme);
+  Widget _buildBody(ThemeData theme, AsyncValue<ReadingLesson?> state) {
+    return state.when(
+      data: (lesson) {
+        if (lesson == null) return _buildTopicInput(theme, false);
+        if (_showQuiz) return _buildQuiz(theme, lesson);
+        return _buildPassage(theme, lesson);
+      },
+      loading: () => _buildTopicInput(theme, true),
+      error: (error, _) => ErrorView(
+        message: error.toString(),
+        onRetry: () => _generateLesson(),
+      ),
+    );
   }
 
-  Widget _buildPassage(ThemeData theme) {
+  Widget _buildTopicInput(ThemeData theme, bool isGenerating) {
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.base),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.menu_book,
+                size: 72,
+                color: theme.colorScheme.primary.withOpacity(0.5),
+              ),
+              const SizedBox(height: AppSpacing.base),
+              Text(
+                'AI Reading Generator',
+                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'Enter any topic you want to learn about, and our AI will generate a tailored reading passage and comprehension quiz.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              TextField(
+                controller: _topicController,
+                decoration: InputDecoration(
+                  hintText: 'e.g., Space Exploration, History of Tea, Artificial Intelligence',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+                  prefixIcon: const Icon(Icons.topic_outlined),
+                ),
+                enabled: !isGenerating,
+              ),
+              const SizedBox(height: AppSpacing.base),
+              AppButton(
+                label: 'Generate Lesson',
+                onPressed: _generateLesson,
+                isLoading: isGenerating,
+                icon: Icons.auto_awesome,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPassage(ThemeData theme, ReadingLesson lesson) {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.base),
       children: [
@@ -121,9 +150,9 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
                       color: AppColors.info.withAlpha(25),
                       borderRadius: AppRadius.smAll,
                     ),
-                    child: const Text(
-                      'Intermediate',
-                      style: TextStyle(
+                    child: Text(
+                      lesson.cefrLevel,
+                      style: const TextStyle(
                         color: AppColors.info,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -136,9 +165,9 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
                     size: 16,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
-                    '5 min read',
+                    '${(lesson.wordCount / 200).ceil()} min read',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -147,14 +176,14 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
               ),
               const SizedBox(height: AppSpacing.base),
               Text(
-                'The Benefits of Learning a New Language',
+                lesson.title,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: AppSpacing.base),
               Text(
-                _passage,
+                lesson.passage,
                 style: theme.textTheme.bodyLarge?.copyWith(height: 1.8),
               ),
             ],
@@ -166,54 +195,115 @@ For students preparing for exams like IELTS or TOEFL, regular reading practice i
           onPressed: () => setState(() => _showQuiz = true),
           icon: Icons.quiz,
         ),
+        const SizedBox(height: AppSpacing.sm),
+        AppButton(
+          label: 'New Topic',
+          onPressed: () => ref.read(readingControllerProvider.notifier).clearLesson(),
+          isSecondary: true,
+        ),
         const SizedBox(height: AppSpacing.xxl),
       ],
     );
   }
 
-  Widget _buildQuiz(ThemeData theme) {
-    return ListView.builder(
+  Widget _buildQuiz(ThemeData theme, ReadingLesson lesson) {
+    final questions = lesson.comprehensionQuestions;
+
+    return ListView(
       padding: const EdgeInsets.all(AppSpacing.base),
-      itemCount: _questions.length,
-      itemBuilder: (context, index) {
-        final q = _questions[index];
-        return AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Q${index + 1}. ${q['question']}',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              ...(q['options'] as List).map((option) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                    ),
-                    leading: Radio<int>(
-                      value: (q['options'] as List).indexOf(option),
-                      onChanged: (val) {},
-                    ),
-                    title: Text(
-                      option as String,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.smAll,
-                      side: BorderSide(color: theme.colorScheme.outline),
-                    ),
+      children: [
+        ...List.generate(questions.length, (index) {
+          final q = questions[index];
+          final options = q['options'] as List<dynamic>? ?? [];
+          final correctIdx = q['correct_index'] as int? ?? 0;
+          final userSelected = _selectedAnswers[index];
+
+          return AppCard(
+            margin: const EdgeInsets.only(bottom: AppSpacing.base),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Q${index + 1}. ${q['question'] ?? ''}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                );
-              }),
-            ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                ...List.generate(options.length, (optIdx) {
+                  final option = options[optIdx] as String;
+                  Color? tileColor;
+                  if (_quizChecked) {
+                    if (optIdx == correctIdx) {
+                      tileColor = Colors.green.withOpacity(0.1);
+                    } else if (userSelected == optIdx) {
+                      tileColor = Colors.red.withOpacity(0.1);
+                    }
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: tileColor,
+                        borderRadius: AppRadius.smAll,
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                        leading: Radio<int>(
+                          value: optIdx,
+                          groupValue: userSelected,
+                          onChanged: _quizChecked ? null : (val) {
+                            setState(() {
+                              _selectedAnswers[index] = val!;
+                            });
+                          },
+                        ),
+                        title: Text(
+                          option,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.smAll,
+                          side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.5)),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: AppSpacing.base),
+        if (!_quizChecked)
+          AppButton(
+            label: 'Check Answers',
+            onPressed: _selectedAnswers.length < questions.length
+                ? null
+                : () => setState(() => _quizChecked = true),
+            icon: Icons.check,
+          )
+        else ...[
+          Text(
+            'Score: ${_selectedAnswers.entries.where((e) => e.value == (questions[e.key]['correct_index'] as int? ?? 0)).length} / ${questions.length}',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
-        );
-      },
+          const SizedBox(height: AppSpacing.base),
+          AppButton(
+            label: 'Back to Passage',
+            onPressed: () => setState(() => _showQuiz = false),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          AppButton(
+            label: 'Try New Topic',
+            onPressed: () => ref.read(readingControllerProvider.notifier).clearLesson(),
+            isSecondary: true,
+          ),
+        ],
+        const SizedBox(height: AppSpacing.xxl),
+      ],
     );
   }
 }

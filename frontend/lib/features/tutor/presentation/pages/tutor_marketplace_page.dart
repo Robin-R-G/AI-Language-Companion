@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/services/livekit_service.dart';
+import '../../../live_class/presentation/pages/live_class_page.dart';
 
-class TutorMarketplacePage extends StatefulWidget {
+class TutorMarketplacePage extends ConsumerStatefulWidget {
   const TutorMarketplacePage({super.key});
 
   @override
-  State<TutorMarketplacePage> createState() => _TutorMarketplacePageState();
+  ConsumerState<TutorMarketplacePage> createState() => _TutorMarketplacePageState();
 }
 
-class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
+class _TutorMarketplacePageState extends ConsumerState<TutorMarketplacePage> {
   final _supabase = Supabase.instance.client;
   bool _isLoading = true;
   List<dynamic> _tutors = [];
@@ -265,11 +268,51 @@ class _TutorMarketplacePageState extends State<TutorMarketplacePage> {
     );
   }
 
-  void _startLiveClassroom(dynamic tutor) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LiveClassroomScreen(tutor: tutor)),
-    );
+  Future<void> _startLiveClassroom(dynamic tutor) async {
+    final studentId = _supabase.auth.currentUser?.id;
+    if (studentId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in first.')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final tutorId = tutor['id'] as String;
+      final tutorName = (tutor['user_profiles']['full_name'] as String?) ?? 'Tutor';
+      
+      // Create session in database
+      final sessionId = await ref.read(liveKitServiceProvider).createSession(
+        tutorId: tutorId,
+        studentId: studentId,
+        scheduledAt: DateTime.now(),
+        durationMinutes: 60,
+        subject: tutor['qualifications'] ?? 'English Practice Session',
+      );
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LiveClassPage(
+              sessionId: sessionId,
+              isHost: false,
+              tutorName: tutorName,
+              subject: tutor['qualifications'] ?? 'English Practice Session',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start session: $e')),
+        );
+      }
+    }
   }
 }
 

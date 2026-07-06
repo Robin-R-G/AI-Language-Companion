@@ -15,7 +15,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTitleDescription => 'The application title';
 
   @override
-  String get navHome => 'Start';
+  String get navHome => 'Startseite';
 
   @override
   String get navPractice => 'Üben';
@@ -54,49 +54,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String get grammarChecking => 'Prüfe...';
 
   @override
-  String get grammarError => 'An error occurred while checking grammar';
+  String get grammarError =>
+      'Es ist ein Fehler bei der Grammatikprüfung aufgetreten';
 
   @override
   String get progressTitle => 'Fortschritt';
 
   @override
-  String get progressProjectedScore => 'Voraussichtliche Punktzahl';
+  String get progressProjectedScore => 'Voraussichtliches Testergebnis';
 
   @override
   String get progressWeeklyActivity => 'Wöchentliche Aktivität';
 
   @override
-  String get progressScoreBreakdown => 'Score Breakdown';
+  String get progressScoreBreakdown => 'Ergebnisübersicht';
 
   @override
   String get progressStudyTime => 'Lernzeit';
 
   @override
-  String get progressDayStreak => 'Tägliche Serie';
+  String get progressDayStreak => 'Tages-Serie';
 
   @override
-  String get progressXpEarned => 'XP verdient';
+  String get progressXpEarned => 'Verdiente XP';
 
   @override
   String get readingTitle => 'Lesepraxis';
 
   @override
-  String get readingStart => 'Start Reading';
+  String get readingStart => 'Lesen starten';
 
   @override
-  String get readingComprehension => 'Reading Comprehension';
+  String get readingComprehension => 'Leseverständnis';
 
   @override
-  String get readingSelectDifficulty => 'Select Difficulty';
+  String get readingSelectDifficulty => 'Schwierigkeit wählen';
 
   @override
   String get writingTitle => 'Schreibpraxis';
 
   @override
-  String get writingPrompt => 'Writing Prompt';
+  String get writingPrompt => 'Schreibaufgabe';
 
   @override
-  String get writingSubmit => 'Submit';
+  String get writingSubmit => 'Senden';
 
   @override
   String get writingFeedback => 'Feedback';
@@ -105,31 +106,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listeningTitle => 'Hörpraxis';
 
   @override
-  String get listeningStart => 'Start Listening';
+  String get listeningStart => 'Hören starten';
 
   @override
-  String get listeningTranscript => 'Transcript';
+  String get listeningTranscript => 'Transkript';
 
   @override
   String get settingsTitle => 'Einstellungen';
 
   @override
-  String get settingsGeneral => 'General';
+  String get settingsGeneral => 'Allgemein';
 
   @override
-  String get settingsLanguage => 'Language';
+  String get settingsLanguage => 'Sprache';
 
   @override
-  String get settingsTheme => 'Theme';
+  String get settingsTheme => 'Design';
 
   @override
-  String get settingsNotifications => 'Notifications';
+  String get settingsNotifications => 'Benachrichtigungen';
 
   @override
-  String get settingsPrivacy => 'Privacy & Security';
+  String get settingsPrivacy => 'Datenschutz & Sicherheit';
 
   @override
-  String get settingsAbout => 'About';
+  String get settingsAbout => 'Über uns';
 
   @override
   String get settingsDarkMode => 'Dunkelmodus';
@@ -138,19 +139,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsLightMode => 'Hellmodus';
 
   @override
-  String get settingsSystemMode => 'System Default';
+  String get settingsSystemMode => 'Systemstandard';
 
   @override
   String get notificationsTitle => 'Benachrichtigungen';
 
   @override
-  String get notificationsEmpty => 'Keine Benachrichtigungen';
+  String get notificationsEmpty => 'Noch keine Benachrichtigungen';
 
   @override
-  String get notificationsMarkRead => 'Mark as read';
+  String get notificationsMarkRead => 'Als gelesen markieren';
 
   @override
-  String get notificationsClearAll => 'Clear all';
+  String get notificationsClearAll => 'Alle löschen';
 
   @override
   String get subscriptionTitle => 'Abonnement';
@@ -162,10 +163,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get subscriptionPremium => 'Premium';
 
   @override
-  String get subscriptionSubscribe => 'Subscribe';
+  String get subscriptionSubscribe => 'Abonnieren';
 
   @override
-  String get subscriptionRestore => 'Restore Purchases';
+  String get subscriptionRestore => 'Käufe wiederherstellen';
 
   @override
   String get editProfileTitle => 'Profil bearbeiten';
@@ -174,13 +175,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editProfileName => 'Name';
 
   @override
-  String get editProfileEmail => 'Email';
+  String get editProfileEmail => 'E-Mail';
 
   @override
   String get editProfileSave => 'Änderungen speichern';
 
   @override
-  String get editProfileCancel => 'Cancel';
+  String get editProfileCancel => 'Abbrechen';
 
   @override
   String get errorTitle => 'Etwas ist schiefgelaufen';
@@ -189,50 +190,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorRetry => 'Wiederholen';
 
   @override
-  String get errorNoInternet => 'No internet connection';
+  String get errorNoInternet => 'Keine Internetverbindung';
 
   @override
   String get emptyState => 'Hier gibt es noch nichts';
 
   @override
-  String get lessonDetailTitle => 'Lesson Details';
+  String get lessonDetailTitle => 'Lektionsdetails';
 
   @override
-  String get lessonStart => 'Start Lesson';
+  String get lessonStart => 'Lektion starten';
 
   @override
-  String get lessonContinue => 'Continue';
+  String get lessonContinue => 'Weiter';
 
   @override
-  String get lessonCompleted => 'Completed';
+  String get lessonCompleted => 'Abgeschlossen';
 
   @override
   String get splashLoading => 'Ihre Erfahrung wird vorbereitet...';
 
   @override
-  String get mockExamTitle => 'Mock Exam';
+  String get mockExamTitle => 'Probeklausur';
 
   @override
-  String get mockExamStart => 'Start Exam';
+  String get mockExamStart => 'Prüfung starten';
 
   @override
-  String get mockExamSubmit => 'Submit Answers';
+  String get mockExamSubmit => 'Antworten absenden';
 
   @override
-  String get mockExamTimeRemaining => 'Time Remaining';
+  String get mockExamTimeRemaining => 'Verbleibende Zeit';
 
   @override
-  String get voiceTitle => 'Voice Practice';
+  String get voiceTitle => 'Sprachpraxis';
 
   @override
-  String get voiceStartCall => 'Start Call';
+  String get voiceStartCall => 'Anruf starten';
 
   @override
-  String get voiceEndCall => 'End Call';
+  String get voiceEndCall => 'Anruf beenden';
 
   @override
-  String get voiceMute => 'Mute';
+  String get voiceMute => 'Stummschalten';
 
   @override
-  String get voiceUnmute => 'Unmute';
+  String get voiceUnmute => 'Stumm aufheben';
 }

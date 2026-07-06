@@ -1,38 +1,26 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
+import '../controllers/writing_controller.dart';
+import '../../data/datasources/writing_remote_datasource.dart';
 
 /// Writing Evaluation screen for essay submission and AI scoring.
-class WritingPage extends StatefulWidget {
+class WritingPage extends ConsumerStatefulWidget {
   const WritingPage({super.key});
 
   @override
-  State<WritingPage> createState() => _WritingPageState();
+  ConsumerState<WritingPage> createState() => _WritingPageState();
 }
 
-class _WritingPageState extends State<WritingPage> {
+class _WritingPageState extends ConsumerState<WritingPage> {
   bool _isLoading = false;
   bool _hasError = false;
-  bool _isSubmitting = false;
-  bool _showResult = false;
   final TextEditingController _essayController = TextEditingController();
   final int _targetWords = 250;
-
-  // Mock evaluation result
-  final Map<String, dynamic> _result = {
-    'bandScore': 6.5,
-    'grammar': 6.0,
-    'vocabulary': 7.0,
-    'coherence': 6.5,
-    'taskAchievement': 6.5,
-    'wordCount': 268,
-    'feedback':
-        'Good overall structure. Watch out for article usage and tense consistency.',
-  };
 
   @override
   void initState() {
@@ -50,15 +38,9 @@ class _WritingPageState extends State<WritingPage> {
   }
 
   Future<void> _submitEssay() async {
-    if (_essayController.text.trim().isEmpty) return;
-    setState(() => _isSubmitting = true);
-    await Future.delayed(const Duration(seconds: 3));
-    if (mounted) {
-      setState(() {
-        _isSubmitting = false;
-        _showResult = true;
-      });
-    }
+    final text = _essayController.text.trim();
+    if (text.isEmpty) return;
+    await ref.read(writingControllerProvider.notifier).evaluateEssay(text);
   }
 
   @override
@@ -78,6 +60,8 @@ class _WritingPageState extends State<WritingPage> {
   }
 
   Widget _buildBody(ThemeData theme) {
+    final state = ref.watch(writingControllerProvider);
+
     if (_hasError) return ErrorView(onRetry: _loadData);
     if (_isLoading) {
       return ListView.builder(
@@ -87,11 +71,24 @@ class _WritingPageState extends State<WritingPage> {
       );
     }
 
-    if (_showResult) return _buildResult(theme);
-    return _buildEditor(theme);
+    return state.when(
+      data: (evaluation) {
+        if (evaluation != null) {
+          return _buildResult(theme, evaluation);
+        }
+        return _buildEditor(theme, false);
+      },
+      loading: () => _buildEditor(theme, true),
+      error: (error, _) => ErrorView(
+        message: error.toString(),
+        onRetry: () => _submitEssay(),
+      ),
+    );
   }
 
-  Widget _buildEditor(ThemeData theme) {
+  Widget _buildEditor(ThemeData theme, bool isSubmitting) {
+    final wordCount = _essayController.text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.base),
       children: [
@@ -170,13 +167,16 @@ class _WritingPageState extends State<WritingPage> {
                 controller: _essayController,
                 hintText: 'Write your essay here...',
                 maxLines: 15,
+                onChanged: (text) {
+                  setState(() {});
+                },
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${_essayController.text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length} / $_targetWords words',
+                    '$wordCount / $_targetWords words',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -197,7 +197,7 @@ class _WritingPageState extends State<WritingPage> {
         AppButton(
           label: 'Submit Essay',
           onPressed: _submitEssay,
-          isLoading: _isSubmitting,
+          isLoading: isSubmitting,
           icon: Icons.send,
         ),
         const SizedBox(height: AppSpacing.xxl),
@@ -205,7 +205,7 @@ class _WritingPageState extends State<WritingPage> {
     );
   }
 
-  Widget _buildResult(ThemeData theme) {
+  Widget _buildResult(ThemeData theme, WritingEvaluation evaluation) {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.base),
       children: [
@@ -233,21 +233,13 @@ class _WritingPageState extends State<WritingPage> {
                 ),
                 child: Center(
                   child: Text(
-                    '${_result['bandScore']}',
+                    evaluation.estimatedBand,
                     style: theme.textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.base),
-              Text(
-                _result['feedback'] as String,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -262,21 +254,60 @@ class _WritingPageState extends State<WritingPage> {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        _ScoreBar(label: 'Grammar', score: _result['grammar'] as double),
-        _ScoreBar(label: 'Vocabulary', score: _result['vocabulary'] as double),
-        _ScoreBar(label: 'Coherence', score: _result['coherence'] as double),
-        _ScoreBar(
-          label: 'Task Achievement',
-          score: _result['taskAchievement'] as double,
-        ),
+        _ScoreBar(label: 'Grammar', score: evaluation.grammarScore.toDouble()),
+        _ScoreBar(label: 'Vocabulary', score: evaluation.vocabularyScore.toDouble()),
+        _ScoreBar(label: 'Organization', score: evaluation.organizationScore.toDouble()),
+        _ScoreBar(label: 'Clarity', score: evaluation.clarityScore.toDouble()),
         const SizedBox(height: AppSpacing.base),
+
+        // Strengths & Recommendations
+        if (evaluation.strengths.isNotEmpty) ...[
+          Text(
+            'Strengths',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          ...evaluation.strengths.map((s) => ListTile(
+            leading: const Icon(Icons.check, color: AppColors.success),
+            title: Text(s),
+          )),
+          const SizedBox(height: AppSpacing.base),
+        ],
+
+        if (evaluation.recommendations.isNotEmpty) ...[
+          Text(
+            'Recommendations',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          ...evaluation.recommendations.map((r) => ListTile(
+            leading: const Icon(Icons.lightbulb_outline, color: AppColors.warning),
+            title: Text(r),
+          )),
+          const SizedBox(height: AppSpacing.base),
+        ],
+
+        if (evaluation.improvedVersion.isNotEmpty) ...[
+          Text(
+            'Improved Version',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          AppCard(
+            child: Text(
+              evaluation.improvedVersion,
+              style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.base),
+        ],
 
         AppButton(
           label: 'Write Another Essay',
-          onPressed: () => setState(() {
-            _showResult = false;
+          onPressed: () {
+            ref.read(writingControllerProvider.notifier).clearResult();
             _essayController.clear();
-          }),
+          },
           isSecondary: true,
         ),
         const SizedBox(height: AppSpacing.xxl),

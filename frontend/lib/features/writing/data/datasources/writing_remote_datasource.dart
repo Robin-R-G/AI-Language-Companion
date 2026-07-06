@@ -46,25 +46,36 @@ abstract class WritingRemoteDataSource {
 }
 
 class WritingRemoteDataSourceImpl implements WritingRemoteDataSource {
-  final Dio _dio;
+  final SupabaseClient _client;
 
-  WritingRemoteDataSourceImpl({Dio? dio}) : _dio = dio ?? Dio();
+  WritingRemoteDataSourceImpl({SupabaseClient? client})
+      : _client = client ?? Supabase.instance.client;
 
   @override
   Future<Result<WritingEvaluation>> evaluateEssay(String essayText) async {
     try {
-      final response = await _dio.post(
-        '/writing/evaluate',
-        data: {'essay_text': essayText},
+      final response = await _client.functions.invoke(
+        'writing-evaluate',
+        body: {
+          'essay_text': essayText,
+        },
       );
 
-      if (response.data['success'] == true) {
-        return Result.success(WritingEvaluation.fromJson(response.data['data'] as Map<String, dynamic>));
+      if (response.status == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        if (data['success'] == true) {
+          return Result.success(
+            WritingEvaluation.fromJson(data['data'] as Map<String, dynamic>),
+          );
+        }
+        return Result.error(
+          ServerFailure(data['message'] as String? ?? 'Evaluation failed'),
+        );
       }
 
-      return Result.error(NetworkFailure((response.data['message'] as String?) ?? 'Evaluation failed'));
-    } on DioException catch (e) {
-      return Result.error(NetworkFailure('Evaluation failed: ${e.message}'));
+      return Result.error(
+        ServerFailure('Evaluation failed with status ${response.status}'),
+      );
     } catch (e) {
       return Result.error(NetworkFailure('Evaluation failed: $e'));
     }
