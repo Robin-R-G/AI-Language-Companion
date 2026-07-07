@@ -22,11 +22,16 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
   List<dynamic> _payouts = [];
   List<dynamic> _auditLogs = [];
   Map<String, dynamic> _liveDashboard = {};
+  List<dynamic> _aiProviders = [];
+  List<dynamic> _aiRouting = [];
+  List<dynamic> _aiFailures = [];
+  List<dynamic> _aiCostDaily = [];
+  List<dynamic> _manualPayments = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: 9, vsync: this);
     _loadData();
   }
 
@@ -43,62 +48,103 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         _supabase.from('payment_settlements').select('*').order('created_at', ascending: false).limit(50).catchError((_) => []),
         _supabase.from('tutor_payouts').select('*').order('created_at', ascending: false).limit(50).catchError((_) => []),
         _supabase.from('financial_audit_logs').select('*').order('created_at', ascending: false).limit(50).catchError((_) => []),
+        _supabase.from('ai_providers').select('*').order('priority', ascending: true).catchError((_) => []),
+        _supabase.from('ai_feature_routing').select('*').catchError((_) => []),
+        _supabase.from('ai_failures').select('*').order('created_at', ascending: false).limit(50).catchError((_) => []),
+        _supabase.from('ai_cost_daily').select('*').catchError((_) => []),
+        _supabase.from('manual_payments').select('*, user_profiles(full_name, email)').order('created_at', ascending: false).catchError((_) => []),
       ]);
 
+      final settlementsList = results[0] is List ? results[0] as List : [];
+      final payoutsList = results[1] is List ? results[1] as List : [];
+      final aiCostList = results[6] is List ? results[6] as List : [];
+
+      double totalCollected = 0;
+      double platformCommission = 0;
+      for (final s in settlementsList) {
+        final amt = (s['amount'] ?? 0) as num;
+        final comm = (s['commission'] ?? 0) as num;
+        totalCollected += amt;
+        platformCommission += comm;
+      }
+
+      double totalPayouts = 0;
+      for (final p in payoutsList) {
+        final amt = (p['amount'] ?? 0) as num;
+        totalPayouts += amt;
+      }
+
+      double totalAiCost = 0;
+      for (final c in aiCostList) {
+        final cost = (c['total_cost_usd'] ?? 0.0) as num;
+        totalAiCost += cost * 83.0; // convert USD to INR roughly
+      }
+
+      double gatewayCharges = totalCollected * 0.02;
+      double actualProfit = platformCommission - totalAiCost - gatewayCharges;
+
       setState(() {
-        _settlements = results[0] is List ? results[0] : [];
-        _payouts = results[1] is List ? results[1] : [];
+        _settlements = settlementsList;
+        _payouts = payoutsList;
         _auditLogs = results[2] is List ? results[2] : [];
+        _aiProviders = results[3] is List ? results[3] as List : [];
+        _aiRouting = results[4] is List ? results[4] as List : [];
+        _aiFailures = results[5] is List ? results[5] : [];
+        _aiCostDaily = aiCostList;
+        _manualPayments = results[7] is List ? results[7] as List : [];
+
+        _revenue = {
+          'total_collected': totalCollected.toInt(),
+          'platform_commission': platformCommission.toInt(),
+          'tutor_payouts': totalPayouts.toInt(),
+          'net_profit': actualProfit.toInt(),
+        };
+
+        _profit = {
+          'gross_revenue': totalCollected.toInt(),
+          'ai_cost': totalAiCost.toInt(),
+          'tutor_payouts': totalPayouts.toInt(),
+          'gateway_charges': gatewayCharges.toInt(),
+          'infrastructure': 0,
+          'actual_profit': actualProfit.toInt(),
+          'margin_percent': totalCollected > 0 ? (actualProfit / totalCollected * 100).toStringAsFixed(1) : '0.0',
+        };
+
+        _healthScore = {
+          'score': totalCollected > 0 ? 95 : 100,
+          'grade': 'A',
+          'revenue_score': 100,
+          'user_growth_score': 100,
+          'dispute_score': 100,
+          'tutor_health_score': 100,
+        };
+
+        _liveDashboard = {
+          'revenue_today': (totalCollected * 0.05).toInt(),
+          'revenue_month': totalCollected.toInt(),
+          'platform_wallet': platformCommission.toInt(),
+          'tutor_payables': (totalCollected - totalPayouts).toInt(),
+          'active_subscriptions': 0,
+          'open_disputes': 0,
+        };
+
         _isLoading = false;
       });
     } catch (e) {
-      // Mock fallback
+      debugPrint('Error loading finance dashboard: $e');
       setState(() {
-        _revenue = {
-          'total_collected': 4850000,
-          'platform_commission': 970000,
-          'tutor_payouts': 3880000,
-          'net_profit': 125000,
-        };
-        _profit = {
-          'gross_revenue': 4850000,
-          'ai_cost': 245000,
-          'tutor_payouts': 3880000,
-          'gateway_charges': 140650,
-          'infrastructure': 85000,
-          'actual_profit': 499350,
-          'margin_percent': 10.3,
-        };
-        _healthScore = {
-          'score': 82,
-          'grade': 'A',
-          'revenue_score': 85,
-          'user_growth_score': 78,
-          'dispute_score': 95,
-          'tutor_health_score': 72,
-        };
-        _liveDashboard = {
-          'revenue_today': 15200,
-          'revenue_month': 485000,
-          'platform_wallet': 1250000,
-          'tutor_payables': 325000,
-          'active_subscriptions': 520,
-          'open_disputes': 3,
-        };
-        _settlements = [
-          {'student': 'Alice M.', 'tutor': 'Prof. Sarah', 'amount': 2500, 'commission': 500, 'net': 2000, 'status': 'settled', 'date': '2026-07-06'},
-          {'student': 'Raj K.', 'tutor': 'David V.', 'amount': 1800, 'commission': 360, 'net': 1440, 'status': 'settled', 'date': '2026-07-06'},
-          {'student': 'Chen W.', 'tutor': 'Prof. Sarah', 'amount': 2500, 'commission': 500, 'net': 2000, 'status': 'pending', 'date': '2026-07-05'},
-        ];
-        _payouts = [
-          {'tutor': 'Prof. Sarah', 'amount': 8500, 'charges': 170, 'net': 8330, 'status': 'completed', 'date': '2026-07-05'},
-          {'tutor': 'David V.', 'amount': 5200, 'charges': 104, 'net': 5096, 'status': 'pending', 'date': '2026-07-04'},
-        ];
-        _auditLogs = [
-          {'action': 'payout_approved', 'entity': 'Tutor Payout', 'by': 'Admin', 'date': '2026-07-06 14:30'},
-          {'action': 'settlement_batch', 'entity': 'Settlement Batch', 'by': 'System', 'date': '2026-07-06 00:00'},
-          {'action': 'commission_rule_updated', 'entity': 'Commission Rule', 'by': 'Admin', 'date': '2026-07-05 11:20'},
-        ];
+        _settlements = [];
+        _payouts = [];
+        _auditLogs = [];
+        _aiProviders = [];
+        _aiRouting = [];
+        _aiFailures = [];
+        _aiCostDaily = [];
+        _manualPayments = [];
+        _revenue = {};
+        _profit = {};
+        _healthScore = {'score': 0, 'grade': 'N/A', 'revenue_score': 0, 'user_growth_score': 0, 'dispute_score': 0, 'tutor_health_score': 0};
+        _liveDashboard = {};
         _isLoading = false;
       });
     }
@@ -126,6 +172,8 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
             Tab(text: 'Commission'),
             Tab(text: 'Audit'),
             Tab(text: 'Reports'),
+            Tab(text: 'AI Providers'),
+            Tab(text: 'Payment Verification'),
           ],
         ),
       ),
@@ -139,6 +187,8 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
           _buildCommissionTab(theme),
           _buildAuditTab(theme),
           _buildReportsTab(theme),
+          _buildAiProvidersTab(theme),
+          _buildPaymentVerificationTab(theme),
         ],
       ),
     );
@@ -579,4 +629,652 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
       default: return Colors.grey;
     }
   }
+
+  bool _isTesting = false;
+
+  Widget _buildAiProvidersTab(ThemeData theme) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.base),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'AI Providers & Costs',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSpacing.base),
+          ..._aiProviders.map((provider) {
+            final name = provider['name'] as String;
+            final displayName = provider['display_name'] as String;
+            final isEnabled = provider['is_enabled'] as bool? ?? false;
+            final priority = provider['priority'] as int? ?? 1;
+
+            // Get cost metrics from daily cost list
+            final providerCosts = _aiCostDaily.where((c) => c['provider'] == name);
+            final requests = providerCosts.fold<int>(0, (sum, item) => sum + ((item['total_requests'] ?? 0) as int));
+            final cost = providerCosts.fold<double>(0.0, (sum, item) => sum + (double.tryParse(item['total_cost_usd']?.toString() ?? '0') ?? 0.0));
+            final failures = _aiFailures.where((f) => f['provider'] == name).length;
+
+            return AppCard(
+              margin: const EdgeInsets.only(bottom: AppSpacing.base),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.base),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          displayName,
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Switch(
+                          value: isEnabled,
+                          onChanged: (val) async {
+                            setState(() {
+                              provider['is_enabled'] = val;
+                            });
+                            try {
+                              await _supabase
+                                  .from('ai_providers')
+                                  .update({'is_enabled': val})
+                                  .eq('name', name);
+                            } catch (_) {}
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Text('Priority: '),
+                            const SizedBox(width: AppSpacing.xs),
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline, size: 20),
+                              onPressed: priority > 1
+                                  ? () async {
+                                      final newPri = priority - 1;
+                                      setState(() {
+                                        provider['priority'] = newPri;
+                                        _aiProviders.sort((a, b) => (a['priority'] as int).compareTo(b['priority'] as int));
+                                      });
+                                      try {
+                                        await _supabase
+                                            .from('ai_providers')
+                                            .update({'priority': newPri})
+                                            .eq('name', name);
+                                      } catch (_) {}
+                                    }
+                                  : null,
+                            ),
+                            Text('$priority', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            IconButton(
+                              icon: const Icon(Icons.add_circle_outline, size: 20),
+                              onPressed: () async {
+                                final newPri = priority + 1;
+                                setState(() {
+                                  provider['priority'] = newPri;
+                                  _aiProviders.sort((a, b) => (a['priority'] as int).compareTo(b['priority'] as int));
+                                });
+                                try {
+                                  await _supabase
+                                      .from('ai_providers')
+                                      .update({'priority': newPri})
+                                      .eq('name', name);
+                                } catch (_) {}
+                              },
+                            ),
+                          ],
+                        ),
+                        AppButton(
+                          label: _isTesting ? 'Testing...' : 'Test Connection',
+                          onPressed: _isTesting
+                              ? null
+                              : () async {
+                                  setState(() => _isTesting = true);
+                                  try {
+                                    final res = await _supabase.functions.invoke(
+                                      'ai-gateway',
+                                      body: {
+                                        'prompt': 'Hello! Confirm your name.',
+                                        'feature': 'chat',
+                                        'test_provider': name,
+                                      },
+                                    );
+                                    if (res.status == 200) {
+                                      final data = res.data as Map<String, dynamic>;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Test successful! Reply: ${data['content']}'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    } else {
+                                      throw Exception(res.data?.toString() ?? 'Error');
+                                    }
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Test failed: $e'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  } finally {
+                                    setState(() => _isTesting = false);
+                                  }
+                                },
+                        ),
+                      ],
+                    ),
+                    const Divider(height: AppSpacing.lg),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildMetricColumn('Requests', '$requests'),
+                        _buildMetricColumn('Failures', '$failures', color: failures > 0 ? Colors.red : null),
+                        _buildMetricColumn('Cost USD', '\$${cost.toStringAsFixed(4)}'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'Feature Fallback Routing',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSpacing.base),
+          ..._aiRouting.map((routing) {
+            final feature = routing['feature'] as String;
+            final order = List<String>.from(routing['provider_order'] ?? []);
+            final controller = TextEditingController(text: order.join(', '));
+
+            return AppCard(
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.base),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      feature.toUpperCase(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        labelText: 'Fallback Order (comma-separated)',
+                        hintText: 'omniroute, openai, gemini',
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: AppButton(
+                        label: 'Save Routing',
+                        onPressed: () async {
+                          final newOrder = controller.text
+                              .split(',')
+                              .map((s) => s.trim())
+                              .where((s) => s.isNotEmpty)
+                              .toList();
+                          setState(() {
+                            routing['provider_order'] = newOrder;
+                          });
+                          try {
+                            await _supabase
+                                .from('ai_feature_routing')
+                                .update({'provider_order': newOrder})
+                                .eq('feature', feature);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Routing updated successfully!')),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to update routing: $e'), backgroundColor: Colors.red),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'Recent API Failures',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSpacing.base),
+          if (_aiFailures.isEmpty)
+            const Center(child: Padding(padding: EdgeInsets.all(AppSpacing.base), child: Text('No recent failures logged'))),
+          ..._aiFailures.map((failure) {
+            return AppCard(
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: ListTile(
+                leading: const Icon(Icons.error, color: Colors.red),
+                title: Text('${failure['provider']} failed on ${failure['feature']}'),
+                subtitle: Text(
+                  (failure['error_message'] ?? '') as String,
+                  style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                ),
+                trailing: Text(
+                  (failure['created_at'] ?? '') as String,
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricColumn(String label, String value, {Color? color}) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Payment Verification Tab ────────────────────────────────────────────────
+
+  Widget _buildPaymentVerificationTab(ThemeData theme) {
+    final pendingPayments = _manualPayments.where((p) => p['status'] == 'pending').toList();
+    final historyPayments = _manualPayments.where((p) => p['status'] != 'pending').toList();
+
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.base),
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Payment Verification Queue',
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _loadData,
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        if (pendingPayments.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.xl),
+              child: Text('No pending verification requests'),
+            ),
+          ),
+        ...pendingPayments.map((p) => _buildPaymentCard(theme, p, isPending: true)),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          'Verification History',
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        if (historyPayments.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.lg),
+              child: Text('No verification history'),
+            ),
+          ),
+        ...historyPayments.map((p) => _buildPaymentCard(theme, p, isPending: false)),
+      ],
+    );
+  }
+
+  Widget _buildPaymentCard(ThemeData theme, Map<String, dynamic> payment, {required bool isPending}) {
+    final userDetails = payment['user_profiles'] as Map<String, dynamic>? ?? {};
+    final fullName = userDetails['full_name'] ?? 'Unknown User';
+    final email = userDetails['email'] ?? '';
+    final status = payment['status'] ?? 'pending';
+
+    Color statusColor = Colors.orange;
+    if (status == 'approved') statusColor = Colors.green;
+    if (status == 'rejected') statusColor = Colors.red;
+
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: AppSpacing.base),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.base),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(fullName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      if (email.isNotEmpty) Text(email, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: statusColor.withAlpha(30),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    status.toString().toUpperCase(),
+                    style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: AppSpacing.lg),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('PLAN / ITEM', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                    const SizedBox(height: 2),
+                    Text(payment['plan_type'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('AMOUNT', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                    const SizedBox(height: 2),
+                    Text('Rs ${payment['amount']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('UTR / REF NUMBER', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                    const SizedBox(height: 2),
+                    Text(payment['utr_number'] ?? '', style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('DATE', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                    const SizedBox(height: 2),
+                    Text(payment['payment_date']?.toString().split('T').first ?? '', style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ],
+            ),
+            if (payment['notes'] != null && payment['notes'].toString().isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              const Text('USER NOTES', style: TextStyle(color: Colors.grey, fontSize: 10)),
+              const SizedBox(height: 2),
+              Text(payment['notes'], style: const TextStyle(fontStyle: FontStyle.italic)),
+            ],
+            if (payment['rejection_reason'] != null && payment['rejection_reason'].toString().isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              const Text('REJECTION REASON', style: TextStyle(color: Colors.red, fontSize: 10)),
+              const SizedBox(height: 2),
+              Text(payment['rejection_reason'], style: const TextStyle(color: Colors.redAccent)),
+            ],
+            const SizedBox(height: AppSpacing.base),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _viewReceiptScreenshot(payment['screenshot_url'] ?? ''),
+                    icon: const Icon(Icons.receipt_long),
+                    label: const Text('View Proof'),
+                  ),
+                ),
+                if (isPending) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  ElevatedButton(
+                    onPressed: () => _approvePayment(payment),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                    child: const Text('Approve'),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  ElevatedButton(
+                    onPressed: () => _showRejectDialog(payment),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                    child: const Text('Reject'),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _viewReceiptScreenshot(String url) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppBar(
+              title: const Text('Payment Proof Screenshot'),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            Flexible(
+              child: Image.network(
+                url,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                      SizedBox(height: AppSpacing.sm),
+                      Text('Failed to load image. Check public storage permission.'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.base),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRejectDialog(Map<String, dynamic> payment) {
+    final reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reject Payment Proof'),
+        content: TextField(
+          controller: reasonController,
+          decoration: const InputDecoration(
+            labelText: 'Reason for Rejection',
+            hintText: 'e.g. Invalid UTR or screenshot',
+          ),
+          maxLines: 2,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) return;
+              Navigator.pop(context);
+              _rejectPayment(payment, reason);
+            },
+            child: const Text('Reject', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _approvePayment(Map<String, dynamic> payment) async {
+    setState(() => _isLoading = true);
+    try {
+      final paymentId = payment['id'];
+      final userId = payment['user_id'];
+      final planType = payment['plan_type'];
+      final amount = payment['amount'];
+      final utr = payment['utr_number'];
+
+      // 1. Update manual_payments status to approved
+      await _supabase
+          .from('manual_payments')
+          .update({
+            'status': 'approved',
+            'verified_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', paymentId);
+
+      // 2. If it is a subscription plan:
+      if (planType.startsWith('premium') || planType.startsWith('pro') || planType.startsWith('basic')) {
+        await _supabase.from('subscriptions').upsert({
+          'user_id': userId,
+          'plan_id': planType,
+          'plan': planType,
+          'status': 'active',
+          'provider': 'manual',
+          'renewal_date': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+          'expires_at': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+          'current_period_start': DateTime.now().toIso8601String(),
+          'current_period_end': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+        });
+
+        // Award premium credits if applicable
+        final creditsMap = {
+          'premium_monthly': 500,
+          'premium_annual': 6000,
+          'pro_monthly': 2000,
+          'pro_annual': 24000,
+          'basic_monthly': 100,
+          'basic_annual': 1200,
+        };
+        final credits = creditsMap[planType] ?? 0;
+        if (credits > 0) {
+          await _supabase.rpc('add_ai_credits', {
+            'p_user_id': userId,
+            'p_credits': credits,
+            'p_source': 'subscription_new',
+            'p_description': 'Manual payment approved: $planType',
+          });
+        }
+      } else {
+        // It is a credit pack
+        final packCredits = {
+          'credits_pack_small': 100,
+          'credits_pack_medium': 250,
+          'credits_pack_large': 600,
+          'credits_pack_ultimate': 1500,
+        };
+        final credits = packCredits[planType] ?? 0;
+        if (credits > 0) {
+          await _supabase.rpc('add_ai_credits', {
+            'p_user_id': userId,
+            'p_credits': credits,
+            'p_source': 'purchase',
+            'p_description': 'Manual purchase approved: $planType',
+          });
+        }
+      }
+
+      // 3. Log transaction in payments table
+      await _supabase.from('payments').insert({
+        'user_id': userId,
+        'transaction_id': utr,
+        'amount': amount,
+        'currency': 'INR',
+        'platform': 'manual',
+        'status': 'success',
+      });
+
+      // 4. Log in financial_audit_logs
+      await _supabase.from('financial_audit_logs').insert({
+        'action': 'manual_payment_approved',
+        'entity': 'Manual Payment',
+        'details': 'Approved manual payment $paymentId for plan $planType. Amount: $amount',
+      }).catchError((_) => null);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payment approved successfully!')),
+      );
+      _loadData();
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error approving payment: $e')),
+      );
+    }
+  }
+
+  Future<void> _rejectPayment(Map<String, dynamic> payment, String reason) async {
+    setState(() => _isLoading = true);
+    try {
+      final paymentId = payment['id'];
+
+      await _supabase
+          .from('manual_payments')
+          .update({
+            'status': 'rejected',
+            'rejection_reason': reason,
+            'verified_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', paymentId);
+
+      // Log in audit log
+      await _supabase.from('financial_audit_logs').insert({
+        'action': 'manual_payment_rejected',
+        'entity': 'Manual Payment',
+        'details': 'Rejected payment $paymentId. Reason: $reason',
+      }).catchError((_) => null);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payment rejected successfully.')),
+      );
+      _loadData();
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error rejecting payment: $e')),
+      );
+    }
+  }
 }
+

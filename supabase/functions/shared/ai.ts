@@ -93,6 +93,132 @@ export abstract class AIProvider {
   ): Promise<AIResponse>;
 }
 
+// ─── OmniRoute Adapter ───────────────────────────────────────────────────────
+
+export class OmniRouteProvider extends AIProvider {
+  readonly name = 'omniroute';
+  readonly models = {
+    fast: 'openai/gpt-4o-mini',
+    standard: 'openai/gpt-4o',
+    premium: 'openai/gpt-4o',
+  };
+
+  private apiKey: string;
+  private baseUrl = 'http://localhost:20128/v1';
+
+  constructor() {
+    super();
+    this.apiKey = Deno.env.get('OMNIROUTE_API_KEY') ?? '';
+    this.baseUrl = Deno.env.get('OMNIROUTE_BASE_URL') ?? 'http://localhost:20128/v1';
+  }
+
+  async chat(
+    messages: ChatMessage[],
+    options: { model?: string; temperature?: number; maxTokens?: number; stream?: boolean } = {}
+  ): Promise<AIResponse> {
+    const startTime = Date.now();
+    const model = options.model ?? this.models.standard;
+
+    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: options.temperature ?? 0.7,
+        max_tokens: options.maxTokens ?? 2048,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`OmniRoute API error (${response.status}): ${error}`);
+    }
+
+    const data = await response.json();
+    const latencyMs = Date.now() - startTime;
+
+    return {
+      content: data.choices[0]?.message?.content ?? '',
+      provider: this.name,
+      model,
+      tokensUsed: data.usage?.total_tokens ?? 0,
+      latencyMs,
+    };
+  }
+
+  async chatStream(
+    messages: ChatMessage[],
+    options: { model?: string; temperature?: number; maxTokens?: number } = {},
+    onChunk?: (chunk: string) => void
+  ): Promise<AIResponse> {
+    const startTime = Date.now();
+    const model = options.model ?? this.models.fast;
+
+    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: options.temperature ?? 0.7,
+        max_tokens: options.maxTokens ?? 2048,
+        stream: true,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`OmniRoute API error (${response.status}): ${error}`);
+    }
+
+    let fullContent = '';
+    let tokensUsed = 0;
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
+
+      for (const line of lines) {
+        const data = line.replace('data: ', '');
+        if (data === '[DONE]') continue;
+
+        try {
+          const parsed = JSON.parse(data);
+          const delta = parsed.choices?.[0]?.delta?.content;
+          if (delta) {
+            fullContent += delta;
+            tokensUsed += 1;
+            onChunk?.(delta);
+          }
+        } catch {
+          // Skip malformed chunks
+        }
+      }
+    }
+
+    return {
+      content: fullContent,
+      provider: this.name,
+      model,
+      tokensUsed,
+      latencyMs: Date.now() - startTime,
+    };
+  }
+}
+
 // ─── OpenAI Adapter ──────────────────────────────────────────────────────────
 
 export class OpenAIProvider extends AIProvider {
@@ -371,7 +497,7 @@ export class GeminiProvider extends AIProvider {
 
 // ─── Provider Factory with Fallback ──────────────────────────────────────────
 
-export type ProviderName = 'openai' | 'gemini';
+export type ProviderName = 'openai' | 'gemini' | 'omniroute';
 
 export class AIProviderFactory {
   private providers: Map<ProviderName, AIProvider> = new Map();
@@ -383,6 +509,7 @@ export class AIProviderFactory {
     this.fallbackProvider = fallback;
     this.providers.set('openai', new OpenAIProvider());
     this.providers.set('gemini', new GeminiProvider());
+    this.providers.set('omniroute', new OmniRouteProvider());
   }
 
   getProvider(name?: ProviderName): AIProvider {

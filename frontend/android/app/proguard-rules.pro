@@ -1,0 +1,3 @@
+# Proguard rules for Stripe
+-dontwarn com.stripe.android.pushProvisioning.**
+-dontwarn com.reactnativestripesdk.pushprovisioning.**

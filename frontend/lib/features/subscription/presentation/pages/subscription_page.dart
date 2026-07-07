@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/design_tokens.dart';
+import 'manual_payment_page.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/error_view.dart';
@@ -146,8 +147,54 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           ),
           textAlign: TextAlign.center,
         ),
+        const SizedBox(height: AppSpacing.xl),
+        Text(
+          'Need More AI Credits?',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _buildCreditPackItem(context, theme, 'Starter Pack', '100 Credits', '\$4.99', 'credits_pack_small'),
+        const SizedBox(height: AppSpacing.sm),
+        _buildCreditPackItem(context, theme, 'Value Pack', '250 Credits', '\$9.99', 'credits_pack_medium'),
+        const SizedBox(height: AppSpacing.sm),
+        _buildCreditPackItem(context, theme, 'Power Pack', '600 Credits', '\$19.99', 'credits_pack_large'),
+        const SizedBox(height: AppSpacing.sm),
+        _buildCreditPackItem(context, theme, 'Unlimited Boost', '1500 Credits', '\$39.99', 'credits_pack_ultimate'),
         const SizedBox(height: AppSpacing.xxl),
       ],
+    );
+  }
+
+  Widget _buildCreditPackItem(
+    BuildContext context,
+    ThemeData theme,
+    String name,
+    String credits,
+    String price,
+    String sku,
+  ) {
+    return AppCard(
+      child: ListTile(
+        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(credits),
+        trailing: AppButton(
+          label: 'Buy $price',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ManualPaymentPage(
+                  planType: sku,
+                  planName: name,
+                  amount: price,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -337,7 +384,18 @@ class _PlanCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.base),
           AppButton(
             label: isPopular ? 'Start Free Trial' : 'Choose $title',
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ManualPaymentPage(
+                    planType: title == 'Premium' ? 'premium_monthly' : 'premium_annual',
+                    planName: title,
+                    amount: price,
+                  ),
+                ),
+              );
+            },
             isSecondary: !isPopular,
           ),
         ],

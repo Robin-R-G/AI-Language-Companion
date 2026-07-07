@@ -6,7 +6,7 @@ import '../enums/user_role.dart';
 
 // ── Models ────────────────────────────────────────────────────────────────────
 
-enum AiProvider { openAi, anthropic, gemini, groq }
+enum AiProvider { openAi, anthropic, gemini, groq, omniRoute }
 
 class AiRequest {
   const AiRequest({
@@ -263,6 +263,8 @@ class AiGateway {
         return AiProvider.gemini;
       case 'groq':
         return AiProvider.groq;
+      case 'omniroute':
+        return AiProvider.omniRoute;
       case 'openai':
       default:
         return AiProvider.openAi;

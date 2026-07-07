@@ -120,6 +120,9 @@ dev_dependencies:
   # Testing
   mocktail: ^1.0.4
 
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
 flutter:
   generate: true
   uses-material-design: true
@@ -255,3 +258,17 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter-Bold.ttf
           weight: 700
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/brand/logo/png/logo-icon.png"
+  adaptive_icon_background: "#1E1E1E"
+  adaptive_icon_foreground: "assets/brand/logo/png/logo-icon.png"
+
+flutter_native_splash:
+  color: "#1E1E1E"
+  image: "assets/brand/splash/png/splash_illustration.png"
+  android_12:
+    image: "assets/brand/logo/png/logo-icon.png"
+    color: "#1E1E1E"

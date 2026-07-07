@@ -1,5 +1,6 @@
 // lib/features/writing/data/datasources/writing_remote_datasource.dart
 import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
 

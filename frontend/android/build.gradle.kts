@@ -17,24 +17,26 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+
+    project.configurations.all {
+        resolutionStrategy {
+            force("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+            force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21")
+            force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
+            force("org.jetbrains.kotlin:kotlin-stdlib-common:2.0.21")
+        }
+    }
+
+    afterEvaluate {
+        val android = project.extensions.findByName("android")
+        if (android is com.android.build.gradle.BaseExtension) {
+            android.compileSdkVersion(36)
+        }
+    }
 }
 
 subprojects {
     project.evaluationDependsOn(":app")
-}
-
-// Ensure all Android subprojects compile with SDK 36 using new DSL
-subprojects {
-    plugins.withId("com.android.library") {
-        extensions.configure<LibraryExtension> {
-            compileSdk = 36
-        }
-    }
-    plugins.withId("com.android.application") {
-        extensions.configure<ApplicationExtension> {
-            compileSdk = 36
-        }
-    }
 }
 
 

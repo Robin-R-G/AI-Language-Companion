@@ -12,6 +12,13 @@ const supabase = createClient(
 // ── Provider configuration ────────────────────────────────────────────────────
 
 const PROVIDERS = {
+  omniroute: {
+    apiKey: Deno.env.get('OMNIROUTE_API_KEY') ?? '',
+    baseUrl: Deno.env.get('OMNIROUTE_BASE_URL') ?? 'http://localhost:20128/v1',
+    model: Deno.env.get('OMNIROUTE_MODEL') ?? 'openai/gpt-4o',
+    costPerInputToken: 0.00000005,
+    costPerOutputToken: 0.00000015,
+  },
   openai: {
     apiKey: Deno.env.get('OPENAI_API_KEY') ?? '',
     baseUrl: 'https://api.openai.com/v1',
@@ -44,15 +51,15 @@ const PROVIDERS = {
 
 // Feature → preferred provider order (primary, fallback1, fallback2)
 const PROVIDER_ROUTING: Record<string, string[]> = {
-  chat: ['openai', 'gemini', 'groq'],
-  grammar: ['openai', 'gemini', 'anthropic'],
-  vocabulary: ['gemini', 'openai', 'groq'],
+  chat: ['omniroute', 'openai', 'gemini', 'groq'],
+  grammar: ['omniroute', 'openai', 'gemini', 'anthropic'],
+  vocabulary: ['omniroute', 'gemini', 'openai', 'groq'],
   writing: ['anthropic', 'openai', 'gemini'],
   speaking: ['openai', 'groq', 'gemini'],
-  listening: ['openai', 'groq', 'gemini'],
-  reading: ['openai', 'gemini', 'anthropic'],
+  listening: ['omniroute', 'openai', 'groq', 'gemini'],
+  reading: ['omniroute', 'openai', 'gemini', 'anthropic'],
   exam: ['openai', 'anthropic', 'gemini'],
-  default: ['openai', 'gemini', 'groq'],
+  default: ['omniroute', 'openai', 'gemini', 'groq'],
 };
 
 // ── Main handler ──────────────────────────────────────────────────────────────
@@ -81,6 +88,7 @@ Deno.serve(async (req: Request) => {
     temperature = 0.7,
     credit_cost = 1,
     stream: streamMode = false,
+    test_provider,
   } = body;
 
   if (!prompt) {
@@ -103,8 +111,28 @@ Deno.serve(async (req: Request) => {
     }, 402);
   }
 
-  // ── Choose provider ────────────────────────────────────────────────────────
-  const providerOrder = PROVIDER_ROUTING[feature] ?? PROVIDER_ROUTING.default;
+  // ── Caching check ──────────────────────────────────────────────────────────
+  const isCacheable = CACHEABLE_FEATURES.has(feature);
+  let cachedResponse: any = null;
+  let cacheKey = '';
+
+  if (isCacheable) {
+    try {
+      cacheKey = await computeSha256(`${feature}:${language}:${prompt}`);
+      const { data } = await supabase
+        .from('ai_cache')
+        .select('response_content')
+        .eq('cache_key', cacheKey)
+        .maybeSingle();
+
+      if (data) {
+        cachedResponse = data.response_content;
+        console.log(`Cache hit for feature ${feature}, key ${cacheKey}`);
+      }
+    } catch (e) {
+      console.error('Failed to check AI cache:', e);
+    }
+  }
 
   let content = '';
   let usedProvider = '';
@@ -112,33 +140,60 @@ Deno.serve(async (req: Request) => {
   let completionTokens = 0;
   let lastError = '';
 
-  for (const providerName of providerOrder) {
-    const provider = PROVIDERS[providerName as keyof typeof PROVIDERS];
-    if (!provider.apiKey) continue;
+  if (cachedResponse) {
+    content = cachedResponse;
+    usedProvider = 'cache';
+  } else {
+    // ── Choose provider ────────────────────────────────────────────────────────
+    const providerOrder = test_provider
+      ? [test_provider]
+      : await getDynamicProviderOrder(feature);
 
-    try {
-      const result = await callProvider(providerName, provider, {
-        prompt,
-        systemPrompt: system_prompt,
-        maxTokens: max_tokens,
-        temperature,
-        language,
-      });
+    for (const providerName of providerOrder) {
+      const provider = PROVIDERS[providerName as keyof typeof PROVIDERS];
+      if (!provider || !provider.apiKey) continue;
 
-      content = result.content;
-      usedProvider = providerName;
-      promptTokens = result.promptTokens;
-      completionTokens = result.completionTokens;
-      break;
-    } catch (e) {
-      lastError = String(e);
-      console.error(`Provider ${providerName} failed:`, e);
-      // Try next provider
+      try {
+        const result = await callProvider(providerName, provider, {
+          prompt,
+          systemPrompt: system_prompt,
+          maxTokens: max_tokens,
+          temperature,
+          language,
+        });
+
+        content = result.content;
+        usedProvider = providerName;
+        promptTokens = result.promptTokens;
+        completionTokens = result.completionTokens;
+        break;
+      } catch (e) {
+        lastError = String(e);
+        console.error(`Provider ${providerName} failed:`, e);
+        // Log failure in db
+        await logAiFailure(user.id, providerName, feature, lastError);
+      }
     }
   }
 
   if (!content) {
     return json({ error: `All providers failed. Last error: ${lastError}` }, 503);
+  }
+
+  // ── Write cache on miss ────────────────────────────────────────────────────
+  if (isCacheable && !cachedResponse && content) {
+    try {
+      await supabase.from('ai_cache').insert({
+        cache_key: cacheKey,
+        feature,
+        language,
+        prompt,
+        response_content: content,
+      });
+      console.log(`Cached response for key ${cacheKey}`);
+    } catch (e) {
+      console.error('Failed to save to AI cache:', e);
+    }
   }
 
   // ── Deduct credits ────────────────────────────────────────────────────────
@@ -150,10 +205,19 @@ Deno.serve(async (req: Request) => {
   });
 
   // ── Log usage ─────────────────────────────────────────────────────────────
-  const provider = PROVIDERS[usedProvider as keyof typeof PROVIDERS];
-  const costUsd =
-    (promptTokens * provider.costPerInputToken) +
-    (completionTokens * provider.costPerOutputToken);
+  let costUsd = 0.0;
+  if (usedProvider !== 'cache') {
+    const provider = PROVIDERS[usedProvider as keyof typeof PROVIDERS];
+    const rates = await getDynamicProviderRates(
+      usedProvider,
+      provider.costPerInputToken,
+      provider.costPerOutputToken
+    );
+    
+    costUsd =
+      (promptTokens * rates.costPerInputToken) +
+      (completionTokens * rates.costPerOutputToken);
+  }
 
   await supabase.from('ai_usage').insert({
     user_id: user.id,
@@ -193,6 +257,7 @@ async function callProvider(
   switch (name) {
     case 'openai':
     case 'groq':
+    case 'omniroute':
       return callOpenAICompatible(provider, params);
     case 'anthropic':
       return callAnthropic(provider, params);
@@ -322,9 +387,100 @@ async function checkRateLimit(userId: string, feature: string): Promise<boolean>
   return (count ?? 0) < 60;
 }
 
+async function getDynamicProviderOrder(feature: string): Promise<string[]> {
+  try {
+    const { data: routingData } = await supabase
+      .from('ai_feature_routing')
+      .select('provider_order')
+      .eq('feature', feature)
+      .maybeSingle();
+
+    let order = routingData?.provider_order as string[];
+    if (!order) {
+      const { data: defaultData } = await supabase
+        .from('ai_feature_routing')
+        .select('provider_order')
+        .eq('feature', 'default')
+        .maybeSingle();
+      order = defaultData?.provider_order as string[];
+    }
+
+    if (!order) {
+      return PROVIDER_ROUTING[feature] ?? PROVIDER_ROUTING.default;
+    }
+
+    const { data: activeProviders } = await supabase
+      .from('ai_providers')
+      .select('name')
+      .eq('is_enabled', true);
+
+    if (!activeProviders) return order;
+
+    const enabledNames = new Set(activeProviders.map((p) => p.name));
+    return order.filter((name) => enabledNames.has(name));
+  } catch (e) {
+    console.error('Failed to load dynamic provider routing:', e);
+    return PROVIDER_ROUTING[feature] ?? PROVIDER_ROUTING.default;
+  }
+}
+
+async function getDynamicProviderRates(
+  name: string,
+  defaultInputRate: number,
+  defaultOutputRate: number
+): Promise<{ costPerInputToken: number; costPerOutputToken: number }> {
+  try {
+    const { data } = await supabase
+      .from('ai_providers')
+      .select('cost_per_input_token, cost_per_output_token')
+      .eq('name', name)
+      .maybeSingle();
+
+    if (data) {
+      return {
+        costPerInputToken: Number(data.cost_per_input_token) ?? defaultInputRate,
+        costPerOutputToken: Number(data.cost_per_output_token) ?? defaultOutputRate,
+      };
+    }
+  } catch (e) {
+    console.error(`Failed to load dynamic provider rates for ${name}:`, e);
+  }
+  return { costPerInputToken: defaultInputRate, costPerOutputToken: defaultOutputRate };
+}
+
+async function logAiFailure(
+  userId: string,
+  provider: string,
+  feature: string,
+  errorMessage: string
+): Promise<void> {
+  try {
+    await supabase.from('ai_failures').insert({
+      user_id: userId,
+      provider,
+      feature,
+      error_message: errorMessage,
+    });
+  } catch (e) {
+    console.error('Failed to log AI failure in database:', e);
+  }
+}
+
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+// ── Cache Helpers ────────────────────────────────────────────────────────────
+
+const CACHEABLE_FEATURES = new Set(['grammar', 'vocabulary', 'reading', 'listening', 'default']);
+
+async function computeSha256(text: string): Promise<string> {
+  const msgUint8 = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hashHex;
 }

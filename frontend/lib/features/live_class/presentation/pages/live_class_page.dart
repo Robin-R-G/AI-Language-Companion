@@ -345,7 +345,7 @@ class _ParticipantTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final videoTrack = participant.videoTrackPublications.values
+    final videoTrack = participant.videoTrackPublications
         .where((p) => !p.muted)
         .firstOrNull
         ?.track as RemoteVideoTrack?;

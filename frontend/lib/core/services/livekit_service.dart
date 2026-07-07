@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -127,10 +128,24 @@ class LiveKitService {
 
   /// Switch between front/rear cameras.
   Future<void> switchCamera() async {
-    final track = _room?.localParticipant?.videoTrackPublications.values
+    final track = _room?.localParticipant?.videoTrackPublications
         .firstOrNull
         ?.track as LocalVideoTrack?;
-    await track?.switchCamera();
+    if (track == null) return;
+    try {
+      final devices = await navigator.mediaDevices.enumerateDevices();
+      final videoInputs = devices.where((d) => d.kind == 'videoinput').toList();
+      if (videoInputs.length < 2) return;
+      
+      final currentDeviceId = track.mediaStreamTrack.getSettings()['deviceId'] as String?;
+      final nextDevice = videoInputs.firstWhere(
+        (d) => d.deviceId != currentDeviceId,
+        orElse: () => videoInputs.first,
+      );
+      await track.switchCamera(nextDevice.deviceId);
+    } catch (e) {
+      print('Failed to switch camera: $e');
+    }
   }
 
   // ── Scheduling ────────────────────────────────────────────────────────────
@@ -170,7 +185,7 @@ class LiveKitService {
         ''')
         .or('tutor_id.eq.${user.id},student_id.eq.${user.id}')
         .gte('scheduled_at', now)
-        .in_('status', ['scheduled', 'active'])
+        .inFilter('status', ['scheduled', 'active'])
         .order('scheduled_at')
         .limit(20);
 
