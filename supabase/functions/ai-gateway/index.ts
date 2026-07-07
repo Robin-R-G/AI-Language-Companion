@@ -3,6 +3,7 @@
 // fallback providers, and streaming support.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { PxPipe } from '../shared/pxpipe.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -78,12 +79,13 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'Unauthorized' }, 401);
   }
 
+  const startTime = Date.now();
   const body = await req.json();
   const {
-    prompt,
+    prompt: rawPrompt,
     feature = 'chat',
     language = 'en',
-    system_prompt,
+    system_prompt: rawSystemPrompt,
     max_tokens = 1024,
     temperature = 0.7,
     credit_cost = 1,
@@ -91,9 +93,15 @@ Deno.serve(async (req: Request) => {
     test_provider,
   } = body;
 
-  if (!prompt) {
+  if (!rawPrompt) {
     return json({ error: 'prompt is required' }, 400);
   }
+
+  // ── PxPipe AI Optimization Layer ───────────────────────────────────────────
+  const intent = PxPipe.detectIntent(rawPrompt, feature);
+  const optimizedPrompt = PxPipe.optimizePrompt(rawPrompt);
+  const { prompt, systemPrompt, savingsChars } = PxPipe.compressContext(optimizedPrompt, rawSystemPrompt);
+  const tokenSavings = Math.ceil(savingsChars / 4);
 
   // ── Rate limiting ──────────────────────────────────────────────────────────
   const rateOk = await checkRateLimit(user.id, feature);
@@ -112,7 +120,7 @@ Deno.serve(async (req: Request) => {
   }
 
   // ── Caching check ──────────────────────────────────────────────────────────
-  const isCacheable = CACHEABLE_FEATURES.has(feature);
+  const isCacheable = PxPipe.isCacheable(prompt, intent);
   let cachedResponse: any = null;
   let cacheKey = '';
 
@@ -156,7 +164,7 @@ Deno.serve(async (req: Request) => {
       try {
         const result = await callProvider(providerName, provider, {
           prompt,
-          systemPrompt: system_prompt,
+          systemPrompt: systemPrompt,
           maxTokens: max_tokens,
           temperature,
           language,
@@ -206,6 +214,8 @@ Deno.serve(async (req: Request) => {
 
   // ── Log usage ─────────────────────────────────────────────────────────────
   let costUsd = 0.0;
+  let costSavingsUsd = 0.0;
+  
   if (usedProvider !== 'cache') {
     const provider = PROVIDERS[usedProvider as keyof typeof PROVIDERS];
     const rates = await getDynamicProviderRates(
@@ -217,20 +227,43 @@ Deno.serve(async (req: Request) => {
     costUsd =
       (promptTokens * rates.costPerInputToken) +
       (completionTokens * rates.costPerOutputToken);
+      
+    costSavingsUsd = tokenSavings * rates.costPerInputToken;
+  } else {
+    // If cache hit, we save the full request fee
+    const rates = PROVIDERS.omniroute;
+    costSavingsUsd = ((rawPrompt.length / 4) * rates.costPerInputToken) + (150 * rates.costPerOutputToken);
   }
 
-  await supabase.from('ai_usage').insert({
-    user_id: user.id,
-    provider: usedProvider,
-    feature,
-    language,
-    prompt_tokens: promptTokens,
-    completion_tokens: completionTokens,
-    total_tokens: promptTokens + completionTokens,
-    credits_used: credit_cost,
-    cost_usd: costUsd,
-    created_at: new Date().toISOString(),
-  });
+  try {
+    const { data: usageLog } = await supabase.from('ai_usage').insert({
+      user_id: user.id,
+      provider: usedProvider,
+      feature,
+      language,
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: promptTokens + completionTokens,
+      credits_used: credit_cost,
+      cost_usd: costUsd,
+      created_at: new Date().toISOString(),
+    }).select('id').maybeSingle();
+
+    await supabase.from('pxpipe_analytics').insert({
+      user_id: user.id,
+      ai_usage_id: usageLog?.id || null,
+      intent,
+      original_prompt_size: rawPrompt.length,
+      optimized_prompt_size: prompt.length,
+      token_savings: tokenSavings,
+      is_cache_hit: usedProvider === 'cache',
+      latency_ms: Date.now() - startTime,
+      provider_used: usedProvider,
+      cost_savings_usd: costSavingsUsd,
+    });
+  } catch (e) {
+    console.error('Failed to log PxPipe metrics:', e);
+  }
 
   return json({
     content,

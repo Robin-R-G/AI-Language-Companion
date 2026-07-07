@@ -27,11 +27,12 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
   List<dynamic> _aiFailures = [];
   List<dynamic> _aiCostDaily = [];
   List<dynamic> _manualPayments = [];
+  List<dynamic> _pxpipeAnalytics = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 9, vsync: this);
+    _tabController = TabController(length: 10, vsync: this);
     _loadData();
   }
 
@@ -53,6 +54,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         _supabase.from('ai_failures').select('*').order('created_at', ascending: false).limit(50).catchError((_) => []),
         _supabase.from('ai_cost_daily').select('*').catchError((_) => []),
         _supabase.from('manual_payments').select('*, user_profiles(full_name, email)').order('created_at', ascending: false).catchError((_) => []),
+        _supabase.from('pxpipe_analytics').select('*').order('created_at', ascending: false).limit(100).catchError((_) => []),
       ]);
 
       final settlementsList = results[0] is List ? results[0] as List : [];
@@ -92,6 +94,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         _aiFailures = results[5] is List ? results[5] : [];
         _aiCostDaily = aiCostList;
         _manualPayments = results[7] is List ? results[7] as List : [];
+        _pxpipeAnalytics = results[8] is List ? results[8] as List : [];
 
         _revenue = {
           'total_collected': totalCollected.toInt(),
@@ -174,6 +177,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
             Tab(text: 'Reports'),
             Tab(text: 'AI Providers'),
             Tab(text: 'Payment Verification'),
+            Tab(text: 'PxPipe Analytics'),
           ],
         ),
       ),
@@ -189,6 +193,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
           _buildReportsTab(theme),
           _buildAiProvidersTab(theme),
           _buildPaymentVerificationTab(theme),
+          _buildPxPipeAnalyticsTab(theme),
         ],
       ),
     );
@@ -1275,6 +1280,139 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         SnackBar(content: Text('Error rejecting payment: $e')),
       );
     }
+  }
+
+  // ── PxPipe Analytics Tab ───────────────────────────────────────────────────
+  Widget _buildPxPipeAnalyticsTab(ThemeData theme) {
+    if (_pxpipeAnalytics.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.analytics_outlined, size: 64, color: Colors.grey),
+              SizedBox(height: AppSpacing.base),
+              Text('No PxPipe optimization metrics logged yet', style: TextStyle(color: Colors.grey)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final totalRequests = _pxpipeAnalytics.length;
+    final cacheHits = _pxpipeAnalytics.where((x) => x['is_cache_hit'] == true).length;
+    final hitRate = totalRequests > 0 ? (cacheHits / totalRequests * 100).toStringAsFixed(1) : '0.0';
+    
+    final totalTokenSavings = _pxpipeAnalytics.fold<int>(0, (sum, x) => sum + ((x['token_savings'] ?? 0) as int));
+    final totalCostSavings = _pxpipeAnalytics.fold<double>(0.0, (sum, x) => sum + (double.tryParse(x['cost_savings_usd']?.toString() ?? '0') ?? 0.0));
+    final averageLatency = totalRequests > 0 
+        ? (_pxpipeAnalytics.fold<int>(0, (sum, x) => sum + ((x['latency_ms'] ?? 0) as int)) / totalRequests).toStringAsFixed(0)
+        : '0';
+
+    // Provider distribution
+    final providers = <String, int>{};
+    for (final x in _pxpipeAnalytics) {
+      final p = (x['provider_used'] ?? 'unknown') as String;
+      providers[p] = (providers[p] ?? 0) + 1;
+    }
+
+    // Optimization ratios (original vs optimized)
+    final totalOriginal = _pxpipeAnalytics.fold<int>(0, (sum, x) => sum + ((x['original_prompt_size'] ?? 0) as int));
+    final totalOptimized = _pxpipeAnalytics.fold<int>(0, (sum, x) => sum + ((x['optimized_prompt_size'] ?? 0) as int));
+    final optimizationRatio = totalOriginal > 0 
+        ? ((totalOriginal - totalOptimized) / totalOriginal * 100).toStringAsFixed(1)
+        : '0.0';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.base),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'PxPipe Optimization Analytics',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSpacing.base),
+
+          // Overview metrics grid
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.4,
+            children: [
+              _buildLiveMetric('Total Requests', '$totalRequests', Colors.blue),
+              _buildLiveMetric('Cache Hits', '$cacheHits ($hitRate%)', Colors.green),
+              _buildLiveMetric('Token Savings', '$totalTokenSavings tokens', Colors.purple),
+              _buildLiveMetric('Cost Savings', '\$${totalCostSavings.toStringAsFixed(4)}', Colors.teal),
+              _buildLiveMetric('Avg Latency', '$averageLatency ms', Colors.orange),
+              _buildLiveMetric('Optimization Ratio', '$optimizationRatio%', Colors.indigo),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Provider distribution card
+          AppCard(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.base),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Provider Distributions', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: AppSpacing.base),
+                  ...providers.entries.map((e) {
+                    final percent = totalRequests > 0 ? (e.value / totalRequests * 100).toStringAsFixed(1) : '0';
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(e.key.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text('${e.value} requests ($percent%)', style: const TextStyle(color: Colors.grey)),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Recent requests history
+          Text('Recent Optimizations Log', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: AppSpacing.base),
+          ..._pxpipeAnalytics.map((x) {
+            final hit = x['is_cache_hit'] == true;
+            return AppCard(
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: ListTile(
+                leading: Icon(
+                  hit ? Icons.flash_on : Icons.bolt,
+                  color: hit ? Colors.green : Colors.blue,
+                ),
+                title: Text('${x['intent']} - ${x['provider_used']?.toString().toUpperCase()}'),
+                subtitle: Text(
+                  'Original: ${x['original_prompt_size']} ch | Optimized: ${x['optimized_prompt_size']} ch | Savings: ${x['token_savings']} tokens',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('${x['latency_ms']} ms', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text('\$${(double.tryParse(x['cost_savings_usd']?.toString() ?? '0') ?? 0.0).toStringAsFixed(4)} saved', style: const TextStyle(color: Colors.green, fontSize: 10)),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
   }
 }
 
