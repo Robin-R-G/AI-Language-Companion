@@ -15,6 +15,7 @@ import '../../features/notifications/presentation/pages/notifications_page.dart'
 import '../../features/security/presentation/pages/security_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/monetization/presentation/pages/monetization_page.dart';
+import '../../features/dashboard/presentation/pages/pxpipe_analytics_page.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -95,6 +96,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/monetization',
             builder: (context, state) => const MonetizationPage(),
+          ),
+          GoRoute(
+            path: '/pxpipe',
+            builder: (context, state) => const PxPipeAnalyticsPage(),
           ),
         ],
       ),

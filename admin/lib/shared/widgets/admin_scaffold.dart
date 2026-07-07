@@ -30,6 +30,7 @@ class AdminScaffold extends ConsumerWidget {
       _NavItem(Icons.campaign_rounded, 'Broadcasts', '/notifications'),
       _NavItem(Icons.security_rounded, 'Security Audits', '/security'),
       _NavItem(Icons.monetization_on_rounded, 'Monetization', '/monetization'),
+      _NavItem(Icons.insights_rounded, 'PxPipe Analytics', '/pxpipe'),
       _NavItem(Icons.settings_rounded, 'Settings', '/settings'),
     ];
 
