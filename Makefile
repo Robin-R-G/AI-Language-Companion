@@ -1,7 +1,8 @@
 # Makefile: AI Language Coach
 
 .PHONY: setup gen analyze test test-watch test-integration test-golden \
-        coverage clean db-lint db-push funcs-deploy verify-env ci
+        coverage clean db-lint db-push funcs-deploy verify-env ci \
+        admin-setup admin-analyze admin-test admin-build
 
 # Setup dependencies
 setup:
@@ -53,7 +54,7 @@ db-push:
 
 # Deploy backend Edge Functions
 funcs-deploy:
-	supabase functions deploy --all --no-verify-jwt
+	supabase functions deploy --all
 
 # Verify environment variables
 verify-env:
@@ -61,3 +62,16 @@ verify-env:
 
 # Full CI pipeline (local)
 ci: setup analyze test
+
+# Admin Web targets
+admin-setup:
+	cd apps/admin_web && flutter pub get
+
+admin-analyze:
+	cd apps/admin_web && flutter analyze
+
+admin-test:
+	cd apps/admin_web && flutter test
+
+admin-build:
+	cd apps/admin_web && flutter build web --release

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,6 +33,8 @@ import '../../features/system_settings/presentation/pages/feature_flags_page.dar
 import '../../features/system_settings/presentation/pages/dev_console_page.dart';
 import '../../features/support_tickets/presentation/pages/support_page.dart';
 import '../../features/infrastructure/presentation/pages/infrastructure_page.dart';
+import '../../features/voice_monitor/presentation/pages/voice_monitor_page.dart';
+import '../../features/pxpipe_analytics/presentation/pages/pxpipe_analytics_page.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -53,6 +57,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/dashboard';
       }
 
+      // Verify admin role from JWT claims
+      final accessToken = session.accessToken;
+      try {
+        final parts = accessToken.split('.');
+        if (parts.length == 3) {
+          final payload = parts[1];
+          final normalized = base64Url.normalize(payload);
+          final decoded = utf8.decode(base64Url.decode(normalized));
+          final claims = jsonDecode(decoded) as Map<String, dynamic>;
+          final role = claims['role'] as String?;
+          if (role != 'admin' && role != 'super_admin') {
+            return '/login';
+          }
+        } else {
+          return '/login';
+        }
+      } catch (_) {
+        return '/login';
+      }
       return null;
     },
     routes: [
@@ -95,6 +118,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/dev-console', builder: (_, __) => const DevConsolePage()),
           GoRoute(path: '/support', builder: (_, __) => const SupportPage()),
           GoRoute(path: '/infrastructure', builder: (_, __) => const InfrastructurePage()),
+          GoRoute(path: '/voice', builder: (_, __) => const VoiceMonitorPage()),
+          GoRoute(path: '/pxpipe', builder: (_, __) => const PxPipeAnalyticsPage()),
         ],
       ),
     ],

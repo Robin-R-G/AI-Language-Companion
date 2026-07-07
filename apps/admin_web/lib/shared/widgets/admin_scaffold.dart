@@ -29,6 +29,8 @@ final List<NavItem> navItems = [
   NavItem(Icons.smart_toy_rounded, 'AI Providers', '/ai-providers'),
   NavItem(Icons.receipt_rounded, 'AI Billing', '/ai-billing'),
   NavItem(Icons.chat_rounded, 'Prompt Manager', '/prompts'),
+  NavItem(Icons.mic_rounded, 'Voice Monitor', '/voice'),
+  NavItem(Icons.insights_rounded, 'PxPipe Analytics', '/pxpipe'),
   NavItem(Icons.store_rounded, 'Tutor Marketplace', '/marketplace', section: 'Platform'),
   NavItem(Icons.book_rounded, 'Courses', '/courses'),
   NavItem(Icons.quiz_rounded, 'Exams', '/exams'),

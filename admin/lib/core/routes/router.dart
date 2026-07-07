@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,9 +40,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/dashboard';
       }
 
-      // Check admin privileges via token role claim or simple local check
-      // In production, we read the role claim from JWT
-      // For now, let user pass through if authenticated
+      // Verify admin role from JWT claims
+      final accessToken = session.accessToken;
+      try {
+        final parts = accessToken.split('.');
+        if (parts.length == 3) {
+          final payload = parts[1];
+          final normalized = base64Url.normalize(payload);
+          final decoded = utf8.decode(base64Url.decode(normalized));
+          final claims = jsonDecode(decoded) as Map<String, dynamic>;
+          final role = claims['role'] as String?;
+          if (role != 'admin' && role != 'super_admin') {
+            return '/login';
+          }
+        } else {
+          return '/login';
+        }
+      } catch (_) {
+        return '/login';
+      }
       return null;
     },
     routes: [

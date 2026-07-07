@@ -33,6 +33,14 @@ class _SettingsPageState extends State<SettingsPage> {
   final _adBannerPriceController = TextEditingController();
   final _adInterstitialPriceController = TextEditingController();
 
+  bool _maintenanceMode = false;
+  bool _voiceEngineActive = true;
+  bool _translationsActive = true;
+  bool _subOnlyAssessments = false;
+
+  final _liveKitUrlController = TextEditingController(text: 'wss://livekit.ailanguagecoach.com');
+  final _revenueCatSecretController = TextEditingController(text: '');
+
   bool _walletEnabled = true;
   bool _referralsEnabled = true;
   bool _adsEnabled = false;
@@ -53,6 +61,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _stripeKeyController.dispose();
     _stripeSecretController.dispose();
     _paypalClientIdController.dispose();
+    _liveKitUrlController.dispose();
+    _revenueCatSecretController.dispose();
     _walletSignupBonusController.dispose();
     _walletReferralBonusController.dispose();
     _walletDailyBonusController.dispose();
@@ -100,6 +110,12 @@ class _SettingsPageState extends State<SettingsPage> {
           _referralsEnabled = settingsMap['referrals_enabled'] != 'false';
           _referralRewardController.text = settingsMap['referral_reward_amount'] ?? '5';
           _referralMaxPerUserController.text = settingsMap['max_referrals_per_user'] ?? '10';
+          _maintenanceMode = settingsMap['maintenance_mode'] == 'true';
+          _voiceEngineActive = settingsMap['voice_engine_active'] != 'false';
+          _translationsActive = settingsMap['translations_active'] != 'false';
+          _subOnlyAssessments = settingsMap['sub_only_assessments'] == 'true';
+          _liveKitUrlController.text = settingsMap['livekit_url'] ?? 'wss://livekit.ailanguagecoach.com';
+          _revenueCatSecretController.text = settingsMap['revenuecat_secret'] ?? '';
           _adsEnabled = settingsMap['ads_enabled'] == 'true';
           _adBannerPriceController.text = settingsMap['ad_banner_price'] ?? '0.50';
           _adInterstitialPriceController.text = settingsMap['ad_interstitial_price'] ?? '1.00';
@@ -144,6 +160,12 @@ class _SettingsPageState extends State<SettingsPage> {
         {'key': 'ads_enabled', 'value': _adsEnabled.toString(), 'updated_at': DateTime.now().toIso8601String()},
         {'key': 'ad_banner_price', 'value': _adBannerPriceController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
         {'key': 'ad_interstitial_price', 'value': _adInterstitialPriceController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'maintenance_mode', 'value': _maintenanceMode.toString(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'voice_engine_active', 'value': _voiceEngineActive.toString(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'translations_active', 'value': _translationsActive.toString(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'sub_only_assessments', 'value': _subOnlyAssessments.toString(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'livekit_url', 'value': _liveKitUrlController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'revenuecat_secret', 'value': _revenueCatSecretController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
       ];
 
       await _supabase.from('system_settings').upsert(settings);
@@ -214,9 +236,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildGeneralSection(),
-                    const SizedBox(height: 24),
-                    _buildPaymentSection(),
+                  _buildGeneralSection(),
+                  const SizedBox(height: 24),
+                  _buildPlatformOperationsSection(),
+                  const SizedBox(height: 24),
+                  _buildPaymentSection(),
                     const SizedBox(height: 24),
                     _buildWalletSection(),
                     const SizedBox(height: 24),
@@ -270,6 +294,66 @@ class _SettingsPageState extends State<SettingsPage> {
         TextFormField(
           controller: _timezoneController,
           decoration: const InputDecoration(labelText: 'Default Timezone'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlatformOperationsSection() {
+    return _buildSectionCard(
+      title: 'Platform Operations',
+      children: [
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Maintenance Mode'),
+          subtitle: const Text('Restricts all client app network traffic and displays static maintenance notification page.'),
+          value: _maintenanceMode,
+          activeColor: AdminTheme.error,
+          onChanged: (v) => setState(() => _maintenanceMode = v),
+        ),
+        const Divider(),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Voice Conversation Module'),
+          subtitle: const Text('Enable or disable LiveKit voice call streaming globally.'),
+          value: _voiceEngineActive,
+          activeColor: AdminTheme.primary,
+          onChanged: (v) => setState(() => _voiceEngineActive = v),
+        ),
+        const Divider(),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Bilingual Helper Translations'),
+          subtitle: const Text('Renders word translations option on lessons vocabulary exercises.'),
+          value: _translationsActive,
+          activeColor: AdminTheme.primary,
+          onChanged: (v) => setState(() => _translationsActive = v),
+        ),
+        const Divider(),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Premium-Only Placement Exam'),
+          subtitle: const Text('Restricts placements exams access strictly to active paying subscriptions.'),
+          value: _subOnlyAssessments,
+          activeColor: AdminTheme.primary,
+          onChanged: (v) => setState(() => _subOnlyAssessments = v),
+        ),
+        const Divider(),
+        TextFormField(
+          controller: _liveKitUrlController,
+          decoration: const InputDecoration(
+            labelText: 'LiveKit Server Gateway Host URL',
+            prefixIcon: Icon(Icons.cell_tower_rounded, size: 18),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _revenueCatSecretController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'RevenueCat Webhook Shared Secret Key',
+            prefixIcon: Icon(Icons.lock_outline, size: 18),
+          ),
         ),
       ],
     );

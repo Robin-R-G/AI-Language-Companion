@@ -1,0 +1,114 @@
+name: Admin Web CI/CD
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'apps/admin_web/**'
+  push:
+    branches: [develop, main]
+    paths:
+      - 'apps/admin_web/**'
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.22.x'
+  FLUTTER_CHANNEL: 'stable'
+  WORK_DIR: apps/admin_web
+
+jobs:
+  analyze:
+    name: Analyze & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORK_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: dart format --set-exit-if-changed .
+
+      - name: Static analysis
+        run: flutter analyze --no-fatal-infos
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORK_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test --coverage --coverage-path=coverage/lcov.info
+
+      - name: Upload coverage reports to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: admin-web
+          files: ${{ env.WORK_DIR }}/coverage/lcov.info
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-coverage
+          path: ${{ env.WORK_DIR }}/coverage/
+          retention-days: 7
+
+  build:
+    name: Build Web
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    defaults:
+      run:
+        working-directory: ${{ env.WORK_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web release
+        run: flutter build web --release --no-tree-shake-icons
+
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-web-build
+          path: ${{ env.WORK_DIR }}/build/web/
+          retention-days: 30

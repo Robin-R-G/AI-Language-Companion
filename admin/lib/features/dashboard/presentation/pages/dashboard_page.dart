@@ -79,6 +79,29 @@ class _DashboardPageState extends State<DashboardPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    if (_error != null || _data == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.cloud_off_rounded, size: 64, color: Colors.grey.shade600),
+            const SizedBox(height: 16),
+            Text(
+              _error ?? 'No dashboard data available',
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _fetchDashboardData,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
     final d = _data!;
 
     return SingleChildScrollView(
