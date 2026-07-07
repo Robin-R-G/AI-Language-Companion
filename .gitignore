@@ -27,7 +27,7 @@ out/
 .dart_tool/
 **/.dart_tool/
 frontend/.dart_tool/
-admin/.dart_tool/
+apps/admin_web/.dart_tool/
 **/.packages
 
 # Flutter generated platform code (auto-regenerated)
@@ -54,8 +54,6 @@ frontend/fastlane/test_output
 **/*.jks
 **/auth_keys.json
 **/service_account.json
-**/google-services.json
-**/GoogleService-Info.plist
 **/*.p8
 **/*.p12
 **/*.cer
