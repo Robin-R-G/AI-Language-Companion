@@ -66,29 +66,8 @@ class _DashboardPageState extends State<DashboardPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback data if local docker server or Edge Function isn't running
       setState(() {
-        _data = _LoginPageData(
-          totalUsers: 1450,
-          totalLessons: 154,
-          totalSessions: 870,
-          analytics: {
-            'new_users_30d': 324,
-            'active_users_7d': 820,
-            'avg_score_30d': 84.2,
-            'total_learning_minutes_30d': 12400,
-          },
-          health: {
-            'status': 'healthy',
-            'database': {'connected': true, 'connections_active': 8},
-            'services': {
-              'openai': 'online',
-              'gemini': 'online',
-              'livekit': 'online',
-              'revenuecat': 'online'
-            }
-          },
-        );
+        _error = 'Failed to load dashboard data: ${e.toString()}';
         _isLoading = false;
       });
     }

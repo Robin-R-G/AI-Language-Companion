@@ -20,23 +20,8 @@ class _AISettingsPageState extends State<AISettingsPage> {
   double _topP = 0.9;
   int _maxTokens = 2048;
 
-  // Prompts Library
-  final List<Map<String, dynamic>> _prompts = [
-    {
-      'id': 'p1',
-      'role': 'Tutor Assistant',
-      'content': 'You are an advanced AI language tutor. Provide helpful explanations, grammar feedback, and converse naturally inside vocabulary boundaries.',
-      'version': 'v1.4',
-      'active': true
-    },
-    {
-      'id': 'p2',
-      'role': 'Speech Reviewer',
-      'content': 'Analyze speech pronunciation and fluency records, checking accent structures and syntax anomalies.',
-      'version': 'v2.1',
-      'active': true
-    }
-  ];
+  // Prompts Library — loaded from system_prompts table
+  final List<Map<String, dynamic>> _prompts = [];
 
   // Playground States
   final _testInputController = TextEditingController();

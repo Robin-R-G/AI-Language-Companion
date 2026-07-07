@@ -41,44 +41,8 @@ class _ExamsPageState extends State<ExamsPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback local mock exams
       setState(() {
-        _exams = [
-          {
-            'id': 'e1',
-            'name': 'IELTS Academic',
-            'code': 'IELTS_A',
-            'description': 'International English Language Testing System - Academic',
-            'exam_type': 'IELTS',
-            'duration_minutes': 165,
-            'max_score': 9,
-            'passing_score': 6,
-            'sections': [
-              {'name': 'Listening', 'duration_minutes': 30, 'max_score': 9},
-              {'name': 'Reading', 'duration_minutes': 60, 'max_score': 9},
-              {'name': 'Writing', 'duration_minutes': 60, 'max_score': 9},
-              {'name': 'Speaking', 'duration_minutes': 15, 'max_score': 9}
-            ],
-            'is_active': true,
-          },
-          {
-            'id': 'e2',
-            'name': 'TOEFL iBT',
-            'code': 'TOEFL',
-            'description': 'Test of English as a Foreign Language',
-            'exam_type': 'TOEFL',
-            'duration_minutes': 180,
-            'max_score': 120,
-            'passing_score': 80,
-            'sections': [
-              {'name': 'Reading', 'duration_minutes': 54, 'max_score': 30},
-              {'name': 'Listening', 'duration_minutes': 41, 'max_score': 30},
-              {'name': 'Speaking', 'duration_minutes': 17, 'max_score': 30},
-              {'name': 'Writing', 'duration_minutes': 50, 'max_score': 30}
-            ],
-            'is_active': true,
-          }
-        ];
+        _error = 'Failed to load exams: ${e.toString()}';
         _isLoading = false;
       });
     }

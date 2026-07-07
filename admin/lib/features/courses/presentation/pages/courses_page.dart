@@ -74,20 +74,8 @@ class _CoursesPageState extends State<CoursesPage> with SingleTickerProviderStat
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback seeds
       setState(() {
-        if (isVocab) {
-          _items = [
-            {'id': 'v1', 'word': 'Fluent', 'meaning': 'Able to express oneself easily and articulately', 'pronunciation': '/ˈfluːənt/', 'cefr_level': 'B2'},
-            {'id': 'v2', 'word': 'Coherent', 'meaning': 'Logical and consistent', 'pronunciation': '/kəʊˈhɪərənt/', 'cefr_level': 'C1'}
-          ];
-        } else {
-          _items = [
-            {'id': 'l1', 'title': 'Grammar Basics: Present Perfect', 'category': 'Grammar', 'difficulty': 'Intermediate', 'estimated_minutes': 20, 'xp_reward': 150},
-            {'id': 'l2', 'title': 'Speaking Fluency: At the airport', 'category': 'Speaking', 'difficulty': 'Beginner', 'estimated_minutes': 15, 'xp_reward': 100}
-          ];
-        }
-        _totalCount = _items.length;
+        _error = 'Failed to load content: ${e.toString()}';
         _isLoading = false;
       });
     }

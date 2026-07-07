@@ -71,37 +71,7 @@ class _UsersPageState extends State<UsersPage> {
         });
       } catch (err) {
         setState(() {
-          _users = [
-            {
-              'id': '1',
-              'auth_user_id': 'u1',
-              'full_name': 'Robin Raju',
-              'avatar_url': '',
-              'native_language': 'Malayalam',
-              'target_language': 'English',
-              'proficiency_level': 'Intermediate',
-              'target_exam': 'IELTS',
-              'xp': 1200,
-              'level': 4,
-              'role': 'user',
-              'created_at': '2026-07-01T12:00:00Z'
-            },
-            {
-              'id': '2',
-              'auth_user_id': 'u2',
-              'full_name': 'Sarah Schmitt',
-              'avatar_url': '',
-              'native_language': 'German',
-              'target_language': 'English',
-              'proficiency_level': 'Advanced',
-              'target_exam': 'TOEFL',
-              'xp': 3400,
-              'level': 8,
-              'role': 'user',
-              'created_at': '2026-07-02T10:00:00Z'
-            }
-          ];
-          _totalUsers = 2;
+          _error = 'Failed to load users: ${err.toString()}';
           _isLoading = false;
         });
       }

@@ -47,29 +47,8 @@ class _SecurityPageState extends State<SecurityPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback logs
       setState(() {
-        _logs = [
-          {
-            'id': 'l1',
-            'action': 'profile_updated',
-            'entity_type': 'user_profiles',
-            'created_at': '2026-07-06T12:00:00Z',
-            'user_profiles': {'full_name': 'Robin Raju'},
-            'old_values': {'native_language': 'Malayalam'},
-            'new_values': {'native_language': 'English'}
-          },
-          {
-            'id': 'l2',
-            'action': 'subscription_created',
-            'entity_type': 'subscriptions',
-            'created_at': '2026-07-06T11:45:00Z',
-            'user_profiles': {'full_name': 'Sarah Schmitt'},
-            'old_values': null,
-            'new_values': {'plan': 'pro'}
-          }
-        ];
-        _totalLogs = 2;
+        _error = 'Failed to load audit logs: ${e.toString()}';
         _isLoading = false;
       });
     }

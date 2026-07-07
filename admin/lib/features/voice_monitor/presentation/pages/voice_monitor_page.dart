@@ -44,31 +44,8 @@ class _VoiceMonitorPageState extends State<VoiceMonitorPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Fallback local seeds
       setState(() {
-        _voiceSessions = [
-          {
-            'id': 's1',
-            'room_id': 'room-341a',
-            'provider': 'LiveKit',
-            'duration': 120,
-            'pronunciation_score': 84.5,
-            'fluency_score': 88.0,
-            'created_at': '2026-07-06T15:00:00Z',
-            'user_profiles': {'full_name': 'Robin Raju'}
-          },
-          {
-            'id': 's2',
-            'room_id': 'room-998f',
-            'provider': 'LiveKit',
-            'duration': 240,
-            'pronunciation_score': 72.1,
-            'fluency_score': 76.5,
-            'created_at': '2026-07-06T14:30:00Z',
-            'user_profiles': {'full_name': 'Sarah Schmitt'}
-          }
-        ];
-        _activeRoomsCount = 1;
+        _error = 'Failed to load voice sessions: ${e.toString()}';
         _isLoading = false;
       });
     }
