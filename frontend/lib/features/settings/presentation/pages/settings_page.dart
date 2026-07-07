@@ -5,6 +5,8 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/info_tile.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
+import 'legal_doc_page.dart';
+import 'support_page.dart';
 
 /// Settings screen with app configuration options.
 class SettingsPage extends StatefulWidget {
@@ -123,23 +125,55 @@ class _SettingsPageState extends State<SettingsPage> {
         InfoTile(
           icon: Icons.help_outline,
           title: 'Help & Support',
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SupportPage()),
+            );
+          },
         ),
         InfoTile(
           icon: Icons.description_outlined,
           title: 'Terms of Service',
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LegalDocPage(
+                  title: 'Terms of Service',
+                  content: 'Welcome to AI Language Companion. By signing up, you agree to these Terms of Service. All content, interactive modules, exam simulations, and features are provided under subscription or credit-pack terms. You agree to use the service in compliance with all guidelines and avoid automated harvesting or credit system exploitation.',
+                ),
+              ),
+            );
+          },
         ),
         InfoTile(
           icon: Icons.privacy_tip_outlined,
           title: 'Privacy Policy',
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LegalDocPage(
+                  title: 'Privacy Policy',
+                  content: 'Your privacy is extremely important. AI Language Companion collects profile registration emails, transaction amounts for fintech verification, and vocal/text speech prompts. These materials are securely transmitted to Supabase Edge Functions and OmniRoute to calculate language improvements. We do not sell user speech files or data.',
+                ),
+              ),
+            );
+          },
         ),
         InfoTile(
           icon: Icons.info_outline,
           title: 'About',
           subtitle: 'Version 1.0.0',
-          onTap: () {},
+          onTap: () {
+            showAboutDialog(
+              context: context,
+              applicationName: 'AI Language Companion',
+              applicationVersion: 'v1.0.0',
+              applicationLegalese: '© 2026 AI Language Companion Ltd',
+            );
+          },
         ),
         const Divider(),
 
