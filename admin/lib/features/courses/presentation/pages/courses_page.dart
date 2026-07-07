@@ -19,6 +19,7 @@ class _CoursesPageState extends State<CoursesPage> with SingleTickerProviderStat
   final int _pageSize = 10;
   int _totalCount = 0;
   bool _isLoading = true;
+  String? _error;
 
   List<dynamic> _items = [];
 

@@ -14,6 +14,7 @@ class _ExamsPageState extends State<ExamsPage> {
   final supabase = Supabase.instance.client;
   List<dynamic> _exams = [];
   bool _isLoading = true;
+  String? _error;
   String _searchQuery = '';
   String _selectedExamType = 'All';
 

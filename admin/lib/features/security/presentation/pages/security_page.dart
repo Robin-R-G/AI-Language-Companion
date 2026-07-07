@@ -13,6 +13,7 @@ class _SecurityPageState extends State<SecurityPage> {
   final supabase = Supabase.instance.client;
   List<dynamic> _logs = [];
   bool _isLoading = true;
+  String? _error;
   String _selectedAction = 'All';
   int _currentPage = 1;
   int _totalLogs = 0;

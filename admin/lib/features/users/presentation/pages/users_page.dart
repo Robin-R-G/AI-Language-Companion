@@ -13,6 +13,7 @@ class _UsersPageState extends State<UsersPage> {
   final supabase = Supabase.instance.client;
   List<dynamic> _users = [];
   bool _isLoading = true;
+  String? _error;
   String _searchQuery = '';
   int _currentPage = 1;
   int _totalUsers = 0;

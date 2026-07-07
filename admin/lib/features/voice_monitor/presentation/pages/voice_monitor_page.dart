@@ -13,15 +13,11 @@ class _VoiceMonitorPageState extends State<VoiceMonitorPage> {
   final supabase = Supabase.instance.client;
   List<dynamic> _voiceSessions = [];
   bool _isLoading = true;
+  String? _error;
   int _activeRoomsCount = 0;
 
   // Real-time events list
-  final List<Map<String, dynamic>> _liveLogs = [
-    {'time': '16:04:12', 'event': 'Room room-341a created successfully', 'type': 'info'},
-    {'time': '16:04:15', 'event': 'User u1 joined room-341a (LiveKit WebRTC)', 'type': 'info'},
-    {'time': '16:04:45', 'event': 'Packet loss warning on room-341a: 2.1%', 'type': 'warning'},
-    {'time': '16:05:01', 'event': 'Speech-to-Text finalized on u1: "Present Simple rules"', 'type': 'success'}
-  ];
+  final List<Map<String, dynamic>> _liveLogs = [];
 
   @override
   void initState() {
