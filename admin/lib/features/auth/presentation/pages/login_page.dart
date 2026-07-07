@@ -54,7 +54,9 @@ class _LoginPageState extends State<LoginPage> {
           .eq('auth_user_id', user.id)
           .maybeSingle();
 
-      if (profileRes == null || profileRes['role'] != 'admin') {
+      final role = profileRes?['role'] as String?;
+      final isAdminRole = role == 'admin' || role == 'super_admin';
+      if (!isAdminRole) {
         // Sign out immediately to block non-admin session
         await supabase.auth.signOut();
         throw AuthException('Access denied. Administrator privileges required.');
