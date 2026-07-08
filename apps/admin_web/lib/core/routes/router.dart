@@ -57,23 +57,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/dashboard';
       }
 
-      // Verify admin role from JWT claims
-      final accessToken = session.accessToken;
+      // Verify admin role from database profiles to prevent loop issues with default JWT claims
       try {
-        final parts = accessToken.split('.');
-        if (parts.length == 3) {
-          final payload = parts[1];
-          final normalized = base64Url.normalize(payload);
-          final decoded = utf8.decode(base64Url.decode(normalized));
-          final claims = jsonDecode(decoded) as Map<String, dynamic>;
-          final role = claims['role'] as String?;
-          if (role != 'admin' && role != 'super_admin') {
-            return '/login';
-          }
-        } else {
+        final profileRes = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('auth_user_id', session.user.id)
+            .maybeSingle();
+
+        if (profileRes == null) {
+          await supabase.auth.signOut();
+          return '/login';
+        }
+
+        final role = profileRes['role'] as String?;
+        if (role != 'admin' && role != 'super_admin') {
+          await supabase.auth.signOut();
           return '/login';
         }
       } catch (_) {
+        await supabase.auth.signOut();
         return '/login';
       }
       return null;
