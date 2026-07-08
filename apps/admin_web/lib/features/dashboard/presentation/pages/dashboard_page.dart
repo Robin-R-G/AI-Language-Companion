@@ -19,6 +19,7 @@ class DashboardPage extends ConsumerStatefulWidget {
 
 class _DashboardPageState extends ConsumerState<DashboardPage> {
   bool _isLoading = true;
+  String? _error;
   Map<String, dynamic> _stats = {};
   List<Map<String, dynamic>> _revenueData = [];
   List<Map<String, dynamic>> _userGrowthData = [];
@@ -32,7 +33,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 
   Future<void> _loadDashboardData() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final results = await Future.wait([
         _fetchStats(),
@@ -55,11 +59,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _stats = _mockStats();
-          _revenueData = _mockRevenueData();
-          _userGrowthData = _mockUserGrowthData();
-          _recentActivity = _mockRecentActivity();
-          _systemHealth = _mockSystemHealth();
+          _error = 'Failed to load dashboard data: $e';
           _isLoading = false;
         });
       }
@@ -67,72 +67,68 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 
   Future<Map<String, dynamic>> _fetchStats() async {
-    try {
-      final supabase = SupabaseService.instance.client;
+    final supabase = SupabaseService.instance.client;
 
-      final userCountFuture = supabase
-          .from('user_profiles')
-          .select('id')
-          .count();
+    final userCountFuture = supabase
+        .from('user_profiles')
+        .select('id')
+        .count();
 
-      final tutorCountFuture = supabase
-          .from('user_profiles')
-          .select('id')
-          .eq('role', 'tutor')
-          .count();
+    final tutorCountFuture = supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('role', 'tutor')
+        .count();
 
-      final subscriptionCountFuture = supabase
-          .from('subscriptions')
-          .select('id')
-          .eq('status', 'active')
-          .count();
+    final subscriptionCountFuture = supabase
+        .from('subscriptions')
+        .select('id')
+        .eq('status', 'active')
+        .count();
 
-      final ticketCountFuture = supabase
-          .from('support_tickets')
-          .select('id')
-          .eq('status', 'open')
-          .count();
+    final ticketCountFuture = supabase
+        .from('support_tickets')
+        .select('id')
+        .eq('status', 'open')
+        .count();
 
-      final results = await Future.wait([
-        userCountFuture,
-        tutorCountFuture,
-        subscriptionCountFuture,
-        ticketCountFuture,
-      ]);
+    final results = await Future.wait([
+      userCountFuture,
+      tutorCountFuture,
+      subscriptionCountFuture,
+      ticketCountFuture,
+    ]);
 
-      final totalUsers = results[0].count;
-      final activeTutors = results[1].count;
-      final activeSubscriptions = results[2].count;
-      final openTickets = results[3].count;
+    final totalUsers = results[0].count;
+    final activeTutors = results[1].count;
+    final activeSubscriptions = results[2].count;
+    final openTickets = results[3].count;
 
-      final revenueResult = await supabase
-          .from('payments')
-          .select('amount')
-          .gte('created_at', _startOfMonth())
-          .eq('status', 'completed');
+    final revenueResult = await supabase
+        .from('payments')
+        .select('amount')
+        .gte('created_at', _startOfMonth())
+        .eq('status', 'completed');
 
-      double monthlyRevenue = 0;
-      for (final payment in revenueResult) {
-        monthlyRevenue += (payment['amount'] as num?)?.toDouble() ?? 0;
-      }
-
-      final conversionRate = totalUsers > 0
-          ? ((activeSubscriptions / totalUsers) * 100)
-          : 0.0;
-
-      return {
-        'total_users': totalUsers,
-        'active_tutors': activeTutors,
-        'monthly_revenue': monthlyRevenue,
-        'active_subscriptions': activeSubscriptions,
-        'ai_cost_today': 42.80,
-        'pending_payouts': 1250.00,
-        'support_tickets': openTickets,
-        'conversion_rate': conversionRate,
-      };
-    } catch (e) {
-      return _mockStats();
+    double monthlyRevenue = 0;
+    for (final payment in revenueResult) {
+      monthlyRevenue += (payment['amount'] as num?)?.toDouble() ?? 0;
     }
+
+    final conversionRate = totalUsers > 0
+        ? ((activeSubscriptions / totalUsers) * 100)
+        : 0.0;
+
+    return {
+      'total_users': totalUsers,
+      'active_tutors': activeTutors,
+      'monthly_revenue': monthlyRevenue,
+      'active_subscriptions': activeSubscriptions,
+      'ai_cost_today': 0.00,
+      'pending_payouts': 0.00,
+      'support_tickets': openTickets,
+      'conversion_rate': conversionRate,
+    };
   }
 
   String _startOfMonth() {
@@ -141,104 +137,88 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchRevenueData() async {
-    try {
-      final supabase = SupabaseService.instance.client;
-      final now = DateTime.now();
-      final twelveMonthsAgo = DateTime(now.year - 1, now.month, 1);
+    final supabase = SupabaseService.instance.client;
+    final now = DateTime.now();
+    final twelveMonthsAgo = DateTime(now.year - 1, now.month, 1);
 
-      final result = await supabase
-          .from('payments')
-          .select('amount, created_at')
-          .gte('created_at', twelveMonthsAgo.toIso8601String())
-          .eq('status', 'completed');
+    final result = await supabase
+        .from('payments')
+        .select('amount, created_at')
+        .gte('created_at', twelveMonthsAgo.toIso8601String())
+        .eq('status', 'completed');
 
-      final Map<int, double> monthlyTotals = {};
-      for (int i = 11; i >= 0; i--) {
-        final month = DateTime(now.year, now.month - i, 1);
-        monthlyTotals[month.millisecondsSinceEpoch] = 0;
-      }
-
-      for (final payment in result) {
-        final date = DateTime.parse(payment['created_at']);
-        final monthKey = DateTime(date.year, date.month, 1).millisecondsSinceEpoch;
-        if (monthlyTotals.containsKey(monthKey)) {
-          monthlyTotals[monthKey] =
-              (monthlyTotals[monthKey] ?? 0) + ((payment['amount'] as num?)?.toDouble() ?? 0);
-        }
-      }
-
-      return monthlyTotals.entries.map((e) => {
-        'month': e.key,
-        'revenue': e.value,
-      }).toList();
-    } catch (e) {
-      return _mockRevenueData();
+    final Map<int, double> monthlyTotals = {};
+    for (int i = 11; i >= 0; i--) {
+      final month = DateTime(now.year, now.month - i, 1);
+      monthlyTotals[month.millisecondsSinceEpoch] = 0;
     }
+
+    for (final payment in result) {
+      final date = DateTime.parse(payment['created_at']);
+      final monthKey = DateTime(date.year, date.month, 1).millisecondsSinceEpoch;
+      if (monthlyTotals.containsKey(monthKey)) {
+        monthlyTotals[monthKey] =
+            (monthlyTotals[monthKey] ?? 0) + ((payment['amount'] as num?)?.toDouble() ?? 0);
+      }
+    }
+
+    return monthlyTotals.entries.map((e) => {
+      'month': e.key,
+      'revenue': e.value,
+    }).toList();
   }
 
   Future<List<Map<String, dynamic>>> _fetchUserGrowthData() async {
-    try {
-      final supabase = SupabaseService.instance.client;
-      final now = DateTime.now();
-      final sixMonthsAgo = DateTime(now.year, now.month - 5, 1);
+    final supabase = SupabaseService.instance.client;
+    final now = DateTime.now();
+    final sixMonthsAgo = DateTime(now.year, now.month - 5, 1);
 
-      final result = await supabase
-          .from('user_profiles')
-          .select('created_at, role')
-          .gte('created_at', sixMonthsAgo.toIso8601String());
+    final result = await supabase
+        .from('user_profiles')
+        .select('created_at, role')
+        .gte('created_at', sixMonthsAgo.toIso8601String());
 
-      final Map<String, int> monthlyGrowth = {};
-      for (int i = 5; i >= 0; i--) {
-        final month = DateTime(now.year, now.month - i, 1);
-        final key = DateFormat('MMM yyyy').format(month);
-        monthlyGrowth[key] = 0;
-      }
-
-      for (final user in result) {
-        final date = DateTime.parse(user['created_at']);
-        final key = DateFormat('MMM yyyy').format(DateTime(date.year, date.month, 1));
-        if (monthlyGrowth.containsKey(key)) {
-          monthlyGrowth[key] = (monthlyGrowth[key] ?? 0) + 1;
-        }
-      }
-
-      return monthlyGrowth.entries.map((e) => {
-        'month': e.key,
-        'count': e.value,
-      }).toList();
-    } catch (e) {
-      return _mockUserGrowthData();
+    final Map<String, int> monthlyGrowth = {};
+    for (int i = 5; i >= 0; i--) {
+      final month = DateTime(now.year, now.month - i, 1);
+      final key = DateFormat('MMM yyyy').format(month);
+      monthlyGrowth[key] = 0;
     }
+
+    for (final user in result) {
+      final date = DateTime.parse(user['created_at']);
+      final key = DateFormat('MMM yyyy').format(DateTime(date.year, date.month, 1));
+      if (monthlyGrowth.containsKey(key)) {
+        monthlyGrowth[key] = (monthlyGrowth[key] ?? 0) + 1;
+      }
+    }
+
+    return monthlyGrowth.entries.map((e) => {
+      'month': e.key,
+      'count': e.value,
+    }).toList();
   }
 
   Future<List<Map<String, dynamic>>> _fetchRecentActivity() async {
-    try {
-      final supabase = SupabaseService.instance.client;
-      final result = await supabase
-          .from('admin_audit_logs')
-          .select('*')
-          .order('created_at', ascending: false)
-          .limit(10);
-      return List<Map<String, dynamic>>.from(result);
-    } catch (e) {
-      return _mockRecentActivity();
-    }
+    final supabase = SupabaseService.instance.client;
+    final result = await supabase
+        .from('admin_audit_logs')
+        .select('*')
+        .order('created_at', ascending: false)
+        .limit(10);
+    return List<Map<String, dynamic>>.from(result);
   }
 
   Future<Map<String, dynamic>> _fetchSystemHealth() async {
-    try {
-      final supabase = SupabaseService.instance.client;
-      await supabase.from('user_profiles').select('id').limit(1);
-      return {
-        'supabase_db': true,
-        'openai': true,
-        'gemini': true,
-        'livekit': true,
-        'revenuecat': true,
-      };
-    } catch (e) {
-      return _mockSystemHealth();
-    }
+    final supabase = SupabaseService.instance.client;
+    await supabase.from('user_profiles').select('id').limit(1);
+    return {
+      'supabase_db': true,
+      'openai': true,
+      'gemini': true,
+      'livekit': true,
+      'revenuecat': true,
+    };
   }
 
   Map<String, dynamic> _mockStats() => {
@@ -385,10 +365,40 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : RefreshIndicator(
-            onRefresh: _loadDashboardData,
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(48),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(48),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  size: 48, color: AdminTheme.error),
+              const SizedBox(height: 16),
+              Text(_error!, style: const TextStyle(color: AdminTheme.error), textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _loadDashboardData,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+        onRefresh: _loadDashboardData,
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

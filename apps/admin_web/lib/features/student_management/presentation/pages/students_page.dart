@@ -7,8 +7,10 @@ import '../../../../core/services/audit_service.dart';
 import '../../../../core/widgets/page_header.dart';
 import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
-import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
+import '../../../../core/widgets/stat_card.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/config/admin_config.dart';
 import '../widgets/student_detail_dialog.dart';
 
 class StudentsPage extends ConsumerStatefulWidget {
@@ -20,6 +22,7 @@ class StudentsPage extends ConsumerStatefulWidget {
 
 class _StudentsPageState extends ConsumerState<StudentsPage> {
   bool _isLoading = true;
+  String? _error;
   List<Map<String, dynamic>> _students = [];
   List<Map<String, dynamic>> _filteredStudents = [];
   int _totalStudents = 0;
@@ -48,13 +51,16 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
   }
 
   Future<void> _loadStudents() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final supabase = SupabaseService.instance.client;
 
       final result = await supabase
           .from('user_profiles')
-          .select('*')
+          .select('*, wallet(balance)')
           .eq('role', 'student')
           .order('created_at', ascending: false);
 
@@ -76,7 +82,6 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
       final counts = await Future.wait([totalFuture, activeFuture]);
 
       int subscribedCount = 0;
-      int trialCount = 0;
       try {
         final subResult = await supabase
             .from('subscriptions')
@@ -101,12 +106,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _students = _mockStudents();
-          _filteredStudents = _mockStudents();
-          _totalStudents = 11205;
-          _activeStudents = 9842;
-          _subscribedStudents = 3156;
-          _trialStudents = 2048;
+          _error = 'Failed to load students: $e';
           _isLoading = false;
         });
       }
@@ -239,6 +239,184 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
     );
   }
 
+  Future<void> _showCreateOrEditStudentDialog({Map<String, dynamic>? student}) async {
+    final isEdit = student != null;
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController(text: student?['email'] ?? '');
+    final passwordController = TextEditingController();
+    final nameController = TextEditingController(text: student?['full_name'] ?? '');
+    final phoneController = TextEditingController(text: student?['phone'] ?? '');
+    final countryController = TextEditingController(text: student?['country'] ?? '');
+    final creditsController = TextEditingController(
+      text: student?['wallet'] != null
+          ? (student?['wallet']['balance'] ?? 0).toString()
+          : '0',
+    );
+    bool isActive = student?['is_active'] ?? true;
+    bool isSaving = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(isEdit ? 'Edit Student' : 'Create Student'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        enabled: !isEdit,
+                        decoration: const InputDecoration(labelText: 'Email Address'),
+                        validator: (v) => v == null || v.isEmpty ? 'Email is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      if (!isEdit) ...[
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(labelText: 'Password'),
+                          validator: (v) => v == null || v.length < 6 ? 'Password must be at least 6 characters' : null,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(labelText: 'Full Name'),
+                        validator: (v) => v == null || v.isEmpty ? 'Full Name is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: phoneController,
+                        decoration: const InputDecoration(labelText: 'Phone'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: countryController,
+                        decoration: const InputDecoration(labelText: 'Country'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: creditsController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Credits Balance'),
+                        validator: (v) => v == null || int.tryParse(v) == null ? 'Credits must be a number' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      SwitchListTile(
+                        title: const Text('Is Active'),
+                        value: isActive,
+                        onChanged: (v) => setDialogState(() => isActive = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setDialogState(() => isSaving = true);
+                          try {
+                            final supabase = SupabaseService.instance.client;
+                            final credits = int.parse(creditsController.text);
+                            
+                            if (isEdit) {
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_active': isActive,
+                              }).eq('id', student['id']);
+
+                              await supabase.from('wallet').upsert({
+                                'user_id': student['auth_user_id'],
+                                'balance': credits,
+                              }, onConflict: 'user_id');
+
+                              await AuditService.instance.log(
+                                action: 'student_update',
+                                targetType: 'student',
+                                targetId: student['id'],
+                                details: {'email': student['email']},
+                              );
+                            } else {
+                              final tempClient = SupabaseClient(
+                                AdminConfig.supabaseUrl,
+                                AdminConfig.supabaseAnonKey,
+                              );
+                              
+                              final authResult = await tempClient.auth.signUp(
+                                email: emailController.text.trim(),
+                                password: passwordController.text,
+                              );
+                              
+                              if (authResult.user == null) {
+                                throw Exception('Auth user creation failed.');
+                              }
+
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'role': 'student',
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_active': isActive,
+                                'email': emailController.text.trim(),
+                              }).eq('auth_user_id', authResult.user!.id);
+
+                              await supabase.from('wallet').upsert({
+                                'user_id': authResult.user!.id,
+                                'balance': credits,
+                              }, onConflict: 'user_id');
+                            }
+                            
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(isEdit ? 'Student updated successfully' : 'Student created successfully'),
+                                  backgroundColor: AdminTheme.success,
+                                ),
+                              );
+                              _loadStudents();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: AdminTheme.error,
+                                ),
+                              );
+                            }
+                          } finally {
+                            setDialogState(() => isSaving = false);
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text(isEdit ? 'Save' : 'Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _exportStudents() {
     final csv = StringBuffer();
     csv.writeln('ID,Email,Name,Status,Subscription,Credits,Level,Lessons,Hours');
@@ -291,9 +469,34 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(48),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  size: 48, color: AdminTheme.error),
+              const SizedBox(height: 16),
+              Text(_error!, style: const TextStyle(color: AdminTheme.error), textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _loadStudents,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -308,7 +511,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => _showCreateOrEditStudentDialog(),
                       icon: const Icon(Icons.person_add_rounded, size: 18),
                       label: const Text('Add Student'),
                     ),
@@ -459,7 +662,8 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
     final rows = _paginatedStudents.map((student) {
       final isActive = student['is_active'] ?? true;
       final subStatus = student['subscription_status'] ?? 'none';
-      final credits = student['credits'] ?? 0;
+      final wallet = student['wallet'];
+      final credits = wallet != null ? (wallet['balance'] ?? 0) : 0;
       final lessons = student['lessons_completed'] ?? 0;
       final level = student['current_level'] ?? '';
 
@@ -593,6 +797,16 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
           ),
         ),
         const PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit_rounded, size: 16),
+              SizedBox(width: 8),
+              Text('Edit Student'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
           value: 'credits',
           child: Row(
             children: [
@@ -625,6 +839,8 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
       onSelected: (value) {
         if (value == 'view') {
           _showStudentDetail(student);
+        } else if (value == 'edit') {
+          _showCreateOrEditStudentDialog(student: student);
         } else if (value == 'toggle') {
           _toggleStudentStatus(student);
         } else if (value == 'credits') {
@@ -635,8 +851,10 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
   }
 
   void _showAdjustCreditsDialog(Map<String, dynamic> student) {
+    final wallet = student['wallet'];
+    final initialCredits = wallet != null ? (wallet['balance'] ?? 0) : 0;
     final controller = TextEditingController(
-      text: (student['credits'] ?? 0).toString(),
+      text: initialCredits.toString(),
     );
 
     showDialog(
@@ -672,9 +890,10 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
               final newCredits = int.tryParse(controller.text) ?? 0;
               try {
                 final supabase = SupabaseService.instance.client;
-                await supabase.from('user_profiles').update({
-                  'credits': newCredits,
-                }).eq('id', student['id']);
+                await supabase.from('wallet').upsert({
+                  'user_id': student['auth_user_id'],
+                  'balance': newCredits,
+                }, onConflict: 'user_id');
 
                 if (mounted) {
                   Navigator.of(context).pop();

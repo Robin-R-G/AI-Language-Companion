@@ -8,6 +8,7 @@ import '../../../../core/widgets/page_header.dart';
 import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/data_table_widget.dart';
+import '../../../../core/services/audit_service.dart';
 import '../widgets/subscription_detail_dialog.dart';
 
 class SubscriptionsPage extends StatefulWidget {
@@ -203,14 +204,210 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
     };
   }
 
+  Future<void> _showCreateOrEditSubscriptionDialog({Map<String, dynamic>? subscription}) async {
+    final isEdit = subscription != null;
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController(
+      text: subscription?['user_profiles']?['email'] ?? '',
+    );
+    final amountController = TextEditingController(
+      text: (subscription?['amount'] ?? 0).toString(),
+    );
+    String plan = subscription?['plan'] ?? 'Basic';
+    String status = subscription?['status'] ?? 'active';
+    String provider = subscription?['provider'] ?? 'stripe';
+    bool isSaving = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(isEdit ? 'Edit Subscription' : 'Create Subscription'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        enabled: !isEdit,
+                        decoration: const InputDecoration(
+                          labelText: 'User Email',
+                          hintText: 'Enter student email',
+                        ),
+                        validator: (v) => v == null || v.isEmpty ? 'Email is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: plan,
+                        decoration: const InputDecoration(labelText: 'Plan'),
+                        items: const [
+                          DropdownMenuItem(value: 'Free', child: Text('Free')),
+                          DropdownMenuItem(value: 'Basic', child: Text('Basic')),
+                          DropdownMenuItem(value: 'Pro', child: Text('Pro')),
+                          DropdownMenuItem(value: 'Premium', child: Text('Premium')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => plan = v);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: status,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                        items: const [
+                          DropdownMenuItem(value: 'active', child: Text('Active')),
+                          DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
+                          DropdownMenuItem(value: 'expired', child: Text('Expired')),
+                          DropdownMenuItem(value: 'trialing', child: Text('Trialing')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => status = v);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Billing Amount (\$)',
+                          hintText: 'e.g. 9.99',
+                        ),
+                        validator: (v) => v == null || double.tryParse(v) == null ? 'Must be a number' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: provider,
+                        decoration: const InputDecoration(labelText: 'Provider'),
+                        items: const [
+                          DropdownMenuItem(value: 'stripe', child: Text('Stripe')),
+                          DropdownMenuItem(value: 'manual', child: Text('Manual')),
+                          DropdownMenuItem(value: 'revenuecat', child: Text('RevenueCat')),
+                          DropdownMenuItem(value: 'apple', child: Text('Apple App Store')),
+                          DropdownMenuItem(value: 'google', child: Text('Google Play Store')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => provider = v);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setDialogState(() => isSaving = true);
+                          try {
+                            final supabase = _supabase;
+                            final amountVal = double.parse(amountController.text);
+                            
+                            if (isEdit) {
+                              await supabase.from('subscriptions').update({
+                                'plan': plan,
+                                'status': status,
+                                'amount': amountVal,
+                                'provider': provider,
+                              }).eq('id', subscription['id']);
+
+                              await AuditService.instance.log(
+                                action: 'subscription_update',
+                                targetType: 'subscription',
+                                targetId: subscription['id'],
+                                details: {'email': emailController.text},
+                              );
+                            } else {
+                              final userRes = await supabase
+                                  .from('user_profiles')
+                                  .select('id')
+                                  .eq('email', emailController.text.trim())
+                                  .maybeSingle();
+                              
+                              if (userRes == null) {
+                                throw Exception('No user found with email ${emailController.text}');
+                              }
+
+                              final userProfileId = userRes['id'];
+
+                              await supabase.from('subscriptions').insert({
+                                'user_id': userProfileId,
+                                'plan': plan,
+                                'status': status,
+                                'amount': amountVal,
+                                'provider': provider,
+                                'start_date': DateTime.now().toIso8601String(),
+                                'next_billing_date': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+                              });
+                            }
+                            
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(isEdit ? 'Subscription updated' : 'Subscription created'),
+                                  backgroundColor: AdminTheme.success,
+                                ),
+                              );
+                              _loadSubscriptions();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: AdminTheme.error,
+                                ),
+                              );
+                            }
+                          } finally {
+                            setDialogState(() => isSaving = false);
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text(isEdit ? 'Save' : 'Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const PageHeader(
+        PageHeader(
           title: 'Subscription Management',
           subtitle: 'Monitor plans, revenue, and subscriber metrics',
+          actions: [
+            ElevatedButton.icon(
+              onPressed: () => _showCreateOrEditSubscriptionDialog(),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('Add Subscription'),
+            ),
+          ],
         ),
         if (_isLoading)
           const Center(
@@ -678,6 +875,8 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                 context: context,
                 builder: (_) => SubscriptionDetailDialog(subscription: sub),
               );
+            } else if (action == 'edit') {
+              _showCreateOrEditSubscriptionDialog(subscription: sub);
             }
           },
           itemBuilder: (context) => [
@@ -688,6 +887,16 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
                   Icon(Icons.visibility_rounded, size: 16),
                   SizedBox(width: 8),
                   Text('View Details'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'edit',
+              child: Row(
+                children: [
+                  Icon(Icons.edit_rounded, size: 16),
+                  SizedBox(width: 8),
+                  Text('Edit Subscription'),
                 ],
               ),
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/config/admin_config.dart';
+import '../../../../core/services/audit_service.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/page_header.dart';
@@ -239,6 +241,226 @@ class _TutorsPageState extends State<TutorsPage> {
     );
   }
 
+  Future<void> _showCreateOrEditTutorDialog({Map<String, dynamic>? tutor}) async {
+    final isEdit = tutor != null;
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController(text: tutor?['email'] ?? '');
+    final passwordController = TextEditingController();
+    final nameController = TextEditingController(text: tutor?['full_name'] ?? '');
+    final phoneController = TextEditingController(text: tutor?['phone'] ?? '');
+    final countryController = TextEditingController(text: tutor?['country'] ?? '');
+    
+    final experienceController = TextEditingController(
+      text: tutor?['tutor_profiles'] != null
+          ? (tutor?['tutor_profiles']['years_of_experience'] ?? 0).toString()
+          : '0',
+    );
+    final specializationsController = TextEditingController(
+      text: tutor?['tutor_profiles'] != null
+          ? ((tutor?['tutor_profiles']['specializations'] as List?) ?? []).join(', ')
+          : '',
+    );
+    final statusController = TextEditingController(
+      text: tutor?['tutor_profiles'] != null
+          ? (tutor?['tutor_profiles']['status'] ?? 'pending')
+          : 'pending',
+    );
+
+    bool isActive = !(tutor?['is_suspended'] == true);
+    bool isSaving = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(isEdit ? 'Edit Tutor' : 'Create Tutor'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        enabled: !isEdit,
+                        decoration: const InputDecoration(labelText: 'Email Address'),
+                        validator: (v) => v == null || v.isEmpty ? 'Email is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      if (!isEdit) ...[
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(labelText: 'Password'),
+                          validator: (v) => v == null || v.length < 6 ? 'Password must be at least 6 characters' : null,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(labelText: 'Full Name'),
+                        validator: (v) => v == null || v.isEmpty ? 'Full Name is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: phoneController,
+                        decoration: const InputDecoration(labelText: 'Phone'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: countryController,
+                        decoration: const InputDecoration(labelText: 'Country'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: experienceController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Years of Experience'),
+                        validator: (v) => v == null || int.tryParse(v) == null ? 'Must be a number' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: specializationsController,
+                        decoration: const InputDecoration(labelText: 'Specializations (comma separated)'),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: statusController.text,
+                        decoration: const InputDecoration(labelText: 'Verification Status'),
+                        items: const [
+                          DropdownMenuItem(value: 'draft', child: Text('Draft')),
+                          DropdownMenuItem(value: 'pending', child: Text('Pending')),
+                          DropdownMenuItem(value: 'approved', child: Text('Approved')),
+                          DropdownMenuItem(value: 'rejected', child: Text('Rejected')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => statusController.text = v);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      SwitchListTile(
+                        title: const Text('Is Active (Not Suspended)'),
+                        value: isActive,
+                        onChanged: (v) => setDialogState(() => isActive = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setDialogState(() => isSaving = true);
+                          try {
+                            final supabase = _supabase;
+                            final yearsExp = int.parse(experienceController.text);
+                            final specs = specializationsController.text
+                                .split(',')
+                                .map((s) => s.trim())
+                                .where((s) => s.isNotEmpty)
+                                .toList();
+                            
+                            if (isEdit) {
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_suspended': !isActive,
+                              }).eq('id', tutor['id']);
+
+                              await supabase.from('tutor_profiles').upsert({
+                                'user_id': tutor['auth_user_id'],
+                                'years_of_experience': yearsExp,
+                                'specializations': specs,
+                                'status': statusController.text,
+                              }, onConflict: 'user_id');
+
+                              await AuditService.instance.log(
+                                action: 'tutor_update',
+                                targetType: 'tutor',
+                                targetId: tutor['id'],
+                                details: {'email': tutor['email']},
+                              );
+                            } else {
+                              final tempClient = SupabaseClient(
+                                AdminConfig.supabaseUrl,
+                                AdminConfig.supabaseAnonKey,
+                              );
+                              
+                              final authResult = await tempClient.auth.signUp(
+                                email: emailController.text.trim(),
+                                password: passwordController.text,
+                              );
+                              
+                              if (authResult.user == null) {
+                                throw Exception('Auth user creation failed.');
+                              }
+
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'role': 'tutor',
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_suspended': !isActive,
+                                'email': emailController.text.trim(),
+                              }).eq('auth_user_id', authResult.user!.id);
+
+                              await supabase.from('tutor_profiles').upsert({
+                                'user_id': authResult.user!.id,
+                                'years_of_experience': yearsExp,
+                                'specializations': specs,
+                                'status': statusController.text,
+                              }, onConflict: 'user_id');
+                            }
+                            
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(isEdit ? 'Tutor updated successfully' : 'Tutor created successfully'),
+                                  backgroundColor: AdminTheme.success,
+                                ),
+                              );
+                              _loadTutors();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: AdminTheme.error,
+                                ),
+                              );
+                            }
+                          } finally {
+                            setDialogState(() => isSaving = false);
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text(isEdit ? 'Save' : 'Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   String _formatDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return 'N/A';
     try {
@@ -262,9 +484,16 @@ class _TutorsPageState extends State<TutorsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const PageHeader(
+        PageHeader(
           title: 'Tutor Management',
           subtitle: 'Manage tutor verification, profiles, and access',
+          actions: [
+            ElevatedButton.icon(
+              onPressed: () => _showCreateOrEditTutorDialog(),
+              icon: const Icon(Icons.person_add_rounded, size: 18),
+              label: const Text('Add Tutor'),
+            ),
+          ],
         ),
         if (_isLoading)
           const Center(
@@ -499,6 +728,9 @@ class _TutorsPageState extends State<TutorsPage> {
           case 'view':
             _showTutorDetail(tutor);
             break;
+          case 'edit':
+            _showCreateOrEditTutorDialog(tutor: tutor);
+            break;
           case 'verify':
             _verifyTutor(tutor);
             break;
@@ -518,6 +750,16 @@ class _TutorsPageState extends State<TutorsPage> {
               Icon(Icons.visibility_rounded, size: 16),
               SizedBox(width: 8),
               Text('View Profile'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit_rounded, size: 16),
+              SizedBox(width: 8),
+              Text('Edit Tutor'),
             ],
           ),
         ),

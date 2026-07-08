@@ -9,6 +9,8 @@ import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/stat_card.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/config/admin_config.dart';
 import '../widgets/user_detail_dialog.dart';
 
 class UsersPage extends ConsumerStatefulWidget {
@@ -20,6 +22,7 @@ class UsersPage extends ConsumerStatefulWidget {
 
 class _UsersPageState extends ConsumerState<UsersPage> {
   bool _isLoading = true;
+  String? _error;
   List<Map<String, dynamic>> _users = [];
   List<Map<String, dynamic>> _filteredUsers = [];
   int _totalCount = 0;
@@ -48,7 +51,10 @@ class _UsersPageState extends ConsumerState<UsersPage> {
   }
 
   Future<void> _loadUsers() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final supabase = SupabaseService.instance.client;
 
@@ -92,12 +98,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _users = _mockUsers();
-          _filteredUsers = _mockUsers();
-          _totalCount = 12847;
-          _studentCount = 11205;
-          _tutorCount = 342;
-          _adminCount = 12;
+          _error = 'Failed to load users: $e';
           _isLoading = false;
         });
       }
@@ -223,6 +224,178 @@ class _UsersPageState extends ConsumerState<UsersPage> {
     );
   }
 
+  Future<void> _showCreateOrEditUserDialog({Map<String, dynamic>? user}) async {
+    final isEdit = user != null;
+    final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController(text: user?['email'] ?? '');
+    final passwordController = TextEditingController();
+    final nameController = TextEditingController(text: user?['full_name'] ?? '');
+    final phoneController = TextEditingController(text: user?['phone'] ?? '');
+    final countryController = TextEditingController(text: user?['country'] ?? '');
+    String role = user?['role'] ?? 'student';
+    bool isActive = user?['is_active'] ?? true;
+    bool isSaving = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(isEdit ? 'Edit User' : 'Create User'),
+              content: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        enabled: !isEdit,
+                        decoration: const InputDecoration(labelText: 'Email Address'),
+                        validator: (v) => v == null || v.isEmpty ? 'Email is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      if (!isEdit) ...[
+                        TextFormField(
+                          controller: passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(labelText: 'Password'),
+                          validator: (v) => v == null || v.length < 6 ? 'Password must be at least 6 characters' : null,
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(labelText: 'Full Name'),
+                        validator: (v) => v == null || v.isEmpty ? 'Full Name is required' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: role,
+                        decoration: const InputDecoration(labelText: 'Role'),
+                        items: const [
+                          DropdownMenuItem(value: 'student', child: Text('Student')),
+                          DropdownMenuItem(value: 'tutor', child: Text('Tutor')),
+                          DropdownMenuItem(value: 'admin', child: Text('Admin')),
+                          DropdownMenuItem(value: 'super_admin', child: Text('Super Admin')),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => role = v);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: phoneController,
+                        decoration: const InputDecoration(labelText: 'Phone'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: countryController,
+                        decoration: const InputDecoration(labelText: 'Country'),
+                      ),
+                      const SizedBox(height: 12),
+                      SwitchListTile(
+                        title: const Text('Is Active'),
+                        value: isActive,
+                        onChanged: (v) => setDialogState(() => isActive = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setDialogState(() => isSaving = true);
+                          try {
+                            final supabase = SupabaseService.instance.client;
+                            if (isEdit) {
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'role': role,
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_active': isActive,
+                              }).eq('id', user['id']);
+
+                              await AuditService.instance.log(
+                                action: 'user_update',
+                                targetType: 'user',
+                                targetId: user['id'],
+                                details: {'email': user['email']},
+                              );
+                            } else {
+                              final tempClient = SupabaseClient(
+                                AdminConfig.supabaseUrl,
+                                AdminConfig.supabaseAnonKey,
+                              );
+                              
+                              final authResult = await tempClient.auth.signUp(
+                                email: emailController.text.trim(),
+                                password: passwordController.text,
+                              );
+                              
+                              if (authResult.user == null) {
+                                throw Exception('Auth user creation failed.');
+                              }
+
+                              await supabase.from('user_profiles').update({
+                                'full_name': nameController.text,
+                                'role': role,
+                                'phone': phoneController.text,
+                                'country': countryController.text,
+                                'is_active': isActive,
+                                'email': emailController.text.trim(),
+                              }).eq('auth_user_id', authResult.user!.id);
+                            }
+                            
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(isEdit ? 'User updated successfully' : 'User created successfully'),
+                                  backgroundColor: AdminTheme.success,
+                                ),
+                              );
+                              _loadUsers();
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: AdminTheme.error,
+                                ),
+                              );
+                            }
+                          } finally {
+                            setDialogState(() => isSaving = false);
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text(isEdit ? 'Save' : 'Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _exportUsers() {
     final csv = StringBuffer();
     csv.writeln('ID,Email,Name,Role,Status,Created At');
@@ -275,9 +448,34 @@ class _UsersPageState extends ConsumerState<UsersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(48),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  size: 48, color: AdminTheme.error),
+              const SizedBox(height: 16),
+              Text(_error!, style: const TextStyle(color: AdminTheme.error), textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _loadUsers,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -292,7 +490,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => _showCreateOrEditUserDialog(),
                       icon: const Icon(Icons.person_add_rounded, size: 18),
                       label: const Text('Add User'),
                     ),
@@ -565,6 +763,16 @@ class _UsersPageState extends ConsumerState<UsersPage> {
             ],
           ),
         ),
+        const PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit_rounded, size: 16),
+              SizedBox(width: 8),
+              Text('Edit User'),
+            ],
+          ),
+        ),
         PopupMenuItem(
           value: 'toggle',
           child: Row(
@@ -588,6 +796,8 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       onSelected: (value) {
         if (value == 'view') {
           _showUserDetail(user);
+        } else if (value == 'edit') {
+          _showCreateOrEditUserDialog(user: user);
         } else if (value == 'toggle') {
           _toggleUserStatus(user);
         }
