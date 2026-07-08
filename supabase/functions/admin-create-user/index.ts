@@ -11,7 +11,7 @@ serve(async (req: Request) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const serviceKey = Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 
     if (!serviceKey) {
       return new Response(JSON.stringify({ error: 'Service role key not configured' }), {

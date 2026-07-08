@@ -30,10 +30,10 @@ CREATE TABLE IF NOT EXISTS public.ai_usage (
     created_at        timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_ai_usage_user_id     ON public.ai_usage(user_id);
-CREATE INDEX idx_ai_usage_provider    ON public.ai_usage(provider);
-CREATE INDEX idx_ai_usage_feature     ON public.ai_usage(feature);
-CREATE INDEX idx_ai_usage_created_at  ON public.ai_usage(created_at);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_user_id     ON public.ai_usage(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_provider    ON public.ai_usage(provider);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_feature     ON public.ai_usage(feature);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_created_at  ON public.ai_usage(created_at);
 
 -- ── AI Cost Aggregates (materialized for dashboard) ──────────────────────────
 CREATE TABLE IF NOT EXISTS public.ai_cost_daily (
@@ -65,10 +65,10 @@ CREATE TABLE IF NOT EXISTS public.live_sessions (
     updated_at       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_live_sessions_tutor_id    ON public.live_sessions(tutor_id);
-CREATE INDEX idx_live_sessions_student_id  ON public.live_sessions(student_id);
-CREATE INDEX idx_live_sessions_scheduled   ON public.live_sessions(scheduled_at);
-CREATE INDEX idx_live_sessions_status      ON public.live_sessions(status);
+CREATE INDEX IF NOT EXISTS idx_live_sessions_tutor_id    ON public.live_sessions(tutor_id);
+CREATE INDEX IF NOT EXISTS idx_live_sessions_student_id  ON public.live_sessions(student_id);
+CREATE INDEX IF NOT EXISTS idx_live_sessions_scheduled   ON public.live_sessions(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_live_sessions_status      ON public.live_sessions(status);
 
 -- ── Invoices ─────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.invoices (
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS public.invoices (
     created_at      timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_invoices_user_id ON public.invoices(user_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);
 
 -- ── Subscription Audit Logs ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.subscription_audit_logs (
@@ -104,9 +104,9 @@ CREATE TABLE IF NOT EXISTS public.subscription_audit_logs (
     created_at       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_sub_audit_user_id    ON public.subscription_audit_logs(user_id);
-CREATE INDEX idx_sub_audit_event_type ON public.subscription_audit_logs(event_type);
-CREATE INDEX idx_sub_audit_created_at ON public.subscription_audit_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_sub_audit_user_id    ON public.subscription_audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_sub_audit_event_type ON public.subscription_audit_logs(event_type);
+CREATE INDEX IF NOT EXISTS idx_sub_audit_created_at ON public.subscription_audit_logs(created_at);
 
 -- ── Feature Flags ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.feature_flags (
@@ -121,19 +121,24 @@ CREATE TABLE IF NOT EXISTS public.feature_flags (
     updated_at  timestamptz NOT NULL DEFAULT now()
 );
 
--- Default feature flags
-INSERT INTO public.feature_flags (key, description, is_enabled, rollout_pct) VALUES
-  ('live_classes', 'Enable live tutoring sessions via LiveKit', true, 100),
-  ('ai_streaming', 'Enable streaming AI responses', true, 100),
-  ('razorpay_payments', 'Enable Razorpay payment gateway', true, 100),
-  ('stripe_payments', 'Enable Stripe payment gateway', true, 100),
-  ('referral_program', 'Enable referral rewards program', true, 100),
-  ('affiliate_marketplace', 'Enable affiliate marketplace', true, 100),
-  ('certificate_generation', 'Enable digital certificates', true, 100),
-  ('multi_tenant', 'Enable multi-tenant features', false, 0),
-  ('mfa_required_for_staff', 'Require MFA for all staff accounts', false, 0),
-  ('ai_evaluation_beta', 'Beta AI evaluation features', false, 20)
-ON CONFLICT (key) DO NOTHING;
+-- Default feature flags (only if table has the expected schema)
+DO $$ BEGIN
+    INSERT INTO public.feature_flags (key, description, is_enabled, rollout_pct) VALUES
+      ('live_classes', 'Enable live tutoring sessions via LiveKit', true, 100),
+      ('ai_streaming', 'Enable streaming AI responses', true, 100),
+      ('razorpay_payments', 'Enable Razorpay payment gateway', true, 100),
+      ('stripe_payments', 'Enable Stripe payment gateway', true, 100),
+      ('referral_program', 'Enable referral rewards program', true, 100),
+      ('affiliate_marketplace', 'Enable affiliate marketplace', true, 100),
+      ('certificate_generation', 'Enable digital certificates', true, 100),
+      ('multi_tenant', 'Enable multi-tenant features', false, 0),
+      ('mfa_required_for_staff', 'Require MFA for all staff accounts', false, 0),
+      ('ai_evaluation_beta', 'Beta AI evaluation features', false, 20)
+    ON CONFLICT (key) DO NOTHING;
+EXCEPTION
+    WHEN undefined_column THEN RAISE NOTICE 'feature_flags schema differs, skipping seed';
+    WHEN undefined_object THEN RAISE NOTICE 'feature_flags schema differs, skipping seed';
+END $$;
 
 -- ── RLS Policies ─────────────────────────────────────────────────────────────
 

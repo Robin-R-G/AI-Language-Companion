@@ -1,5 +1,3 @@
-name = "ai-language-coach"
-
 [api]
 enabled = true
 port = 54321
@@ -37,77 +35,49 @@ enable_signup = true
 double_confirm_changes = true
 enable_confirmations = false
 
-[auth.google]
-enabled = true
-client_id = "935306663961-k8pj9bf4vobef2rj8adkkqu0meairpq7.apps.googleusercontent.com"
-secret = "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"
-redirect_uri = "https://tuashfxoiwyyglmrchjn.supabase.co/auth/v1/callback"
 
-[auth.apple]
-enabled = false
-client_id = ""
-secret = ""
-redirect_uri = "http://localhost:54321/auth/v1/callback"
-
-[auth.microsoft]
-enabled = false
-client_id = ""
-secret = ""
-redirect_uri = "http://localhost:54321/auth/v1/callback"
 
 [storage]
 enabled = true
 file_size_limit = "50MiB"
 
 [storage.buckets.avatars]
-enabled = true
 file_size_limit = "5MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
 public = true
 
 [storage.buckets.voice-recordings]
-enabled = true
 file_size_limit = "25MiB"
 allowed_mime_types = ["audio/wav", "audio/mp3", "audio/webm", "audio/ogg"]
 public = false
 
 [storage.buckets.lesson-images]
-enabled = true
 file_size_limit = "10MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
 public = true
 
 [storage.buckets.exam-assets]
-enabled = true
 file_size_limit = "20MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "audio/wav", "audio/mp3"]
 public = false
 
 [storage.buckets.certificates]
-enabled = true
 file_size_limit = "5MiB"
 allowed_mime_types = ["application/pdf", "image/png"]
 public = false
 
 [storage.buckets.exports]
-enabled = true
 file_size_limit = "50MiB"
 allowed_mime_types = ["application/json", "text/csv", "application/pdf"]
 public = false
 
 [storage.buckets.temporary]
-enabled = true
 file_size_limit = "100MiB"
 allowed_mime_types = ["*"]
 public = false
 
 [realtime]
 enabled = true
-max_connections = 200
-flipbook_interval = 1
-
-[functions]
-verify_jwt = true
 
 [functions.ai-chat]
 verify_jwt = true
