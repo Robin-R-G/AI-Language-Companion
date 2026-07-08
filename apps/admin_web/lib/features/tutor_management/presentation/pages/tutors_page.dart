@@ -59,7 +59,7 @@ class _TutorsPageState extends State<TutorsPage> {
     try {
       final response = await _supabase
           .from('user_profiles')
-          .select('*, tutor_profiles(*)')
+          .select('*, tutor_profiles!tutor_profiles_user_id_fkey(*)')
           .eq('role', 'tutor')
           .order('created_at', ascending: false);
 
