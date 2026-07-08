@@ -205,6 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
             backgroundColor: AdminTheme.success,
           ),
         );
+        _loadSettings();
       }
     } catch (e) {
       if (mounted) {

@@ -71,7 +71,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
 
         final role = profileRes['role'] as String?;
-        if (role != 'admin' && role != 'super_admin') {
+        if (!AdminConfig.adminRoles.contains(role)) {
           await supabase.auth.signOut();
           return '/login';
         }
@@ -103,6 +103,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/wallet', builder: (_, __) => const WalletPage()),
           GoRoute(path: '/finance', builder: (_, __) => const FinancePage()),
           GoRoute(path: '/payments', builder: (_, __) => const PaymentsPage()),
+          GoRoute(path: '/tutor-payments', builder: (_, __) => const TutorPaymentsPage()),
           GoRoute(path: '/revenuecat', builder: (_, __) => const SubscriptionsPage()),
           GoRoute(path: '/ai-costs', builder: (_, __) => const AiCostPage()),
           GoRoute(path: '/ai-providers', builder: (_, __) => const AiProvidersPage()),

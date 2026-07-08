@@ -24,6 +24,7 @@ final List<NavItem> navItems = [
   NavItem(Icons.account_balance_wallet_rounded, 'Wallet & Credits', '/wallet'),
   NavItem(Icons.receipt_long_rounded, 'Finance Center', '/finance'),
   NavItem(Icons.payments_rounded, 'Payments', '/payments'),
+  NavItem(Icons.account_balance_rounded, 'Tutor Payments', '/tutor-payments'),
   NavItem(Icons.attach_money_rounded, 'RevenueCat', '/revenuecat'),
   NavItem(Icons.analytics_rounded, 'AI Cost Monitor', '/ai-costs', section: 'AI'),
   NavItem(Icons.smart_toy_rounded, 'AI Providers', '/ai-providers'),
