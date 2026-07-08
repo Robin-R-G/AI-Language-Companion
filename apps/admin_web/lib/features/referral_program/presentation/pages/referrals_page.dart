@@ -60,7 +60,7 @@ class _ReferralsPageState extends State<ReferralsPage>
     try {
       final referralsRes = await _supabase
           .from('referrals')
-          .select('*')
+          .select('*, user_profiles!referrer_id(full_name, email)')
           .order('created_at', ascending: false);
 
       final couponsRes = await _supabase
@@ -92,7 +92,7 @@ class _ReferralsPageState extends State<ReferralsPage>
           _totalReferrals = referrals.length;
           _activeReferrers =
               referrals.map((r) => r['referrer_id']).toSet().length;
-          _rewardsGiven = referrals.where((r) => r['reward_given'] == true).length;
+          _rewardsGiven = referrals.where((r) => (r['reward_credits'] ?? 0) > 0).length;
           _referralRewardAmount =
               double.tryParse(settingsMap['referral_reward_amount']?.toString() ?? '') ?? 5.0;
           _maxReferralsPerUser =
@@ -112,10 +112,11 @@ class _ReferralsPageState extends State<ReferralsPage>
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredReferrals = _referrals.where((r) {
+        final referrerEmail = (r['user_profiles']?['email'] ?? '').toString().toLowerCase();
+        final referredEmail = (r['referred_email'] ?? '').toString().toLowerCase();
         return query.isEmpty ||
-            (r['referrer_email'] ?? '').toString().toLowerCase().contains(query) ||
-            (r['referred_email'] ?? '').toString().toLowerCase().contains(query) ||
-            (r['code'] ?? '').toString().toLowerCase().contains(query);
+            referrerEmail.contains(query) ||
+            referredEmail.contains(query);
       }).toList();
     });
   }
@@ -161,10 +162,10 @@ class _ReferralsPageState extends State<ReferralsPage>
     final isEdit = existing != null;
     final codeController = TextEditingController(text: existing?['code'] ?? '');
     final discountController = TextEditingController(
-      text: existing?['discount_percent']?.toString() ?? '10',
+      text: existing?['discount_value']?.toString() ?? '10',
     );
     final maxUsesController = TextEditingController(
-      text: existing?['max_uses']?.toString() ?? '100',
+      text: existing?['usage_limit']?.toString() ?? '100',
     );
     final formKey = GlobalKey<FormState>();
 
@@ -230,15 +231,16 @@ class _ReferralsPageState extends State<ReferralsPage>
       try {
         final data = {
           'code': codeController.text.trim().toUpperCase(),
-          'discount_percent': int.tryParse(discountController.text) ?? 10,
-          'max_uses': int.tryParse(maxUsesController.text) ?? 100,
+          'discount_type': 'percentage',
+          'discount_value': double.tryParse(discountController.text) ?? 10,
+          'usage_limit': int.tryParse(maxUsesController.text) ?? 100,
           'updated_at': DateTime.now().toIso8601String(),
         };
 
         if (isEdit) {
           await _supabase.from('coupons').update(data).eq('id', existing!['id']);
         } else {
-          data['current_uses'] = 0;
+          data['used_count'] = 0;
           data['is_active'] = true;
           data['created_at'] = DateTime.now().toIso8601String();
           await _supabase.from('coupons').insert(data);
@@ -433,20 +435,47 @@ class _ReferralsPageState extends State<ReferralsPage>
         ),
         Expanded(
           child: AdminDataTable(
-            columns: ['Referrer', 'Referred', 'Code', 'Status', 'Date', 'Actions'],
+            columns: ['Referrer', 'Referred', 'Status', 'Reward', 'Date', 'Actions'],
             rows: _filteredReferrals.map((r) {
+              final referrerName = r['user_profiles']?['full_name'] ?? 'Unknown';
+              final referrerEmail = r['user_profiles']?['email'] ?? '';
+              final referredEmail = r['referred_email'] ?? '-';
+              final status = r['status'] ?? 'joined';
+              final rewardCredits = r['reward_credits'] ?? 0;
               return [
-                Text(r['referrer_email'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w500)),
-                Text(r['referred_email'] ?? '-'),
-                StatusBadge(label: r['code'] ?? '-', type: BadgeType.info),
-                StatusBadge(
-                  label: (r['status'] ?? 'pending'),
-                  type: (r['status'] == 'completed')
-                      ? BadgeType.success
-                      : (r['status'] == 'pending')
-                          ? BadgeType.warning
-                          : BadgeType.neutral,
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: AdminTheme.primary.withOpacity(0.1),
+                      child: Text(
+                        referrerName.toString().isNotEmpty ? referrerName.toString()[0].toUpperCase() : '?',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AdminTheme.primary),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(referrerName.toString(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(referrerEmail.toString(), style: Theme.of(context).textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+                Text(referredEmail.toString()),
+                StatusBadge(
+                  label: status.toUpperCase(),
+                  type: status == 'premium_purchased'
+                      ? BadgeType.success
+                      : status == 'studied_7d'
+                          ? BadgeType.info
+                          : BadgeType.warning,
+                ),
+                Text('$rewardCredits cr'),
                 Text(r['created_at'] != null
                     ? DateTime.parse(r['created_at']).toString().substring(0, 10)
                     : '-'),
@@ -461,11 +490,10 @@ class _ReferralsPageState extends State<ReferralsPage>
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Referrer: ${r['referrer_email']}'),
-                            Text('Referred: ${r['referred_email']}'),
-                            Text('Code: ${r['code']}'),
-                            Text('Status: ${r['status']}'),
-                            Text('Reward Given: ${r['reward_given'] == true ? 'Yes' : 'No'}'),
+                            Text('Referrer: $referrerEmail'),
+                            Text('Referred: $referredEmail'),
+                            Text('Status: $status'),
+                            Text('Reward Credits: $rewardCredits'),
                           ],
                         ),
                         actions: [
@@ -508,11 +536,14 @@ class _ReferralsPageState extends State<ReferralsPage>
               : AdminDataTable(
                   columns: ['Code', 'Discount', 'Uses', 'Max Uses', 'Status', 'Actions'],
                   rows: _coupons.map((c) {
+                    final discountType = c['discount_type'] ?? 'percentage';
+                    final discountValue = c['discount_value'] ?? 0;
+                    final discountDisplay = discountType == 'percentage' ? '$discountValue%' : '\$$discountValue';
                     return [
                       Text(c['code'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
-                      Text('${c['discount_percent'] ?? 0}%'),
-                      Text('${c['current_uses'] ?? 0}'),
-                      Text('${c['max_uses'] ?? '-'}'),
+                      Text(discountDisplay),
+                      Text('${c['used_count'] ?? 0}'),
+                      Text('${c['usage_limit'] ?? '-'}'),
                       StatusBadge(
                         label: (c['is_active'] ?? false) ? 'Active' : 'Inactive',
                         type: (c['is_active'] ?? false) ? BadgeType.success : BadgeType.neutral,

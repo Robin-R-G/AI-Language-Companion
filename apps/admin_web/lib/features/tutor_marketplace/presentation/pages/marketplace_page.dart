@@ -120,11 +120,15 @@ class _MarketplacePageState extends State<MarketplacePage>
     }
 
     if (_statusFilter != 'All') {
-      results = results
-          .where((l) =>
-              (l['status'] ?? '').toString().toLowerCase() ==
-              _statusFilter.toLowerCase())
-          .toList();
+      if (_statusFilter == 'featured') {
+        results = results.where((l) => l['is_featured'] == true).toList();
+      } else {
+        results = results
+            .where((l) =>
+                (l['status'] ?? '').toString().toLowerCase() ==
+                _statusFilter.toLowerCase())
+            .toList();
+      }
     }
 
     setState(() => _filteredListings = results);

@@ -27,7 +27,7 @@ class SupabaseService {
 
   Future<String> getUserRole() async {
     final profile = await getUserProfile();
-    return profile?['role'] ?? 'admin';
+    return profile?['role'] ?? 'user';
   }
 
   Future<List<Map<String, dynamic>>> query({

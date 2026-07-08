@@ -16,6 +16,7 @@ class SupportPage extends StatefulWidget {
 
 class _SupportPageState extends State<SupportPage> {
   bool _isLoading = true;
+  String? _error;
   List<Map<String, dynamic>> _tickets = [];
   String _searchQuery = '';
   String _statusFilter = 'all';
@@ -31,7 +32,10 @@ class _SupportPageState extends State<SupportPage> {
   }
 
   Future<void> _fetchTickets() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final client = Supabase.instance.client;
       final res = await client
@@ -48,29 +52,12 @@ class _SupportPageState extends State<SupportPage> {
         _resolvedTickets = tickets.where((t) => t['status'] == 'resolved').length;
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
       setState(() {
-        _tickets = _generateMockTickets();
-        _totalTickets = _tickets.length;
-        _openTickets = 12;
-        _inProgressTickets = 8;
-        _resolvedTickets = 45;
+        _error = 'Failed to load support tickets: $e';
         _isLoading = false;
       });
     }
-  }
-
-  List<Map<String, dynamic>> _generateMockTickets() {
-    return List.generate(20, (i) => {
-      'id': 'ticket_${i + 1}',
-      'subject': ['Login issue', 'Payment failed', 'App crash', 'Feature request', 'Account suspended'][i % 5],
-      'description': 'User reported an issue that needs attention.',
-      'status': ['open', 'in_progress', 'resolved', 'closed'][i % 4],
-      'priority': ['low', 'medium', 'high', 'urgent'][i % 4],
-      'user_email': 'user${i + 1}@example.com',
-      'created_at': DateTime.now().subtract(Duration(hours: i * 3)).toIso8601String(),
-      'assigned_to': i % 3 == 0 ? null : 'admin@ailanguagecoach.com',
-    });
   }
 
   List<Map<String, dynamic>> get _filteredTickets {
@@ -116,6 +103,25 @@ class _SupportPageState extends State<SupportPage> {
         ),
         if (_isLoading)
           const Center(child: CircularProgressIndicator())
+        else if (_error != null)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline_rounded, size: 48, color: AdminTheme.error),
+                  const SizedBox(height: 16),
+                  Text(_error!, style: const TextStyle(color: AdminTheme.error)),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _fetchTickets,
+                    icon: const Icon(Icons.refresh_rounded, size: 18),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          )
         else ...[
           GridView.count(
             crossAxisCount: MediaQuery.of(context).size.width >= 1024 ? 4 : 2,

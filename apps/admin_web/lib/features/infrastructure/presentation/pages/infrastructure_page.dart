@@ -55,10 +55,22 @@ class _InfrastructurePageState extends State<InfrastructurePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const PageHeader(
+        PageHeader(
           title: 'Infrastructure',
           subtitle: 'Monitor database, API, storage, realtime, and deployment status',
-          trailing: _RefreshButton(),
+          actions: [
+            IconButton(
+              onPressed: _fetchInfrastructureData,
+              icon: const Icon(Icons.refresh_rounded),
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1)),
+                ),
+              ),
+            ),
+          ],
         ),
         if (_isLoading)
           const Center(child: CircularProgressIndicator())
@@ -323,25 +335,6 @@ class _InfrastructurePageState extends State<InfrastructurePage> {
           Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6))),
           Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         ],
-      ),
-    );
-  }
-}
-
-class _RefreshButton extends StatelessWidget {
-  const _RefreshButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {},
-      icon: const Icon(Icons.refresh_rounded),
-      style: IconButton.styleFrom(
-        backgroundColor: Theme.of(context).cardTheme.color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1)),
-        ),
       ),
     );
   }
