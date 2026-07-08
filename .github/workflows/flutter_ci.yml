@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: ${{ env.WORK_DIR }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -52,7 +52,7 @@ jobs:
       run:
         working-directory: ${{ env.WORK_DIR }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -91,7 +91,7 @@ jobs:
       run:
         working-directory: ${{ env.WORK_DIR }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Java
         uses: actions/setup-java@v4
