@@ -555,14 +555,22 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
                     leading: const Icon(Icons.person),
                     title: const Text('Per-Tutor Commission'),
                     subtitle: const Text('Custom rates for specific tutors'),
-                    trailing: AppButton(label: 'Configure', onPressed: () {}),
+                    trailing: AppButton(label: 'Configure', onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Per-tutor commission settings coming soon')),
+                      );
+                    }),
                   ),
                   const Divider(),
                   ListTile(
                     leading: const Icon(Icons.subject),
                     title: const Text('Per-Subject Commission'),
                     subtitle: const Text('Different rates by subject'),
-                    trailing: AppButton(label: 'Configure', onPressed: () {}),
+                    trailing: AppButton(label: 'Configure', onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Per-subject commission settings coming soon')),
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -618,7 +626,11 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         title: Text(title),
         subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$title coming soon')),
+          );
+        },
       ),
     );
   }
@@ -796,8 +808,8 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
           ),
           const SizedBox(height: AppSpacing.base),
           ..._aiRouting.map((routing) {
-            final feature = routing['feature'] as String;
-            final order = List<String>.from(routing['provider_order'] ?? []);
+            final feature = routing['feature'] as String? ?? '';
+            final order = List<String>.from((routing['provider_order'] as List<dynamic>?) ?? []);
             final controller = TextEditingController(text: order.join(', '));
 
             return AppCard(
@@ -931,7 +943,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
               child: Text('No pending verification requests'),
             ),
           ),
-        ...pendingPayments.map((p) => _buildPaymentCard(theme, p, isPending: true)),
+        ...pendingPayments.map((p) => _buildPaymentCard(theme, Map<String, dynamic>.from(p as Map), isPending: true)),
         const SizedBox(height: AppSpacing.lg),
         Text(
           'Verification History',
@@ -945,16 +957,16 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
               child: Text('No verification history'),
             ),
           ),
-        ...historyPayments.map((p) => _buildPaymentCard(theme, p, isPending: false)),
+        ...historyPayments.map((p) => _buildPaymentCard(theme, Map<String, dynamic>.from(p as Map), isPending: false)),
       ],
     );
   }
 
   Widget _buildPaymentCard(ThemeData theme, Map<String, dynamic> payment, {required bool isPending}) {
     final userDetails = payment['user_profiles'] as Map<String, dynamic>? ?? {};
-    final fullName = userDetails['full_name'] ?? 'Unknown User';
-    final email = userDetails['email'] ?? '';
-    final status = payment['status'] ?? 'pending';
+    final fullName = (userDetails['full_name'] as String?) ?? 'Unknown User';
+    final email = (userDetails['email'] as String?) ?? '';
+    final status = (payment['status'] as String?) ?? 'pending';
 
     Color statusColor = Colors.orange;
     if (status == 'approved') statusColor = Colors.green;
@@ -1001,7 +1013,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
                   children: [
                     const Text('PLAN / ITEM', style: TextStyle(color: Colors.grey, fontSize: 10)),
                     const SizedBox(height: 2),
-                    Text(payment['plan_type'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Text((payment['plan_type'] as String?) ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
                   ],
                 ),
                 Column(
@@ -1023,7 +1035,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
                   children: [
                     const Text('UTR / REF NUMBER', style: TextStyle(color: Colors.grey, fontSize: 10)),
                     const SizedBox(height: 2),
-                    Text(payment['utr_number'] ?? '', style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                    Text((payment['utr_number'] as String?) ?? '', style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
                   ],
                 ),
                 Column(
@@ -1040,20 +1052,20 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
               const SizedBox(height: AppSpacing.sm),
               const Text('USER NOTES', style: TextStyle(color: Colors.grey, fontSize: 10)),
               const SizedBox(height: 2),
-              Text(payment['notes'], style: const TextStyle(fontStyle: FontStyle.italic)),
+              Text(payment['notes'].toString(), style: const TextStyle(fontStyle: FontStyle.italic)),
             ],
             if (payment['rejection_reason'] != null && payment['rejection_reason'].toString().isNotEmpty) ...[
               const SizedBox(height: AppSpacing.sm),
               const Text('REJECTION REASON', style: TextStyle(color: Colors.red, fontSize: 10)),
               const SizedBox(height: 2),
-              Text(payment['rejection_reason'], style: const TextStyle(color: Colors.redAccent)),
+              Text(payment['rejection_reason'].toString(), style: const TextStyle(color: Colors.redAccent)),
             ],
             const SizedBox(height: AppSpacing.base),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => _viewReceiptScreenshot(payment['screenshot_url'] ?? ''),
+                    onPressed: () => _viewReceiptScreenshot((payment['screenshot_url'] as String?) ?? ''),
                     icon: const Icon(Icons.receipt_long),
                     label: const Text('View Proof'),
                   ),
@@ -1154,11 +1166,11 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
   Future<void> _approvePayment(Map<String, dynamic> payment) async {
     setState(() => _isLoading = true);
     try {
-      final paymentId = payment['id'];
-      final userId = payment['user_id'];
-      final planType = payment['plan_type'];
+      final paymentId = payment['id'] as String;
+      final userId = payment['user_id'] as String;
+      final planType = (payment['plan_type'] as String?) ?? '';
       final amount = payment['amount'];
-      final utr = payment['utr_number'];
+      final utr = (payment['utr_number'] as String?) ?? '';
 
       // 1. Update manual_payments status to approved
       await _supabase
@@ -1194,7 +1206,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         };
         final credits = creditsMap[planType] ?? 0;
         if (credits > 0) {
-          await _supabase.rpc('add_ai_credits', {
+          await _supabase.rpc('add_ai_credits', params: {
             'p_user_id': userId,
             'p_credits': credits,
             'p_source': 'subscription_new',
@@ -1211,7 +1223,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
         };
         final credits = packCredits[planType] ?? 0;
         if (credits > 0) {
-          await _supabase.rpc('add_ai_credits', {
+          await _supabase.rpc('add_ai_credits', params: {
             'p_user_id': userId,
             'p_credits': credits,
             'p_source': 'purchase',
@@ -1252,7 +1264,7 @@ class _AdminFinanceCenterPageState extends State<AdminFinanceCenterPage> with Si
   Future<void> _rejectPayment(Map<String, dynamic> payment, String reason) async {
     setState(() => _isLoading = true);
     try {
-      final paymentId = payment['id'];
+      final paymentId = payment['id'] as String;
 
       await _supabase
           .from('manual_payments')

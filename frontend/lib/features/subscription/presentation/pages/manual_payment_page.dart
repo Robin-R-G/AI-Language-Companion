@@ -220,10 +220,10 @@ class _ManualPaymentPageState extends State<ManualPaymentPage> {
                             const Divider(height: AppSpacing.lg),
                             if (_upiDetails.isNotEmpty) ...[
                               const Text('UPI ID', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                              Text(_upiDetails['upi_id'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                              Text((_upiDetails['upi_id'] as String?) ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                               const SizedBox(height: AppSpacing.xs),
                               const Text('Payee Name', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                              Text(_upiDetails['payee_name'] ?? '', style: const TextStyle(fontSize: 14)),
+                              Text((_upiDetails['payee_name'] as String?) ?? '', style: const TextStyle(fontSize: 14)),
                               const Divider(),
                             ],
                             if (_bankDetails.isNotEmpty) ...[

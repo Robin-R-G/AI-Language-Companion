@@ -41,7 +41,7 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
         actions: [
           IconButton(
             onPressed: () {
-              // TODO: Show filter options
+              _showFilterSheet();
             },
             icon: const Icon(Icons.filter_list),
           ),
@@ -78,6 +78,63 @@ class _LessonsPageState extends ConsumerState<LessonsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Filter Lessons',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: AppSpacing.base),
+              Text('Category',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: ['All', 'Grammar', 'Vocabulary', 'Speaking', 'Writing', 'Listening']
+                    .map((cat) => ChoiceChip(
+                          label: Text(cat),
+                          selected: _selectedCategory == cat,
+                          onSelected: (selected) {
+                            setState(() => _selectedCategory = cat);
+                            _loadLessons();
+                            Navigator.pop(context);
+                          },
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: AppSpacing.base),
+              Text('Difficulty',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey)),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: ['All', 'Beginner', 'Intermediate', 'Advanced']
+                    .map((diff) => ChoiceChip(
+                          label: Text(diff),
+                          selected: _selectedDifficulty == diff,
+                          onSelected: (selected) {
+                            setState(() => _selectedDifficulty = diff);
+                            _loadLessons();
+                            Navigator.pop(context);
+                          },
+                        ))
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

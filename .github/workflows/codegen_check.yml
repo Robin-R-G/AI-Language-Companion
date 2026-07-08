@@ -41,8 +41,8 @@ jobs:
 
       - name: Check for uncommitted generated files
         run: |
-          if (Get-ChildItem -Recurse -Filter "*.freezed.dart" -File | Where-Object { $_.Directory.Name -notmatch '.dart_tool' }) {
-            Write-Output "Generated files exist - build_runner succeeded"
-          } else {
-            Write-Output "No generated files found (expected for initial state)"
-          }
+          if find . -name "*.freezed.dart" -not -path "./.dart_tool/*" | grep -q .; then
+            echo "Generated files exist - build_runner succeeded"
+          else
+            echo "No generated files found (expected for initial state)"
+          fi

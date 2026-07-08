@@ -22,6 +22,9 @@ dependencies:
   # Networking
   dio: ^5.7.0
 
+  # Environment
+  flutter_dotenv: ^5.2.1
+
   # Supabase
   supabase_flutter: ^2.8.4
 
@@ -128,6 +131,8 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
+
     # Legacy asset dirs
     - assets/icons/
     - assets/illustrations/

@@ -220,7 +220,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 /// Tab navigation with consistent styling.
-class AppTabNavigation extends StatelessWidget {
+class AppTabNavigation extends StatefulWidget {
   final List<String> tabs;
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -231,6 +231,46 @@ class AppTabNavigation extends StatelessWidget {
     required this.currentIndex,
     required this.onTap,
   });
+
+  @override
+  State<AppTabNavigation> createState() => _AppTabNavigationState();
+}
+
+class _AppTabNavigationState extends State<AppTabNavigation>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: widget.tabs.length,
+      initialIndex: widget.currentIndex,
+      vsync: this,
+    );
+  }
+
+  @override
+  void didUpdateWidget(AppTabNavigation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentIndex != widget.currentIndex) {
+      _tabController.index = widget.currentIndex;
+    }
+    if (oldWidget.tabs.length != widget.tabs.length) {
+      _tabController.dispose();
+      _tabController = TabController(
+        length: widget.tabs.length,
+        initialIndex: widget.currentIndex,
+        vsync: this,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,13 +285,9 @@ class AppTabNavigation extends StatelessWidget {
         ),
       ),
       child: TabBar(
-        tabs: tabs.map((tab) => Tab(text: tab)).toList(),
-        controller: TabController(
-          length: tabs.length,
-          initialIndex: currentIndex,
-          vsync: Navigator.of(context),
-        ),
-        onTap: onTap,
+        tabs: widget.tabs.map((tab) => Tab(text: tab)).toList(),
+        controller: _tabController,
+        onTap: widget.onTap,
         labelColor: theme.colorScheme.primary,
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: theme.colorScheme.primary,

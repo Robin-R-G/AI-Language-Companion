@@ -100,7 +100,11 @@ class _VoiceSessionScreenState extends ConsumerState<VoiceSessionScreen>
         backgroundColor: AppColors.surface,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Voice settings coming soon')),
+              );
+            },
             icon: const Icon(Icons.settings),
           ),
         ],

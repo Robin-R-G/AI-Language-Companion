@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_card.dart';
@@ -54,20 +55,9 @@ class _ReferralPageState extends State<ReferralPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Mock Fallback
       setState(() {
-        _referrals = [
-          {'referred_email': 'akhil.menon@mail.com', 'status': 'studied_7d', 'reward_credits': 300},
-          {'referred_email': 'sreya_krishna@live.com', 'status': 'joined', 'reward_credits': 100},
-          {'referred_email': 'deepak.p@gmail.com', 'status': 'premium_purchased', 'reward_credits': 1300},
-        ];
-        _leaderboard = [
-          {'full_name': 'Meera Varughese', 'referral_count': 45},
-          {'full_name': 'Rahul Nair', 'referral_count': 32},
-          {'full_name': 'Siddharth S.', 'referral_count': 28},
-          {'full_name': 'Devika Ram', 'referral_count': 22},
-          {'full_name': 'Dr. George Thomas', 'referral_count': 18},
-        ];
+        _referrals = [];
+        _leaderboard = [];
         _isLoading = false;
       });
     }
@@ -144,6 +134,7 @@ class _ReferralPageState extends State<ReferralPage> {
                   IconButton(
                     icon: const Icon(Icons.copy_rounded),
                     onPressed: () {
+                      Clipboard.setData(ClipboardData(text: _referralCode));
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Referral code copied to clipboard!')));
                     },
                   )

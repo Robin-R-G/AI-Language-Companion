@@ -38,16 +38,19 @@ jobs:
 
       - name: Check minimum coverage
         run: |
-          $coverage = (Select-String -Path "coverage/lcov.info" -Pattern "^SF:" | Measure-Object | Select-Object -ExpandProperty Count)
-          $linesFound = (Select-String -Path "coverage/lcov.info" -Pattern "^DA:" | Measure-Object | Select-Object -ExpandProperty Count)
-          $linesHit = (Select-String -Path "coverage/lcov.info" -Pattern "^DA:.*,1$" | Measure-Object | Select-Object -ExpandProperty Count)
-          if ($linesFound -gt 0) {
-            $pct = [math]::Round(($linesHit / $linesFound) * 100, 2)
-            echo "Coverage: $pct%"
-            if ($pct -lt 70) {
-              echo "::warning::Coverage $pct% is below 70% threshold"
-            }
-          }
+          if [ -f coverage/lcov.info ]; then
+            linesFound=$(grep -c "^SF:" coverage/lcov.info || true)
+            linesHit=$(grep -c "^DA:.*,1$" coverage/lcov.info || true)
+            if [ "$linesFound" -gt 0 ]; then
+              pct=$(echo "scale=2; $linesHit * 100 / $linesFound" | bc)
+              echo "Coverage: $pct%"
+              if [ $(echo "$pct < 70" | bc) -eq 1 ]; then
+                echo "::warning::Coverage $pct% is below 70% threshold"
+              fi
+            fi
+          else
+            echo "No coverage file found"
+          fi
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5

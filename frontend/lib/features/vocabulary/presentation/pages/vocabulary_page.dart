@@ -32,7 +32,14 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
       appBar: AppBar(
         title: const Text('Vocabulary'),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.bar_chart)),
+          IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Vocabulary stats coming soon')),
+              );
+            },
+            icon: const Icon(Icons.bar_chart),
+          ),
         ],
       ),
       body: words.isEmpty ? _buildEmptyState() : _buildCardView(words),
@@ -166,7 +173,14 @@ class _VocabularyPageState extends ConsumerState<VocabularyPage> {
                 icon: const Icon(Icons.arrow_back_ios),
               ),
               const SizedBox(width: AppSpacing.xl),
-              TextButton(onPressed: () {}, child: const Text('View All')),
+              TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Full vocabulary list coming soon')),
+                  );
+                },
+                child: const Text('View All'),
+              ),
               const SizedBox(width: AppSpacing.xl),
               IconButton(
                 onPressed: _currentCardIndex < words.length - 1

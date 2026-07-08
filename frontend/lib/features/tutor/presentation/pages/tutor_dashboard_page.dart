@@ -30,7 +30,13 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
     setState(() => _isLoading = true);
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        setState(() {
+          _dashboard = {};
+          _isLoading = false;
+        });
+        return;
+      }
 
       final results = await Future.wait([
         _supabase.rpc('get_tutor_dashboard', params: {'p_user_id': user.id}).catchError((_) => null),
@@ -43,31 +49,8 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Mock fallback
       setState(() {
-        _dashboard = {
-          'today_classes': [
-            {'time': '10:00 AM', 'student': 'Alice M.', 'subject': 'IELTS Speaking', 'status': 'confirmed'},
-            {'time': '2:00 PM', 'student': 'Raj K.', 'subject': 'Grammar', 'status': 'confirmed'},
-          ],
-          'upcoming_classes': [
-            {'time': 'Tomorrow 9:00 AM', 'student': 'Chen W.', 'subject': 'TOEFL Writing'},
-            {'time': 'Tomorrow 3:00 PM', 'student': 'Maria S.', 'subject': 'Conversation'},
-            {'time': 'Wed 11:00 AM', 'student': 'Ahmed H.', 'subject': 'IELTS Listening'},
-          ],
-          'revenue': {
-            'pending': 12500,
-            'available': 8300,
-            'total_earned': 145600,
-          },
-          'rating': 4.87,
-          'review_count': 42,
-          'total_students': 38,
-          'completed_classes': 186,
-          'hours_taught': 142.5,
-          'messages': 5,
-          'wallet_balance': 8300,
-        };
+        _dashboard = {};
         _isLoading = false;
       });
     }
@@ -87,11 +70,19 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Notifications coming soon')),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.calendar_month),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Calendar view coming soon')),
+              );
+            },
           ),
         ],
       ),
@@ -221,7 +212,11 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
               children: [
                 Text('Revenue', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                 TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/tutor-earnings'),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Earnings page coming soon')),
+                    );
+                  },
                   child: const Text('View All'),
                 ),
               ],
@@ -237,7 +232,11 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
             const SizedBox(height: AppSpacing.base),
             AppButton(
               label: 'Request Withdrawal',
-              onPressed: () => Navigator.pushNamed(context, '/tutor-withdraw'),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Withdrawal page coming soon')),
+                );
+              },
             ),
           ],
         ),
@@ -322,7 +321,11 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
           children: [
             Text('Upcoming Classes', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/tutor-schedule'),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Calendar view coming soon')),
+                );
+              },
               child: const Text('View Calendar'),
             ),
           ],
@@ -376,7 +379,11 @@ class _TutorDashboardPageState extends State<TutorDashboardPage> {
             final action = actions[index];
             return AppCard(
               child: InkWell(
-                onTap: () => Navigator.pushNamed(context, action['route'] as String),
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${action['label']} coming soon')),
+                  );
+                },
                 borderRadius: BorderRadius.circular(AppRadius.md),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

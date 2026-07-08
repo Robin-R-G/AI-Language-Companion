@@ -93,14 +93,8 @@ serve(async (req: Request) => {
     const { error: sessionError } = await supabase.from('voice_sessions').insert({
       user_id: userId,
       transcript: transcript_text,
-      target_language: target_language || context.userProfile?.targetLanguage || 'English',
-      fluency_score: evaluation.fluency_score,
-      grammar_score: evaluation.grammar_score,
-      vocabulary_score: evaluation.vocabulary_score,
       pronunciation_score: evaluation.pronunciation_score,
-      overall_score: evaluation.overall_score,
-      feedback: evaluation,
-      estimated_proficiency: evaluation.estimated_proficiency,
+      fluency_score: evaluation.fluency_score,
     })
     if (sessionError) {
       console.error('Failed to save voice session:', sessionError)

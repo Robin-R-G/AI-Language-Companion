@@ -66,41 +66,10 @@ class _WalletPageState extends State<WalletPage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Mock Fallback
       setState(() {
-        _balance = 165;
-        _transactions = [
-          {
-            'amount': 20,
-            'type': 'ad_reward',
-            'description': 'Watched Rewarded Video Ad',
-            'created_at': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-          },
-          {
-            'amount': 5,
-            'type': 'lesson_reward',
-            'description': 'Completed "Greetings and Introductions"',
-            'created_at': DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-          },
-          {
-            'amount': 10,
-            'type': 'login_reward',
-            'description': 'Daily Login Reward',
-            'created_at': DateTime.now().subtract(const Duration(days: 1)).toIso8601String(),
-          },
-          {
-            'amount': 100,
-            'type': 'monthly_grant',
-            'description': 'Monthly Subscriber Credit Grant',
-            'created_at': DateTime.now().subtract(const Duration(days: 4)).toIso8601String(),
-          }
-        ];
-        _packages = [
-          {'name': 'Starter Pack', 'credits_amount': 100, 'price_cents': 499, 'sku': 'credits_pack_small'},
-          {'name': 'Value Pack', 'credits_amount': 250, 'price_cents': 999, 'sku': 'credits_pack_medium'},
-          {'name': 'Power Pack', 'credits_amount': 600, 'price_cents': 1999, 'sku': 'credits_pack_large'},
-          {'name': 'Unlimited Boost', 'credits_amount': 1500, 'price_cents': 3999, 'sku': 'credits_pack_ultimate'},
-        ];
+        _balance = 0;
+        _transactions = [];
+        _packages = [];
         _isLoading = false;
       });
     }

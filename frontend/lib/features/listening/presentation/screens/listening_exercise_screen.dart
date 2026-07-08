@@ -207,7 +207,6 @@ class _ListeningExerciseScreenState extends ConsumerState<ListeningExerciseScree
                   children: [
                     IconButton(
                       onPressed: () {
-                        // TODO: Implement text-to-speech
                         setState(() => _isPlaying = !_isPlaying);
                       },
                       icon: Icon(

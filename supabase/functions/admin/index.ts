@@ -28,15 +28,21 @@ serve(async (req: Request) => {
     const pathParts = url.pathname.split('/').filter(Boolean)
     const action = pathParts[pathParts.length - 1]
 
-    // Check admin privileges (simplified - in production use proper role check)
-    const { data: profile } = await supabase
+    // Check admin privileges via user_profiles table
+    const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
-      .select('id')
+      .select('role')
       .eq('auth_user_id', userId)
       .single()
 
-    // For now, allow all authenticated users for development
-    // In production, check for admin role in a separate table
+    if (profileError || !profile) {
+      return forbidden('User profile not found')
+    }
+
+    const userRole = profile.role
+    if (userRole !== 'admin' && userRole !== 'super_admin') {
+      return forbidden('Admin access required')
+    }
 
     // GET /admin/users - List all users
     if (req.method === 'GET' && action === 'users') {

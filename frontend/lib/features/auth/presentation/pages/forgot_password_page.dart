@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../core/utils/auth_error_messages.dart';
 
 /// Forgot password page for password reset.
 class ForgotPasswordPage extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to send reset email: ${e.toString()}'),
+            content: Text(friendlyAuthMessage(e)),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

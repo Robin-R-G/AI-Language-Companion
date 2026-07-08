@@ -2,6 +2,7 @@
 // Section 23: Subscription APIs
 // GET /subscription, POST /subscription/checkout, POST /subscription/webhook, POST /subscription/cancel
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validateRequest } from '../shared/auth.ts'
 import {
   successResponse,
@@ -31,10 +32,17 @@ serve(async (req: Request) => {
 
     // POST /subscription/webhook - RevenueCat webhook (no auth required)
     if (req.method === 'POST' && action === 'webhook') {
+      // Verify RevenueCat webhook signature
+      const authorization = req.headers.get('authorization')
+      const webhookSecret = Deno.env.get('REVENUECAT_WEBHOOK_SECRET')
+      
+      if (webhookSecret && authorization !== `Bearer ${webhookSecret}`) {
+        return forbidden('Invalid webhook signature')
+      }
+
       const body = await req.json()
       const { event, app_user_id, product_id } = body
 
-      // Verify webhook signature in production
       console.log('RevenueCat webhook:', event, app_user_id, product_id)
 
       // Update subscription in database
@@ -155,6 +163,3 @@ serve(async (req: Request) => {
     return serverError(error.message || 'Internal server error')
   }
 })
-
-// Need to import createClient for webhook
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'

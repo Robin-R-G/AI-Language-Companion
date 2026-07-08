@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../app/router.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
@@ -72,13 +75,13 @@ class _SettingsPageState extends State<SettingsPage> {
           icon: Icons.record_voice_over,
           title: 'Native Language (L1)',
           subtitle: 'Malayalam',
-          onTap: () {},
+          onTap: () => _showLanguageDialog(context),
         ),
         InfoTile(
           icon: Icons.language,
           title: 'Learning Language (L2)',
           subtitle: 'English',
-          onTap: () {},
+          onTap: () => _showLanguageDialog(context),
         ),
         const Divider(),
 
@@ -96,7 +99,11 @@ class _SettingsPageState extends State<SettingsPage> {
           icon: Icons.alarm,
           title: 'Study Reminders',
           subtitle: 'Daily at 7:00 PM',
-          onTap: () {},
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Reminder settings coming soon')),
+            );
+          },
         ),
         const Divider(),
 
@@ -105,18 +112,22 @@ class _SettingsPageState extends State<SettingsPage> {
         InfoTile(
           icon: Icons.person_outline,
           title: 'Edit Profile',
-          onTap: () {},
+          onTap: () => context.push(RouteNames.editProfile),
         ),
         InfoTile(
           icon: Icons.lock_outline,
           title: 'Change Password',
-          onTap: () {},
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Password change coming soon')),
+            );
+          },
         ),
         InfoTile(
           icon: Icons.language,
           title: 'Subscription',
           subtitle: 'Free Plan',
-          onTap: () {},
+          onTap: () => context.push(RouteNames.subscription),
         ),
         const Divider(),
 
@@ -229,7 +240,33 @@ class _SettingsPageState extends State<SettingsPage> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                final user = Supabase.instance.client.auth.currentUser;
+                if (user != null) {
+                  // Delete user profile data
+                  await Supabase.instance.client
+                      .from('user_profiles')
+                      .delete()
+                      .eq('auth_user_id', user.id);
+                  // Sign out after deletion
+                  await Supabase.instance.client.auth.signOut();
+                  if (context.mounted) {
+                    context.go(RouteNames.login);
+                  }
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete account: $e'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+                }
+              }
+            },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Delete'),
           ),

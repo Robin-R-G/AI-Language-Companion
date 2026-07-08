@@ -40,42 +40,8 @@ class _TutorMarketplacePageState extends ConsumerState<TutorMarketplacePage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Mock Fallback
       setState(() {
-        _tutors = [
-          {
-            'id': 'tutor_oxford',
-            'user_profiles': {
-              'full_name': 'Prof. Sarah Jenkins',
-              'email': 'sarah@ieltsacademy.org',
-              'avatar_url': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100'
-            },
-            'bio': 'TEFL certified linguist and former IELTS examiner. Specializing in advanced conversational fluency, academic writing corrections, and speech accent training.',
-            'qualifications': 'MA in Applied Linguistics (Oxford), Cambridge DELTA.',
-            'price_per_hour_cents': 2500,
-            'rating': 4.95,
-            'review_count': 38,
-            'experience_years': 8,
-            'languages': ['English', 'Spanish'],
-            'exams': ['IELTS', 'TOEFL'],
-          },
-          {
-            'id': 'tutor_cambridge',
-            'user_profiles': {
-              'full_name': 'David Vance',
-              'email': 'david@eslboost.com',
-              'avatar_url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
-            },
-            'bio': 'Fun and interactive conversational coach. Focused on CEFR levels A2-B2, vocabulary build-ups, and native pronunciation confidence.',
-            'qualifications': 'BA in Communications, TESOL Certified.',
-            'price_per_hour_cents': 1800,
-            'rating': 4.82,
-            'review_count': 24,
-            'experience_years': 5,
-            'languages': ['English', 'French'],
-            'exams': ['PTE', 'CELPIP'],
-          }
-        ];
+        _tutors = [];
         _isLoading = false;
       });
     }
@@ -288,7 +254,7 @@ class _TutorMarketplacePageState extends ConsumerState<TutorMarketplacePage> {
         studentId: studentId,
         scheduledAt: DateTime.now(),
         durationMinutes: 60,
-        subject: tutor['qualifications'] ?? 'English Practice Session',
+        subject: (tutor['qualifications'] as String?) ?? 'English Practice Session',
       );
 
       if (mounted) {
@@ -300,7 +266,7 @@ class _TutorMarketplacePageState extends ConsumerState<TutorMarketplacePage> {
               sessionId: sessionId,
               isHost: false,
               tutorName: tutorName,
-              subject: tutor['qualifications'] ?? 'English Practice Session',
+              subject: (tutor['qualifications'] as String?) ?? 'English Practice Session',
             ),
           ),
         );

@@ -277,14 +277,18 @@ class _MockExamPageState extends ConsumerState<MockExamPage> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Next question')),
+                    );
+                  },
                   child: const Text('Skip'),
                 ),
               ),
               const SizedBox(width: AppSpacing.base),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _submitExam,
                   child: const Text('Submit'),
                 ),
               ),

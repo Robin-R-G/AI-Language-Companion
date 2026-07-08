@@ -60,6 +60,17 @@ class AuthController extends _$AuthController {
     state = const AsyncValue.data(null);
   }
 
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+    final repository = ref.read(authRepositoryProvider);
+    final result = await repository.signInWithGoogle();
+
+    result.fold(
+      (failure) => state = AsyncValue.error(failure.message, StackTrace.current),
+      (user) => state = AsyncValue.data(user),
+    );
+  }
+
   Future<void> checkCurrentUser() async {
     state = const AsyncValue.loading();
     final repository = ref.read(authRepositoryProvider);

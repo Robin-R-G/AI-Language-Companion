@@ -1,4 +1,5 @@
 // lib/features/auth/data/repositories/auth_repository_impl.dart
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 import '../../../../core/errors/failure.dart';
 import '../../../../core/errors/result.dart';
@@ -60,6 +61,39 @@ class AuthRepositoryImpl implements AuthRepository {
         return Result.success(_mapUser(user));
       },
     );
+  }
+
+  @override
+  Future<Result<AuthUser>> signInWithGoogle() async {
+    try {
+      // Supabase signInWithOAuth works on ALL platforms (web + mobile).
+      // On web: opens Google consent screen in same tab.
+      // On mobile: opens browser for Google consent, then redirects back.
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb
+            ? null
+            : 'io.ailanguagecoach.ai_language_coach://login-callback/',
+      );
+
+      // After redirect, Supabase handles the session automatically.
+      // The AuthStateNotifier picks up the onAuthStateChange event.
+      final user = _client.auth.currentUser;
+      if (user != null) {
+        return Result.success(_mapUser(user));
+      }
+      // Redirect in progress — the router handles the rest.
+      return const Result.error(AuthFailure('redirect_in_progress'));
+    } catch (e) {
+      final message = e.toString();
+      if (message.contains('network_error') || message.contains('timeout')) {
+        return Result.error(NetworkFailure('Network error. Please check your connection.'));
+      }
+      if (message.contains('sign_in_canceled') || message.contains('cancelled')) {
+        return const Result.error(AuthFailure('cancelled'));
+      }
+      return Result.error(AuthFailure('Google sign in failed: $e'));
+    }
   }
 
   @override

@@ -39,9 +39,9 @@ enable_confirmations = false
 
 [auth.google]
 enabled = true
-client_id = ""
-secret = ""
-redirect_uri = "http://localhost:54321/auth/v1/callback"
+client_id = "935306663961-k8pj9bf4vobef2rj8adkkqu0meairpq7.apps.googleusercontent.com"
+secret = "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"
+redirect_uri = "https://tuashfxoiwyyglmrchjn.supabase.co/auth/v1/callback"
 
 [auth.apple]
 enabled = false

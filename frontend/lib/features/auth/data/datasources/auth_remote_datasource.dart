@@ -15,6 +15,12 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
 
+  Future<Result<AuthResponse>> signInWithIdToken({
+    required OAuthProvider provider,
+    required String idToken,
+    required String? accessToken,
+  });
+
   Future<Result<void>> signOut();
 
   Future<Result<AuthResponse>> refreshSession(String refreshToken);
@@ -67,6 +73,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return Result.error(AuthFailure(e.message));
     } catch (e) {
       return Result.error(NetworkFailure('Sign in failed: $e'));
+    }
+  }
+
+  @override
+  Future<Result<AuthResponse>> signInWithIdToken({
+    required OAuthProvider provider,
+    required String idToken,
+    required String? accessToken,
+  }) async {
+    try {
+      final response = await _client.auth.signInWithIdToken(
+        provider: provider,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      return Result.success(response);
+    } on AuthException catch (e) {
+      return Result.error(AuthFailure(e.message));
+    } catch (e) {
+      return Result.error(NetworkFailure('OAuth sign in failed: $e'));
     }
   }
 

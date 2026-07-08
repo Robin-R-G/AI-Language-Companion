@@ -115,7 +115,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             tooltip: 'Toggle Malayalam translation',
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Chat settings coming soon')),
+              );
+            },
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
@@ -299,7 +303,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final explanation = feedback is Map ? (feedback['explanation'] ?? '') as String : '';
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Grammar details coming soon')),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(top: AppSpacing.sm),
         padding: const EdgeInsets.all(AppSpacing.sm),

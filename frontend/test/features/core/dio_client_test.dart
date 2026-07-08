@@ -4,7 +4,7 @@ import 'package:ai_language_coach/core/constants/app_constants.dart';
 void main() {
   group('DioClient Configuration', () {
     test('base URL should be correctly configured', () {
-      const expectedBaseUrl =
+      final expectedBaseUrl =
           AppConstants.supabaseUrl + AppConstants.apiBaseUrl;
 
       expect(expectedBaseUrl, isNotEmpty);

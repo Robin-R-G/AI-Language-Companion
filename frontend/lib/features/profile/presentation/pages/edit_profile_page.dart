@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/design_tokens.dart';
 import '../../../../core/widgets/app_avatar.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -20,8 +21,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _isLoading = false;
   bool _hasError = false;
   bool _isSaving = false;
-  final _nameController = TextEditingController(text: 'Rahul');
-  final _emailController = TextEditingController(text: 'rahul@example.com');
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   String _selectedNativeLanguage = 'Malayalam';
   String _selectedTargetLanguage = 'English';
   String _selectedLevel = 'Intermediate';
@@ -42,19 +43,72 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _isLoading = true;
       _hasError = false;
     });
-    await Future<void>.delayed(const Duration(seconds: 1));
-    if (mounted) setState(() => _isLoading = false);
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        // Load profile from Supabase
+        final profile = await Supabase.instance.client
+            .from('user_profiles')
+            .select()
+            .eq('auth_user_id', user.id)
+            .maybeSingle();
+
+        if (mounted) {
+          setState(() {
+            _nameController.text = (profile?['full_name'] as String?) ?? user.email?.split('@').first ?? '';
+            _emailController.text = user.email ?? '';
+            _selectedNativeLanguage = (profile?['native_language'] as String?) ?? 'Malayalam';
+            _selectedTargetLanguage = (profile?['target_language'] as String?) ?? 'English';
+            _selectedLevel = (profile?['proficiency_level'] as String?) ?? 'Intermediate';
+            _selectedAvatarPath = profile?['avatar_url'] as String?;
+            _isLoading = false;
+          });
+        }
+      } else {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Future<void> _saveProfile() async {
     setState(() => _isSaving = true);
-    await Future<void>.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
-      Navigator.pop(context);
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        await Supabase.instance.client.from('user_profiles').upsert({
+          'auth_user_id': user.id,
+          'full_name': _nameController.text.trim(),
+          'native_language': _selectedNativeLanguage,
+          'target_language': _selectedTargetLanguage,
+          'proficiency_level': _selectedLevel,
+          if (_selectedAvatarPath != null && !_isLocalFile)
+            'avatar_url': _selectedAvatarPath,
+        }, onConflict: 'auth_user_id');
+      }
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update profile: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 

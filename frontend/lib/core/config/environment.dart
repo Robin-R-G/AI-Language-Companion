@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Supported application environments/flavors.
 enum AppEnvironment { dev, staging, production }
 
 /// Environment-based configuration for the application.
 ///
-/// Reads environment variables at compile-time using `--dart-define`.
-/// Configure these in your build commands or IDE run configurations.
+/// Reads environment variables from .env file loaded at runtime.
 class Environment {
   const Environment._();
 
@@ -14,22 +14,22 @@ class Environment {
   static AppEnvironment get current => _fromEnvironment();
 
   /// Supabase project URL.
-  static String get supabaseUrl => _getConfig('SUPABASE_URL');
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
 
   /// Supabase anonymous/public key.
-  static String get supabaseAnonKey => _getConfig('SUPABASE_ANON_KEY');
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
   /// RevenueCat API key for in-app purchases.
-  static String get revenueCatApiKey => _getConfig('REVENUECAT_API_KEY');
+  static String get revenueCatApiKey => dotenv.env['REVENUECAT_API_KEY'] ?? '';
 
   /// Firebase project ID.
-  static String get firebaseProjectId => _getConfig('FIREBASE_PROJECT_ID');
+  static String get firebaseProjectId => dotenv.env['FIREBASE_PROJECT_ID'] ?? '';
 
   /// LiveKit server URL for voice features.
-  static String get liveKitUrl => _getConfig('LIVEKIT_URL');
+  static String get liveKitUrl => dotenv.env['LIVEKIT_URL'] ?? '';
 
   /// LiveKit API key.
-  static String get liveKitApiKey => _getConfig('LIVEKIT_API_KEY');
+  static String get liveKitApiKey => dotenv.env['LIVEKIT_API_KEY'] ?? '';
 
   /// Whether analytics and crash reporting should be enabled.
   static bool get enableAnalytics =>
@@ -50,35 +50,6 @@ class Environment {
         return 'https://staging-api.ailanguagecoach.com/functions/v1';
       case AppEnvironment.production:
         return 'https://api.ailanguagecoach.com/functions/v1';
-    }
-  }
-
-  /// Get configuration value from environment variables with fallback.
-  static String _getConfig(String key) {
-    final value = String.fromEnvironment(key);
-    if (value.isNotEmpty) {
-      return value;
-    }
-    return _getDefaultValue(key);
-  }
-
-  /// Default values for development environment.
-  static String _getDefaultValue(String key) {
-    switch (key) {
-      case 'SUPABASE_URL':
-        return 'your-supabase-url';
-      case 'SUPABASE_ANON_KEY':
-        return 'your-supabase-anon-key';
-      case 'REVENUECAT_API_KEY':
-        return 'your-revenuecat-api-key';
-      case 'FIREBASE_PROJECT_ID':
-        return 'your-firebase-project-id';
-      case 'LIVEKIT_URL':
-        return 'wss://your-livekit-project.livekit.cloud';
-      case 'LIVEKIT_API_KEY':
-        return 'your-livekit-api-key';
-      default:
-        return '';
     }
   }
 

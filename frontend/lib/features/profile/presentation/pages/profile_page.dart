@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import '../../../../app/router.dart';
 import '../../../../app/app.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../core/providers/auth_state_provider.dart';
 import '../../../../core/storage/local_storage.dart';
 import '../../../../shared/models/user_profile.dart';
 import '../controllers/profile_controller.dart';
@@ -118,7 +120,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         title: const Text('Profile'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.push(RouteNames.settings),
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
@@ -306,20 +308,20 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           _SettingsTile(
             icon: Icons.person_outline,
             title: 'Edit Profile',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.editProfile),
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.language,
             title: 'Languages',
             subtitle: 'English, Malayalam',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.settings),
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.notifications),
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -362,25 +364,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
-            onTap: () {},
+            onTap: () => context.push(RouteNames.subscription),
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.help_outline,
             title: 'Help & Support',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.settings),
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.description_outlined,
             title: 'Terms of Service',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.settings),
           ),
           const Divider(height: 1),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.settings),
           ),
           const Divider(height: 1),
           _SettingsTile(
@@ -415,6 +417,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           TextButton(
             onPressed: () async {
               await LocalStorage.clearTokens();
+              await ref.read(authStateProvider.notifier).signOut();
               if (mounted) {
                 Navigator.pop(context);
                 context.go(RouteNames.login);
@@ -444,8 +447,32 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+              try {
+                final user = Supabase.instance.client.auth.currentUser;
+                if (user != null) {
+                  // Delete user profile data
+                  await Supabase.instance.client
+                      .from('user_profiles')
+                      .delete()
+                      .eq('auth_user_id', user.id);
+                  // Sign out after deletion
+                  await Supabase.instance.client.auth.signOut();
+                  if (mounted) {
+                    context.go(RouteNames.login);
+                  }
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete account: $e'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+                }
+              }
             },
             child: const Text(
               'Delete',

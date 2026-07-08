@@ -37,27 +37,40 @@ class _AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      // Token expired - attempt refresh
-      _refreshToken()
-          .then((_) {
-            // Retry the request with new token
-            handler.resolve(err.response!);
-          })
-          .catchError((_) {
-            handler.next(err);
-          });
+      try {
+        // Refresh the token
+        await Supabase.instance.client.auth.refreshSession();
+
+        // Get the new session
+        final newSession = Supabase.instance.client.auth.currentSession;
+        if (newSession != null && newSession.accessToken.isNotEmpty) {
+          // Update the request headers with the new token
+          err.requestOptions.headers['Authorization'] =
+              'Bearer ${newSession.accessToken}';
+
+          // Retry the actual request with the new token
+          try {
+            final dio = Dio(
+              BaseOptions(baseUrl: err.requestOptions.baseUrl),
+            );
+            final response = await dio.fetch(err.requestOptions);
+            handler.resolve(response);
+            return;
+          } on DioException catch (retryError) {
+            handler.next(retryError);
+            return;
+          }
+        }
+
+        // If refresh failed or no new session, forward the error
+        handler.next(err);
+      } catch (_) {
+        handler.next(err);
+      }
     } else {
       handler.next(err);
-    }
-  }
-
-  Future<void> _refreshToken() async {
-    try {
-      await Supabase.instance.client.auth.refreshSession();
-    } catch (_) {
-      rethrow;
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +35,7 @@ class _LiveClassPageState extends ConsumerState<LiveClassPage> {
   String? _error;
   Duration _elapsed = Duration.zero;
   late final DateTime _startTime;
+  StreamSubscription<dynamic>? _timerSubscription;
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _LiveClassPageState extends ConsumerState<LiveClassPage> {
 
   @override
   void dispose() {
+    _timerSubscription?.cancel();
     _leaveSession();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();
@@ -80,7 +84,8 @@ class _LiveClassPageState extends ConsumerState<LiveClassPage> {
   }
 
   void _startTimer() {
-    Stream.periodic(const Duration(seconds: 1)).listen((_) {
+    _timerSubscription?.cancel();
+    _timerSubscription = Stream<int>.periodic(const Duration(seconds: 1)).listen((_) {
       if (!mounted) return;
       setState(() {
         _elapsed = DateTime.now().difference(_startTime);

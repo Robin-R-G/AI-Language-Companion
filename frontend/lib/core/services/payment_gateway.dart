@@ -360,7 +360,7 @@ class PaymentGateway {
           'customer_id': customerInfo.originalAppUserId,
           'entitlements': customerInfo.entitlements.active.keys.toList(),
           'expires': customerInfo.entitlements.active.values
-              .map((e) => e.expirationDate?.toIso8601String())
+              .map((e) => e.expirationDate?.toString())
               .toList(),
         },
       );

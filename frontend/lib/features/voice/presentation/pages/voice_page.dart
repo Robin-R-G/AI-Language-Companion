@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +20,9 @@ class _VoicePageState extends ConsumerState<VoicePage>
   bool _isConnected = false;
   final bool _isSpeaking = false;
   bool _isMuted = false;
+  bool _isSpeakerOn = true;
   int _duration = 0;
+  Timer? _durationTimer;
 
   @override
   void initState() {
@@ -34,6 +38,7 @@ class _VoicePageState extends ConsumerState<VoicePage>
 
   @override
   void dispose() {
+    _durationTimer?.cancel();
     _animationController.dispose();
     super.dispose();
   }
@@ -43,22 +48,27 @@ class _VoicePageState extends ConsumerState<VoicePage>
       _isConnected = !_isConnected;
       if (_isConnected) {
         _animationController.repeat(reverse: true);
+        _duration = 0;
         _startDurationTimer();
       } else {
         _animationController.stop();
         _animationController.reset();
+        _durationTimer?.cancel();
+        _durationTimer = null;
       }
     });
   }
 
   void _startDurationTimer() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (_isConnected && mounted) {
-        setState(() {
-          _duration++;
-        });
-        _startDurationTimer();
+    _durationTimer?.cancel();
+    _durationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || !_isConnected) {
+        timer.cancel();
+        return;
       }
+      setState(() {
+        _duration++;
+      });
     });
   }
 
@@ -66,6 +76,46 @@ class _VoicePageState extends ConsumerState<VoicePage>
     final minutes = seconds ~/ 60;
     final secs = seconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+  }
+
+  void _showVoiceSettings() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Voice Settings',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: AppSpacing.base),
+              ListTile(
+                leading: const Icon(Icons.speed),
+                title: const Text('Speech Speed'),
+                subtitle: const Text('Normal (1.0x)'),
+                onTap: () => Navigator.pop(context),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.record_voice_over),
+                title: const Text('AI Voice'),
+                subtitle: const Text('Default'),
+                onTap: () => Navigator.pop(context),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.noise_aware_outlined),
+                title: const Text('Noise Cancellation'),
+                subtitle: const Text('Enabled'),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -91,7 +141,7 @@ class _VoicePageState extends ConsumerState<VoicePage>
                   ),
                   IconButton(
                     onPressed: () {
-                      // TODO: Show voice settings
+                      _showVoiceSettings();
                     },
                     icon: const Icon(Icons.speed),
                   ),
@@ -265,9 +315,9 @@ class _VoicePageState extends ConsumerState<VoicePage>
           _ControlButton(
             icon: Icons.volume_up,
             label: 'Speaker',
-            isActive: false,
+            isActive: _isSpeakerOn,
             onTap: () {
-              // TODO: Toggle speaker
+              setState(() => _isSpeakerOn = !_isSpeakerOn);
             },
           ),
         ],

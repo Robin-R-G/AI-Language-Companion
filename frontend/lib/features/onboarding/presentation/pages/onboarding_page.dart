@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import '../../../../app/router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/providers/auth_state_provider.dart';
 import '../../../../core/storage/local_storage.dart';
 
 /// Multi-step onboarding wizard for collecting user preferences.
@@ -54,13 +57,31 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Save onboarding data to Supabase
-      await Future.delayed(const Duration(seconds: 2));
+      // Save onboarding data to Supabase
+      final client = Supabase.instance.client;
+      final user = client.auth.currentUser;
+      if (user != null) {
+        await client.from('user_profiles').upsert({
+          'auth_user_id': user.id,
+          'native_language': _selectedNativeLanguage,
+          'target_language': _selectedTargetLanguage,
+          'proficiency_level': _selectedProficiencyLevel,
+          'target_exam': _selectedExam,
+          'daily_goal_minutes': _selectedDailyGoal,
+          'onboarding_completed': true,
+        }, onConflict: 'auth_user_id');
+      }
 
       await LocalStorage.setOnboardingComplete(true);
 
       if (mounted) {
-        context.go(RouteNames.home);
+        final authState = ref.read(authStateProvider);
+        final role = authState.role;
+        if (role.isStaff) {
+          context.go(_homeForRole(role));
+        } else {
+          context.go(RouteNames.home);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -75,6 +96,23 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  String _homeForRole(UserRole role) {
+    switch (role) {
+      case UserRole.tutor:
+        return RouteNames.tutorDashboard;
+      case UserRole.superAdmin:
+      case UserRole.admin:
+      case UserRole.financeManager:
+      case UserRole.tutorManager:
+      case UserRole.supportManager:
+      case UserRole.contentManager:
+      case UserRole.marketingManager:
+        return RouteNames.adminFinance;
+      case UserRole.student:
+        return RouteNames.home;
     }
   }
 

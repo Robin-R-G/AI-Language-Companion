@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 
 /// Predefined feature flag keys for the application.
@@ -100,11 +101,41 @@ class FeatureFlagService {
   /// In production, this would fetch from a remote config service
   /// (Firebase Remote Config, LaunchDarkly, etc.).
   Future<void> updateFromRemote() async {
-    // TODO: Implement remote feature flag fetching
-    // Example with Firebase Remote Config:
-    // final remoteConfig = FirebaseRemoteConfig.instance;
-    // await remoteConfig.fetchAndActivate();
-    // _flags[FeatureFlags.voiceChat] = remoteConfig.getBool('voice_chat');
+    try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(minutes: 1),
+        minimumFetchInterval: const Duration(hours: 1),
+      ));
+      await remoteConfig.fetchAndActivate();
+
+      // Update flags from remote config
+      final allFlags = [
+        FeatureFlags.voiceChat,
+        FeatureFlags.mockExams,
+        FeatureFlags.vocabulary,
+        FeatureFlags.grammar,
+        FeatureFlags.writing,
+        FeatureFlags.listening,
+        FeatureFlags.reading,
+        FeatureFlags.advancedAnalytics,
+        FeatureFlags.offlineMode,
+        FeatureFlags.aiTutor,
+        FeatureFlags.liveClasses,
+        FeatureFlags.newOnboarding,
+        FeatureFlags.darkMode,
+        FeatureFlags.animations,
+        FeatureFlags.betaFeatures,
+        FeatureFlags.aBTesting,
+      ];
+
+      for (final flag in allFlags) {
+        final value = remoteConfig.getBool(flag);
+        _flags[flag] = value;
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch remote feature flags: $e');
+    }
   }
 
   /// Reset all flags to defaults.

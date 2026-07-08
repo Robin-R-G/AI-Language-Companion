@@ -10,6 +10,7 @@ import '../features/splash/presentation/pages/splash_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/signup_page.dart';
 import '../features/auth/presentation/pages/forgot_password_page.dart';
+import '../features/auth/presentation/pages/role_selection_page.dart';
 import '../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/ai_chat/presentation/pages/chat_page.dart';
@@ -49,6 +50,7 @@ class RouteNames {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  static const String roleSelection = '/role-selection';
   static const String onboarding = '/onboarding';
 
   // Student Shell
@@ -77,34 +79,13 @@ class RouteNames {
   static const String tutors = '/tutors';
   static const String affiliates = '/affiliates';
   static const String certificates = '/certificates';
-  static const String paymentMethods = '/payment-methods';
-  static const String bookingConfirm = '/booking-confirm';
 
   // Tutor
   static const String tutorDashboard = '/tutor-dashboard';
   static const String tutorRegister = '/tutor-register';
-  static const String tutorAvailability = '/tutor-availability';
-  static const String tutorStudents = '/tutor-students';
-  static const String tutorReviews = '/tutor-reviews';
-  static const String tutorDocuments = '/tutor-documents';
-  static const String tutorEarnings = '/tutor-earnings';
-  static const String tutorWithdraw = '/tutor-withdraw';
-  static const String tutorWallet = '/tutor-wallet';
-  static const String tutorSchedule = '/tutor-schedule';
-  static const String tutorTax = '/tutor-tax';
-  static const String liveClass = '/live-class';
 
   // Admin (all staff roles share this prefix)
   static const String adminFinance = '/admin-finance';
-  static const String adminSettlements = '/admin-settlements';
-  static const String adminPayouts = '/admin-payouts';
-  static const String adminCommission = '/admin-commission';
-  static const String adminPricing = '/admin-pricing';
-  static const String adminDisputes = '/admin-disputes';
-  static const String adminAuditLogs = '/admin-audit-logs';
-  static const String adminCoupons = '/admin-coupons';
-  static const String adminForecasts = '/admin-forecasts';
-  static const String adminFeatureFlags = '/admin-feature-flags';
 }
 
 // ── Transitions ───────────────────────────────────────────────────────────────
@@ -157,7 +138,6 @@ final GlobalKey<NavigatorState> _shellNavigatorKey =
 final routerProvider = FutureProvider<GoRouter>((ref) async {
   final token = await LocalStorage.getUserToken();
   final bool isLoggedIn = token != null;
-  final bool onboardingDone = LocalStorage.isOnboardingComplete();
 
   // Watch auth state so the router rebuilds on role changes
   final authState = ref.watch(authStateProvider);
@@ -171,19 +151,20 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
       final String location = state.matchedLocation;
       final loggedIn = authState.isAuthenticated;
       final done = LocalStorage.isOnboardingComplete();
+      final roleSelected = LocalStorage.getData('selected_role') != null;
 
       // ── Splash ──
       if (location == RouteNames.splash) {
-        if (!loggedIn) return RouteNames.login;
-        if (!done) return RouteNames.onboarding;
-        return _homeForRole(role);
+        // Splash screen handles its own navigation
+        return null;
       }
 
       // ── Already logged in trying to reach auth pages ──
       if (loggedIn &&
           (location == RouteNames.login ||
               location == RouteNames.signup ||
-              location == RouteNames.forgotPassword)) {
+              location == RouteNames.forgotPassword ||
+              location == RouteNames.roleSelection)) {
         if (!done) return RouteNames.onboarding;
         return _homeForRole(role);
       }
@@ -191,8 +172,15 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
       // ── Not logged in, accessing protected pages ──
       final isPublic = location == RouteNames.login ||
           location == RouteNames.signup ||
-          location == RouteNames.forgotPassword;
+          location == RouteNames.forgotPassword ||
+          location == RouteNames.roleSelection ||
+          location == RouteNames.tutorRegister;
       if (!loggedIn && !isPublic) return RouteNames.login;
+
+      // ── Role selection on first launch (not authenticated) ──
+      if (!loggedIn && location == RouteNames.login && !roleSelected) {
+        return RouteNames.roleSelection;
+      }
 
       // ── Onboarding gate ──
       if (loggedIn && !done && location != RouteNames.onboarding) {
@@ -229,6 +217,11 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
         path: RouteNames.forgotPassword,
         pageBuilder: (context, state) => AppPageTransitions.fadeThrough(
             context, state, const ForgotPasswordPage()),
+      ),
+      GoRoute(
+        path: RouteNames.roleSelection,
+        pageBuilder: (context, state) => AppPageTransitions.fadeThrough(
+            context, state, const RoleSelectionPage()),
       ),
 
       // ── Onboarding ───────────────────────────────────────────────────────────

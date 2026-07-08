@@ -271,7 +271,11 @@ class _ListeningPageState extends ConsumerState<ListeningPage>
                 children: [
                   IconButton(
                     icon: const Icon(Icons.replay_10),
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _progress = (_progress - 0.1).clamp(0.0, 1.0);
+                      });
+                    },
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Container(
@@ -290,7 +294,11 @@ class _ListeningPageState extends ConsumerState<ListeningPage>
                   const SizedBox(width: AppSpacing.sm),
                   IconButton(
                     icon: const Icon(Icons.forward_10),
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _progress = (_progress + 0.1).clamp(0.0, 1.0);
+                      });
+                    },
                   ),
                   const SizedBox(width: AppSpacing.base),
                   // Speed control

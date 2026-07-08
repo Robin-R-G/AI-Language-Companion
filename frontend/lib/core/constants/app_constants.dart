@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// Application constants and environment configuration.
 class AppConstants {
   AppConstants._();
@@ -10,21 +12,40 @@ class AppConstants {
   static const String androidPackageName = 'com.ailanguagecoach.app';
   static const String iosAppStoreId = '1234567890';
 
-  // API Configuration
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: 'your-supabase-url',
-  );
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: 'your-supabase-anon-key',
-  );
+  // API Configuration — loaded from the bundled .env asset at runtime
+  // (see bootstrap.dart). Falls back to compile-time --dart-define flags.
+  // Secrets are never hard-coded in source.
+  static String get supabaseUrl {
+    final value = dotenv.env['SUPABASE_URL'];
+    if (value != null && value.isNotEmpty && !value.startsWith('your-')) return value;
+    final fallback = const String.fromEnvironment(
+      'SUPABASE_URL',
+      defaultValue: '',
+    );
+    if (fallback.isNotEmpty && !fallback.startsWith('your-')) return fallback;
+    throw Exception('SUPABASE_URL not configured. Set it in .env or via --dart-define.');
+  }
+
+  static String get supabaseAnonKey {
+    final value = dotenv.env['SUPABASE_ANON_KEY'];
+    if (value != null && value.isNotEmpty && !value.startsWith('your-')) return value;
+    final fallback = const String.fromEnvironment(
+      'SUPABASE_ANON_KEY',
+      defaultValue: '',
+    );
+    if (fallback.isNotEmpty && !fallback.startsWith('your-')) return fallback;
+    throw Exception('SUPABASE_ANON_KEY not configured. Set it in .env or via --dart-define.');
+  }
 
   // RevenueCat Configuration
-  static const String revenueCatApiKey = String.fromEnvironment(
-    'REVENUECAT_API_KEY',
-    defaultValue: 'your-revenuecat-api-key',
-  );
+  static String get revenueCatApiKey {
+    final value = dotenv.env['REVENUECAT_API_KEY'];
+    if (value != null && value.isNotEmpty) return value;
+    return const String.fromEnvironment(
+      'REVENUECAT_API_KEY',
+      defaultValue: 'your-revenuecat-api-key',
+    );
+  }
 
   // API Endpoints
   static const String apiBaseUrl = '/functions/v1';

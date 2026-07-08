@@ -85,9 +85,9 @@ serve(async (req: Request) => {
       }
     }
 
-    // Save evaluation to writing_tasks table if prompt_id is provided
+    // Save evaluation to writing_evaluations table if prompt_id is provided
     if (prompt_id) {
-      const { error } = await supabase.from('writing_tasks').insert({
+      const { error } = await supabase.from('writing_evaluations').insert({
         user_id: userId,
         prompt_id,
         essay_text,

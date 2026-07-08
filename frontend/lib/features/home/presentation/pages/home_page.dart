@@ -359,37 +359,37 @@ class _HomePageState extends ConsumerState<HomePage> {
             _QuickActionCard(
               icon: Icons.account_balance_wallet_rounded,
               label: 'Credits Wallet',
-              color: Colors.blue,
+              color: AppColors.info,
               onTap: () => context.push(RouteNames.wallet),
             ),
             _QuickActionCard(
               icon: Icons.person_add_rounded,
               label: 'Referrals',
-              color: Colors.orange,
+              color: AppColors.warning,
               onTap: () => context.push(RouteNames.referral),
             ),
             _QuickActionCard(
               icon: Icons.verified_user_rounded,
               label: 'Tutor Market',
-              color: Colors.purple,
+              color: AppColors.secondary,
               onTap: () => context.push(RouteNames.tutors),
             ),
             _QuickActionCard(
               icon: Icons.shopping_bag_rounded,
               label: 'Affiliate Shop',
-              color: Colors.green,
+              color: AppColors.success,
               onTap: () => context.push(RouteNames.affiliates),
             ),
             _QuickActionCard(
               icon: Icons.card_membership_rounded,
               label: 'Certificates',
-              color: Colors.teal,
+              color: AppColors.tertiary,
               onTap: () => context.push(RouteNames.certificates),
             ),
             _QuickActionCard(
               icon: Icons.credit_card_rounded,
               label: 'Get Premium',
-              color: Colors.pink,
+              color: AppColors.primary500,
               onTap: () => context.push(RouteNames.subscription),
             ),
           ],
@@ -434,12 +434,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('University of Oxford', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue)),
-                          SizedBox(height: 4),
-                          Text('English Honors Program', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text('University of Oxford', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+                          const SizedBox(height: 4),
+                          const Text('English Honors Program', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                         ],
                       ),
                     ),
@@ -462,12 +462,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Duolingo Partner', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue)),
-                          SizedBox(height: 4),
-                          Text('Duolingo Exam (10% Off)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text('Duolingo Partner', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+                          const SizedBox(height: 4),
+                          const Text('Duolingo Exam (10% Off)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                         ],
                       ),
                     ),

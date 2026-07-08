@@ -53,8 +53,30 @@ frontend/fastlane/test_output
 **/*.keystore
 **/*.jks
 **/auth_keys.json
+
+# Firebase / Google config (contains API keys) â€” NEVER commit
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Vercel deploy state
+**/.vercel/
+
+# Kotlin / Gradle build cache
+**/.kotlin/
+
+# Local build/analysis logs
+frontend/*_log*.txt
+frontend/analyze*.txt
+frontend/apk_build*.txt
+frontend/web_build*.txt
+frontend/clean_log.txt
+frontend/pubget_log.txt
+frontend/build_log*.txt
 **/service_account.json
 **/*.p8
 **/*.p12
 **/*.cer
 **/*.mobileprovision
+
+# Nested third-party repo — not part of this project
+OmniRoute/

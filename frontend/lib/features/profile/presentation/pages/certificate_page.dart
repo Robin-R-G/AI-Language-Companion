@@ -26,7 +26,13 @@ class _CertificatePageState extends State<CertificatePage> {
     setState(() => _isLoading = true);
     try {
       final user = _supabase.auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        setState(() {
+          _certificates = [];
+          _isLoading = false;
+        });
+        return;
+      }
 
       final res = await _supabase
           .from('certificates')
@@ -38,30 +44,8 @@ class _CertificatePageState extends State<CertificatePage> {
         _isLoading = false;
       });
     } catch (e) {
-      // Mock Fallback
       setState(() {
-        _certificates = [
-          {
-            'id': 'cert_1',
-            'title': 'IELTS Mock Exam Preparation Mastery',
-            'recipient_name': 'Robin RG',
-            'grade': 'Band 8.5',
-            'issuer': 'AI Language Coach',
-            'verify_code': 'CERT-IELTS-849502',
-            'paid_verification': true,
-            'created_at': DateTime.now().subtract(const Duration(days: 10)).toIso8601String(),
-          },
-          {
-            'id': 'cert_2',
-            'title': 'Elementary English Conversation Fluency',
-            'recipient_name': 'Robin RG',
-            'grade': 'A2 Level',
-            'issuer': 'AI Language Coach',
-            'verify_code': 'CERT-CEFR-A2-94820',
-            'paid_verification': false,
-            'created_at': DateTime.now().subtract(const Duration(days: 20)).toIso8601String(),
-          }
-        ];
+        _certificates = [];
         _isLoading = false;
       });
     }

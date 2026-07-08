@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide LocalStorage;
 import '../../../../app/router.dart';
 import '../../../../core/constants/design_tokens.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/providers/auth_state_provider.dart';
+import '../../../../core/storage/local_storage.dart';
+import '../../../../core/utils/auth_error_messages.dart';
 import '../controllers/auth_controller.dart';
 
-/// Signup page for new user registration.
+/// Signup page for new user registration with role-specific flows.
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
@@ -24,6 +28,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   bool _isLoading = false;
   bool _acceptTerms = false;
 
+  String get _selectedRole => LocalStorage.getSelectedRole() ?? 'student';
+  bool get _isTutorSignup => _selectedRole == 'tutor';
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -31,6 +38,53 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleGoogleSignup() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithGoogle();
+
+      final authState = ref.read(authControllerProvider);
+      if (mounted) {
+        if (authState.hasError) {
+          final error = authState.error.toString();
+          if (error.contains('cancelled')) {
+            setState(() => _isLoading = false);
+            return;
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(friendlyAuthMessage(authState.error!)),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        } else if (authState.hasValue && authState.value != null) {
+          ref.read(authStateProvider.notifier).refreshRole();
+
+          if (_isTutorSignup) {
+            context.go(RouteNames.tutorRegister);
+          } else {
+            context.go(RouteNames.onboarding);
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final message = friendlyAuthMessage(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _handleSignup() async {
@@ -56,34 +110,49 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         if (authState.hasError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Signup failed: ${authState.error}'),
+                content: Text(friendlyAuthMessage(authState.error!)),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         } else if (authState.hasValue && authState.value != null) {
-          // Create user profile row
+          // Create user profile row with selected role
           try {
             final client = Supabase.instance.client;
             final user = client.auth.currentUser;
             if (user != null) {
+              final roleValue = _isTutorSignup ? 'student' : _selectedRole;
               await client.from('user_profiles').upsert({
                 'auth_user_id': user.id,
                 'full_name': _nameController.text.trim(),
                 'email': _emailController.text.trim(),
+                'role': roleValue,
                 'onboarding_completed': false,
               }, onConflict: 'auth_user_id');
             }
-          } catch (_) {
-            // Profile creation can happen later
+          } catch (profileError) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Profile setup will complete on next login.'),
+                  backgroundColor: AppColors.warning,
+                ),
+              );
+            }
           }
-          context.go(RouteNames.onboarding);
+
+          if (_isTutorSignup) {
+            context.go(RouteNames.tutorRegister);
+          } else {
+            context.go(RouteNames.onboarding);
+          }
         }
       }
     } catch (e) {
       if (mounted) {
+        final message = friendlyAuthMessage(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Signup failed: ${e.toString()}'),
+            content: Text(message),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -114,18 +183,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               children: [
                 // Title
                 Text(
-                  'Create Account',
+                  _isTutorSignup ? 'Create Tutor Account' : 'Create Account',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Start your language learning journey today',
+                  _isTutorSignup
+                      ? 'Start your teaching journey today'
+                      : 'Start your language learning journey today',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
                   ),
                 ),
 
@@ -161,8 +230,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
+                      return 'Please enter a valid email address';
                     }
                     return null;
                   },
@@ -283,16 +352,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Create Account'),
+                      : Text(_isTutorSignup ? 'Create Tutor Account' : 'Create Account'),
                 ),
 
                 const SizedBox(height: AppSpacing.xl),
 
                 // Social Signup Buttons
                 OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement Google sign-up
-                  },
+                  onPressed: _isLoading ? null : _handleGoogleSignup,
                   icon: const Icon(Icons.g_mobiledata, size: 24),
                   label: const Text('Continue with Google'),
                 ),
@@ -301,7 +368,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
                 OutlinedButton.icon(
                   onPressed: () {
-                    // TODO: Implement Apple sign-up
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Apple Sign-Up coming soon')),
+                    );
                   },
                   icon: const Icon(Icons.apple, size: 24),
                   label: const Text('Continue with Apple'),

@@ -64,6 +64,16 @@ class LocalStorage {
     await _box.put(AppConstants.onboardingCompleteKey, value);
   }
 
+  // Selected Role (first-launch preference)
+  static String? getSelectedRole() {
+    final value = _box.get('selected_role');
+    return value as String?;
+  }
+
+  static Future<void> setSelectedRole(String role) async {
+    await _box.put('selected_role', role);
+  }
+
   // Theme Mode
   static ThemeMode getThemeMode() {
     final value = _box.get(AppConstants.themeModeKey);
