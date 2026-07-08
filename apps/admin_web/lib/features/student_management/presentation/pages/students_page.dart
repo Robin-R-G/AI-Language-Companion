@@ -336,7 +336,7 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                             if (isEdit) {
                               await supabase.from('user_profiles').update({
                                 'full_name': nameController.text,
-                                'phone': phoneController.text,
+                                'phone_number': phoneController.text,
                                 'country': countryController.text,
                                 'is_active': isActive,
                               }).eq('id', student['id']);
@@ -353,33 +353,31 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
                                 details: {'email': student['email']},
                               );
                             } else {
-                              final tempClient = SupabaseClient(
-                                AdminConfig.supabaseUrl,
-                                AdminConfig.supabaseAnonKey,
+                              final result = await supabase.functions.invoke(
+                                'admin-create-user',
+                                body: {
+                                  'email': emailController.text.trim(),
+                                  'password': passwordController.text,
+                                  'full_name': nameController.text,
+                                  'role': 'student',
+                                  'phone': phoneController.text,
+                                  'country': countryController.text,
+                                  'is_active': isActive,
+                                },
                               );
-                              
-                              final authResult = await tempClient.auth.signUp(
-                                email: emailController.text.trim(),
-                                password: passwordController.text,
-                              );
-                              
-                              if (authResult.user == null) {
-                                throw Exception('Auth user creation failed.');
+
+                              if (result.status != 200) {
+                                final data = result.data;
+                                throw Exception(data?['error'] ?? 'Student creation failed');
                               }
 
-                              await supabase.from('user_profiles').update({
-                                'full_name': nameController.text,
-                                'role': 'student',
-                                'phone': phoneController.text,
-                                'country': countryController.text,
-                                'is_active': isActive,
-                                'email': emailController.text.trim(),
-                              }).eq('auth_user_id', authResult.user!.id);
-
-                              await supabase.from('wallet').upsert({
-                                'user_id': authResult.user!.id,
-                                'balance': credits,
-                              }, onConflict: 'user_id');
+                              final userId = result.data?['user_id'];
+                              if (userId != null) {
+                                await supabase.from('wallet').upsert({
+                                  'user_id': userId,
+                                  'balance': credits,
+                                }, onConflict: 'user_id');
+                              }
                             }
                             
                             if (mounted) {

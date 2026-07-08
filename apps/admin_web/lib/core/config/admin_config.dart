@@ -31,7 +31,7 @@ class AdminConfig {
   ];
 
   static bool hasPermission(String userRole, String requiredRole) {
-    if (userRole == 'super_admin') return true;
+    if (userRole == 'super_admin' || userRole == 'admin') return true;
     return userRole == requiredRole;
   }
 }

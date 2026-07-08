@@ -325,7 +325,7 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                               await supabase.from('user_profiles').update({
                                 'full_name': nameController.text,
                                 'role': role,
-                                'phone': phoneController.text,
+                                'phone_number': phoneController.text,
                                 'country': countryController.text,
                                 'is_active': isActive,
                               }).eq('id', user['id']);
@@ -337,28 +337,23 @@ class _UsersPageState extends ConsumerState<UsersPage> {
                                 details: {'email': user['email']},
                               );
                             } else {
-                              final tempClient = SupabaseClient(
-                                AdminConfig.supabaseUrl,
-                                AdminConfig.supabaseAnonKey,
+                              final result = await supabase.functions.invoke(
+                                'admin-create-user',
+                                body: {
+                                  'email': emailController.text.trim(),
+                                  'password': passwordController.text,
+                                  'full_name': nameController.text,
+                                  'role': role,
+                                  'phone': phoneController.text,
+                                  'country': countryController.text,
+                                  'is_active': isActive,
+                                },
                               );
-                              
-                              final authResult = await tempClient.auth.signUp(
-                                email: emailController.text.trim(),
-                                password: passwordController.text,
-                              );
-                              
-                              if (authResult.user == null) {
-                                throw Exception('Auth user creation failed.');
-                              }
 
-                              await supabase.from('user_profiles').update({
-                                'full_name': nameController.text,
-                                'role': role,
-                                'phone': phoneController.text,
-                                'country': countryController.text,
-                                'is_active': isActive,
-                                'email': emailController.text.trim(),
-                              }).eq('auth_user_id', authResult.user!.id);
+                              if (result.status != 200) {
+                                final data = result.data;
+                                throw Exception(data?['error'] ?? 'User creation failed');
+                              }
                             }
                             
                             if (mounted) {

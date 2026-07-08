@@ -53,7 +53,7 @@ class _ExamsPageState extends State<ExamsPage> {
           .select('*')
           .order('created_at', ascending: false);
 
-      final attemptsRes = await _supabase.from('exam_attempts').select('score');
+      final attemptsRes = await _supabase.from('exam_attempts').select('score, estimated_score');
 
       final exams = List<Map<String, dynamic>>.from(examsRes);
       final attempts = List<Map<String, dynamic>>.from(attemptsRes);
@@ -62,7 +62,10 @@ class _ExamsPageState extends State<ExamsPage> {
       if (attempts.isNotEmpty) {
         final totalScore = attempts.fold<double>(
           0,
-          (sum, a) => sum + ((a['score'] ?? 0) as num).toDouble(),
+          (sum, a) {
+            final s = a['score'] ?? a['estimated_score'] ?? 0;
+            return sum + (s as num).toDouble();
+          },
         );
         avgScore = totalScore / attempts.length;
       }

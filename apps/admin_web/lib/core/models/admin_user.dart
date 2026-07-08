@@ -68,7 +68,7 @@ class AdminUser {
         'metadata': metadata,
       };
 
-  bool get isSuperAdmin => role == AdminRole.superAdmin;
+  bool get isSuperAdmin => role == AdminRole.superAdmin || role == AdminRole.admin;
   bool get canManageUsers => isSuperAdmin || role == AdminRole.admin;
   bool get canManageFinance => isSuperAdmin || role == AdminRole.financeManager;
   bool get canManageContent => isSuperAdmin || role == AdminRole.contentManager;

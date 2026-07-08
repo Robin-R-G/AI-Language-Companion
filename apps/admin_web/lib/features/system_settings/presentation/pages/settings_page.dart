@@ -33,6 +33,15 @@ class _SettingsPageState extends State<SettingsPage> {
   final _adBannerPriceController = TextEditingController();
   final _adInterstitialPriceController = TextEditingController();
 
+  // UPI Payment
+  final _upiIdController = TextEditingController(text: 'metherobin@oksbi');
+  bool _upiEnabled = true;
+
+  // Tutor Commission
+  final _tutorCommissionRateController = TextEditingController(text: '20');
+  final _tutorMinPayoutController = TextEditingController(text: '50');
+  String _tutorPayoutSchedule = 'weekly';
+
   bool _maintenanceMode = false;
   bool _voiceEngineActive = true;
   bool _translationsActive = true;
@@ -73,6 +82,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _referralMaxPerUserController.dispose();
     _adBannerPriceController.dispose();
     _adInterstitialPriceController.dispose();
+    _upiIdController.dispose();
+    _tutorCommissionRateController.dispose();
+    _tutorMinPayoutController.dispose();
     super.dispose();
   }
 
@@ -120,6 +132,15 @@ class _SettingsPageState extends State<SettingsPage> {
           _adBannerPriceController.text = settingsMap['ad_banner_price'] ?? '0.50';
           _adInterstitialPriceController.text = settingsMap['ad_interstitial_price'] ?? '1.00';
 
+          // UPI
+          _upiIdController.text = settingsMap['upi_id'] ?? 'metherobin@oksbi';
+          _upiEnabled = settingsMap['upi_enabled'] != 'false';
+
+          // Tutor Commission
+          _tutorCommissionRateController.text = settingsMap['tutor_commission_rate'] ?? '20';
+          _tutorMinPayoutController.text = settingsMap['tutor_min_payout'] ?? '50';
+          _tutorPayoutSchedule = settingsMap['tutor_payout_schedule'] ?? 'weekly';
+
           _envVariables = {
             'SUPABASE_URL': 'https://your-project.supabase.co',
             'SUPABASE_ANON_KEY': '••••••••',
@@ -166,6 +187,13 @@ class _SettingsPageState extends State<SettingsPage> {
         {'key': 'sub_only_assessments', 'value': _subOnlyAssessments.toString(), 'updated_at': DateTime.now().toIso8601String()},
         {'key': 'livekit_url', 'value': _liveKitUrlController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
         {'key': 'revenuecat_secret', 'value': _revenueCatSecretController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        // UPI
+        {'key': 'upi_id', 'value': _upiIdController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'upi_enabled', 'value': _upiEnabled.toString(), 'updated_at': DateTime.now().toIso8601String()},
+        // Tutor Commission
+        {'key': 'tutor_commission_rate', 'value': _tutorCommissionRateController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'tutor_min_payout', 'value': _tutorMinPayoutController.text.trim(), 'updated_at': DateTime.now().toIso8601String()},
+        {'key': 'tutor_payout_schedule', 'value': _tutorPayoutSchedule, 'updated_at': DateTime.now().toIso8601String()},
       ];
 
       await _supabase.from('system_settings').upsert(settings);
@@ -241,6 +269,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildPlatformOperationsSection(),
                   const SizedBox(height: 24),
                   _buildPaymentSection(),
+                    const SizedBox(height: 24),
+                    _buildUpiSection(),
+                    const SizedBox(height: 24),
+                    _buildTutorCommissionSection(),
                     const SizedBox(height: 24),
                     _buildWalletSection(),
                     const SizedBox(height: 24),
@@ -386,6 +418,75 @@ class _SettingsPageState extends State<SettingsPage> {
             labelText: 'PayPal Client ID',
             prefixIcon: Icon(Icons.account_balance_wallet_outlined, size: 18),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUpiSection() {
+    return _buildSectionCard(
+      title: 'UPI Payment Receiving',
+      children: [
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Enable UPI Payments'),
+          subtitle: const Text('Accept payments via UPI (India)'),
+          value: _upiEnabled,
+          onChanged: (v) => setState(() => _upiEnabled = v),
+        ),
+        const Divider(),
+        TextFormField(
+          controller: _upiIdController,
+          decoration: const InputDecoration(
+            labelText: 'UPI ID',
+            hintText: 'e.g. yourname@oksbi',
+            helperText: 'Default receiving UPI address for all payments',
+            prefixIcon: Icon(Icons.account_balance_rounded, size: 18),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTutorCommissionSection() {
+    return _buildSectionCard(
+      title: 'Tutor Commission & Payouts',
+      children: [
+        TextFormField(
+          controller: _tutorCommissionRateController,
+          decoration: const InputDecoration(
+            labelText: 'Commission Rate (%)',
+            helperText: 'Platform commission deducted from tutor earnings',
+            prefixIcon: Icon(Icons.percent_rounded, size: 18),
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _tutorMinPayoutController,
+          decoration: const InputDecoration(
+            labelText: 'Minimum Payout Amount',
+            helperText: 'Minimum balance required to request a payout',
+            prefixIcon: Icon(Icons.monetization_on_outlined, size: 18),
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<String>(
+          value: _tutorPayoutSchedule,
+          decoration: const InputDecoration(
+            labelText: 'Payout Schedule',
+            prefixIcon: Icon(Icons.schedule_rounded, size: 18),
+          ),
+          items: const [
+            DropdownMenuItem(value: 'daily', child: Text('Daily')),
+            DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
+            DropdownMenuItem(value: 'biweekly', child: Text('Bi-Weekly')),
+            DropdownMenuItem(value: 'monthly', child: Text('Monthly')),
+          ],
+          onChanged: (v) {
+            if (v != null) setState(() => _tutorPayoutSchedule = v);
+          },
         ),
       ],
     );

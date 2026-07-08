@@ -376,9 +376,9 @@ class _TutorsPageState extends State<TutorsPage> {
                             if (isEdit) {
                               await supabase.from('user_profiles').update({
                                 'full_name': nameController.text,
-                                'phone': phoneController.text,
+                                'phone_number': phoneController.text,
                                 'country': countryController.text,
-                                'is_suspended': !isActive,
+                                'is_active': isActive,
                               }).eq('id', tutor['id']);
 
                               await supabase.from('tutor_profiles').upsert({
@@ -395,35 +395,33 @@ class _TutorsPageState extends State<TutorsPage> {
                                 details: {'email': tutor['email']},
                               );
                             } else {
-                              final tempClient = SupabaseClient(
-                                AdminConfig.supabaseUrl,
-                                AdminConfig.supabaseAnonKey,
+                              final result = await supabase.functions.invoke(
+                                'admin-create-user',
+                                body: {
+                                  'email': emailController.text.trim(),
+                                  'password': passwordController.text,
+                                  'full_name': nameController.text,
+                                  'role': 'tutor',
+                                  'phone': phoneController.text,
+                                  'country': countryController.text,
+                                  'is_active': isActive,
+                                },
                               );
-                              
-                              final authResult = await tempClient.auth.signUp(
-                                email: emailController.text.trim(),
-                                password: passwordController.text,
-                              );
-                              
-                              if (authResult.user == null) {
-                                throw Exception('Auth user creation failed.');
+
+                              if (result.status != 200) {
+                                final data = result.data;
+                                throw Exception(data?['error'] ?? 'Tutor creation failed');
                               }
 
-                              await supabase.from('user_profiles').update({
-                                'full_name': nameController.text,
-                                'role': 'tutor',
-                                'phone': phoneController.text,
-                                'country': countryController.text,
-                                'is_suspended': !isActive,
-                                'email': emailController.text.trim(),
-                              }).eq('auth_user_id', authResult.user!.id);
-
-                              await supabase.from('tutor_profiles').upsert({
-                                'user_id': authResult.user!.id,
-                                'years_of_experience': yearsExp,
-                                'specializations': specs,
-                                'status': statusController.text,
-                              }, onConflict: 'user_id');
+                              final userId = result.data?['user_id'];
+                              if (userId != null) {
+                                await supabase.from('tutor_profiles').upsert({
+                                  'user_id': userId,
+                                  'years_of_experience': yearsExp,
+                                  'specializations': specs,
+                                  'status': statusController.text,
+                                }, onConflict: 'user_id');
+                              }
                             }
                             
                             if (mounted) {
