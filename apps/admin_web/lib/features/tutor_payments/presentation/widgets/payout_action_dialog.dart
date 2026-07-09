@@ -211,7 +211,7 @@ class _PayoutActionDialogState extends State<PayoutActionDialog> {
             color: color ??
                 (isNegative
                     ? AdminTheme.error
-                    : Theme.of(context).colorScheme.onBackground),
+                    : Theme.of(context).colorScheme.onSurface),
           ),
         ),
       ],

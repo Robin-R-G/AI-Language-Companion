@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/stat_card.dart';
@@ -249,7 +248,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                                       'Uptime: $uptime',
                                       style: TextStyle(
                                         fontSize: 10,
-                                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                       ),
                                     ),
                                   ],
@@ -343,7 +342,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                 onSelected: (_) => setState(() => _activeTab = tab.$1),
                 selectedColor: AdminTheme.primary.withOpacity(0.1),
                 labelStyle: TextStyle(
-                  color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onBackground,
+                  color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 side: BorderSide.none,
@@ -459,7 +458,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
               const SizedBox(height: 16),
               Text('No failed payments',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                       )),
             ],
           ),
@@ -526,11 +525,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
             children: [
               Icon(Icons.inbox_rounded,
                   size: 48,
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2)),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
               const SizedBox(height: 16),
               Text('No refunds processed',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                       )),
             ],
           ),
@@ -596,11 +595,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
                   children: [
                     Icon(Icons.account_balance_rounded,
                         size: 48,
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2)),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                     const SizedBox(height: 16),
                     Text('No bank accounts configured',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             )),
                   ],
                 ),

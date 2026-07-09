@@ -20,8 +20,8 @@ class StatusBadge extends StatelessWidget {
       BadgeType.error => (Colors.red, Colors.red.withOpacity(0.1)),
       BadgeType.info => (Colors.blue, Colors.blue.withOpacity(0.1)),
       BadgeType.neutral => (
-          Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
-          Theme.of(context).colorScheme.onBackground.withOpacity(0.05),
+          Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
         ),
     };
 

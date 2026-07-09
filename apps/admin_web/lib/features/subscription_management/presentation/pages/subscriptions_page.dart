@@ -767,7 +767,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
             fontWeight: FontWeight.w500,
             color: isActive
                 ? AdminTheme.primary
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         );
       }).toList(),
@@ -795,7 +795,7 @@ class _SubscriptionsPageState extends State<SubscriptionsPage> {
             fontWeight: FontWeight.w500,
             color: isActive
                 ? AdminTheme.info
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         );
       }).toList(),

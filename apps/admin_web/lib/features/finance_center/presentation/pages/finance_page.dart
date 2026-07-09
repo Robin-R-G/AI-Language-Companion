@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/page_header.dart';
-import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/data_table_widget.dart';
 import '../widgets/revenue_breakdown_chart.dart';
@@ -241,7 +240,7 @@ class _FinancePageState extends State<FinancePage> {
               onSelected: (_) => setState(() => _selectedPeriod = p),
               selectedColor: AdminTheme.primary.withOpacity(0.1),
               labelStyle: TextStyle(
-                color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onBackground,
+                color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onSurface,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
               side: BorderSide.none,
@@ -255,14 +254,6 @@ class _FinancePageState extends State<FinancePage> {
   }
 
   Widget _buildRevenueCards(bool isDesktop) {
-    final currentRevenue = switch (_selectedPeriod) {
-      'Today' => _revenueToday,
-      'Week' => _revenueWeek,
-      'Month' => _revenueMonth,
-      'Year' => _revenueYear,
-      _ => _revenueLifetime,
-    };
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = isDesktop ? 5 : (constraints.maxWidth > 600 ? 3 : 2);

@@ -230,7 +230,7 @@ class _WalletPageState extends State<WalletPage> {
                 onSelected: (_) => setState(() => _activeTab = tab.$1),
                 selectedColor: AdminTheme.primary.withOpacity(0.1),
                 labelStyle: TextStyle(
-                  color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onBackground,
+                  color: isSelected ? AdminTheme.primary : Theme.of(context).colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 side: BorderSide.none,

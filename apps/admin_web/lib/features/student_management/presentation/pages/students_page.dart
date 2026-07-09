@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/services/audit_service.dart';
@@ -9,8 +8,6 @@ import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/stat_card.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/config/admin_config.dart';
 import '../widgets/student_detail_dialog.dart';
 
 class StudentsPage extends ConsumerStatefulWidget {
@@ -112,43 +109,6 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
       }
     }
   }
-
-  List<Map<String, dynamic>> _mockStudents() => List.generate(
-        40,
-        (i) => {
-          'id': 'student_$i',
-          'auth_user_id': 'auth_$i',
-          'email': 'student$i@example.com',
-          'full_name': [
-            'Emma Wilson',
-            'Liam Davis',
-            'Olivia Brown',
-            'Noah Garcia',
-            'Sophia Martinez',
-            'Mason Anderson',
-            'Isabella Taylor',
-            'Lucas Thomas',
-          ][i % 8],
-          'role': 'student',
-          'is_active': i % 6 != 0,
-          'phone': '+1 555 0${200 + i}',
-          'country': ['US', 'UK', 'JP', 'DE', 'FR', 'IT', 'ES', 'BR'][i % 8],
-          'created_at': DateTime.now()
-              .subtract(Duration(days: 365 - i * 9))
-              .toIso8601String(),
-          'last_login_at': i % 4 == 0
-              ? null
-              : DateTime.now()
-                  .subtract(Duration(hours: i * 3))
-                  .toIso8601String(),
-          'credits': [500, 1200, 800, 200, 1500, 0, 300, 1000][i % 8],
-          'subscription_status': ['active', 'trial', 'expired', 'none'][i % 4],
-          'learning_hours': (i * 3.5 + 10).toStringAsFixed(1),
-          'lessons_completed': i * 5 + 12,
-          'current_level': ['A1', 'A2', 'B1', 'B2', 'C1', 'A2', 'B1', 'B2'][i % 8],
-          'target_language': ['English', 'Spanish', 'Japanese', 'French', 'German', 'Italian', 'Portuguese', 'Korean'][i % 8],
-        },
-      );
 
   void _applyFilters() {
     setState(() {
@@ -438,18 +398,6 @@ class _StudentsPageState extends ConsumerState<StudentsPage> {
         action: SnackBarAction(label: 'OK', onPressed: () {}),
       ),
     );
-  }
-
-  String _formatDate(String? dateStr) {
-    if (dateStr == null) return 'Never';
-    final date = DateTime.tryParse(dateStr);
-    if (date == null) return 'Unknown';
-    final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-    if (diff.inDays < 1) return '${diff.inHours}h ago';
-    if (diff.inDays < 30) return '${diff.inDays}d ago';
-    return DateFormat('MMM d, yyyy').format(date);
   }
 
   BadgeType _getSubscriptionBadge(String status) {

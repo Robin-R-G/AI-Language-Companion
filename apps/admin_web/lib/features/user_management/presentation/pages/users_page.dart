@@ -9,8 +9,6 @@ import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/stat_card.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/config/admin_config.dart';
 import '../widgets/user_detail_dialog.dart';
 
 class UsersPage extends ConsumerStatefulWidget {
@@ -104,38 +102,6 @@ class _UsersPageState extends ConsumerState<UsersPage> {
       }
     }
   }
-
-  List<Map<String, dynamic>> _mockUsers() => List.generate(
-        45,
-        (i) => {
-          'id': 'user_$i',
-          'auth_user_id': 'auth_$i',
-          'email': 'user$i@example.com',
-          'full_name': [
-            'Alice Johnson',
-            'Bob Smith',
-            'Carlos Rodriguez',
-            'Diana Chen',
-            'Eva Müller',
-            'François Dubois',
-            'Giulia Rossi',
-            'Hiroshi Tanaka',
-          ][i % 8],
-          'role': ['student', 'tutor', 'admin'][i % 3],
-          'is_active': i % 7 != 0,
-          'avatar_url': null,
-          'phone': '+1 555 0${100 + i}',
-          'country': ['US', 'UK', 'JP', 'DE', 'FR', 'IT', 'ES', 'BR'][i % 8],
-          'created_at': DateTime.now()
-              .subtract(Duration(days: 365 - i * 8))
-              .toIso8601String(),
-          'last_login_at': i % 3 == 0
-              ? null
-              : DateTime.now()
-                  .subtract(Duration(hours: i * 5))
-                  .toIso8601String(),
-        },
-      );
 
   void _applyFilters() {
     setState(() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/config/admin_config.dart';
 import '../../../../core/services/audit_service.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/stat_card.dart';
@@ -641,7 +640,7 @@ class _TutorsPageState extends State<TutorsPage> {
             fontWeight: FontWeight.w500,
             color: isActive
                 ? AdminTheme.primary
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         );
       }).toList(),

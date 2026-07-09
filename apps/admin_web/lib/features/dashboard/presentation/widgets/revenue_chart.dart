@@ -187,7 +187,7 @@ class RevenueChart extends StatelessWidget {
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             getTooltipColor: (_) =>
-                Theme.of(context).colorScheme.surface ?? Colors.grey[900]!,
+                Colors.grey[900]!,
             tooltipRoundedRadius: 8,
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {

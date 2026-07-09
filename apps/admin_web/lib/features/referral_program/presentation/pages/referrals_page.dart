@@ -238,7 +238,7 @@ class _ReferralsPageState extends State<ReferralsPage>
         };
 
         if (isEdit) {
-          await _supabase.from('coupons').update(data).eq('id', existing!['id']);
+          await _supabase.from('coupons').update(data).eq('id', existing['id']);
         } else {
           data['used_count'] = 0;
           data['is_active'] = true;
@@ -652,7 +652,7 @@ class _ReferralsPageState extends State<ReferralsPage>
           Text(
             'Manage affiliates and sponsored content partnerships',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                 ),
           ),
           const SizedBox(height: 24),

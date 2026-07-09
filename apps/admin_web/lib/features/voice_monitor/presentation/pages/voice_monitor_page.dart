@@ -18,12 +18,42 @@ class _VoiceMonitorPageState extends State<VoiceMonitorPage> {
   String? _error;
   List<dynamic> _voiceSessions = [];
   int _activeRoomsCount = 0;
+  double _avgLatency = 0;
   final List<Map<String, dynamic>> _liveLogs = [];
+  RealtimeChannel? _channel;
 
   @override
   void initState() {
     super.initState();
     _fetchVoiceSessions();
+    _setupRealtimeSubscription();
+  }
+
+  @override
+  void dispose() {
+    _channel?.unsubscribe();
+    super.dispose();
+  }
+
+  void _setupRealtimeSubscription() {
+    _channel = _supabase.channel('voice_sessions_changes');
+    _channel!.onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'voice_sessions',
+      callback: (payload) {
+        final now = DateTime.now();
+        final timeStr = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+        setState(() {
+          _liveLogs.insert(0, {
+            'time': timeStr,
+            'event': 'Change on voice_sessions',
+            'type': 'info',
+          });
+          if (_liveLogs.length > 50) _liveLogs.removeLast();
+        });
+      },
+    ).subscribe();
   }
 
   Future<void> _fetchVoiceSessions() async {
@@ -44,6 +74,14 @@ class _VoiceMonitorPageState extends State<VoiceMonitorPage> {
         _activeRoomsCount = _voiceSessions
             .where((s) => s['duration'] == null || s['duration'] == 0)
             .length;
+        // Compute average latency from sessions that have a latency_ms field
+        final latencies = _voiceSessions
+            .where((s) => s['latency_ms'] != null && (s['latency_ms'] as num) > 0)
+            .map<double>((s) => (s['latency_ms'] as num).toDouble())
+            .toList();
+        _avgLatency = latencies.isNotEmpty
+            ? latencies.fold<double>(0, (s, l) => s + l) / latencies.length
+            : 0;
         _isLoading = false;
       });
     } catch (e) {
@@ -151,7 +189,7 @@ class _VoiceMonitorPageState extends State<VoiceMonitorPage> {
         Expanded(
           child: StatCard(
             title: 'Avg Audio Latency',
-            value: '114 ms',
+            value: _avgLatency > 0 ? '${_avgLatency.toStringAsFixed(0)} ms' : 'N/A',
             subtitle: 'WebRTC gateway',
             icon: Icons.speed_rounded,
             color: AdminTheme.success,

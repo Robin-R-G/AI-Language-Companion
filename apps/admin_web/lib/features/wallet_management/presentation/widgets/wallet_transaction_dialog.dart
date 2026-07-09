@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/theme/admin_theme.dart';
 
 class WalletTransactionDialog extends StatefulWidget {
@@ -141,7 +140,7 @@ class _WalletTransactionDialogState extends State<WalletTransactionDialog> {
                           'Mark as recommended',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           ),
                         ),
                         value: _isPopular,
@@ -158,7 +157,7 @@ class _WalletTransactionDialogState extends State<WalletTransactionDialog> {
                           'Available for purchase',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           ),
                         ),
                         value: _isActive,

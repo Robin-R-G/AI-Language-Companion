@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/page_header.dart';
-import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/data_table_widget.dart';
 import '../widgets/ai_cost_chart.dart';

@@ -230,15 +230,6 @@ class _MarketplacePageState extends State<MarketplacePage>
     }
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'N/A';
-    try {
-      return DateFormat('MMM d, yyyy').format(DateTime.parse(dateStr));
-    } catch (_) {
-      return dateStr;
-    }
-  }
-
   String _formatCurrency(dynamic amount) {
     if (amount == null) return '\$0.00';
     final val = double.tryParse(amount.toString()) ?? 0;
@@ -447,7 +438,7 @@ class _MarketplacePageState extends State<MarketplacePage>
             fontWeight: FontWeight.w500,
             color: isActive
                 ? AdminTheme.primary
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         );
       }).toList(),

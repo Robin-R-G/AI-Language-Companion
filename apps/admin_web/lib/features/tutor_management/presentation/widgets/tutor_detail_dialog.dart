@@ -717,9 +717,7 @@ class _TutorDetailDialogState extends State<TutorDetailDialog>
                         fontSize: 13, fontWeight: FontWeight.w600)),
                 subtitle: hasSlots
                     ? Text(
-                        slots is List
-                            ? slots.map((s) => s.toString()).join(', ')
-                            : slots.toString(),
+                        slots.map((s) => s.toString()).join(', '),
                         style: const TextStyle(fontSize: 12),
                       )
                     : Text('Not available',

@@ -167,64 +167,6 @@ class _AuditLogsPageState extends State<AuditLogsPage> {
     });
   }
 
-  void _showLogDetail(Map<String, dynamic> log) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Log Detail'),
-        content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _detailRow('ID', log['id']?.toString() ?? '-'),
-                _detailRow('Timestamp', log['created_at'] ?? '-'),
-                _detailRow('Admin', log['admin_email'] ?? log['admin_name'] ?? '-'),
-                _detailRow('Action', log['action'] ?? '-'),
-                _detailRow('Target Type', log['target_type'] ?? '-'),
-                _detailRow('Target ID', log['target_id'] ?? '-'),
-                const SizedBox(height: 16),
-                const Text('Details:',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AdminTheme.lightBg,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _formatJson(log['details']),
-                    style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _detailRow(String label, String value) {
-    return Text('$label: $value');
-  }
-
-  String _formatJson(dynamic data) {
-    if (data == null) return 'No details';
-    if (data is String) return data;
-    return data.toString();
-  }
-
   void _exportLogs() {
     final csv = StringBuffer();
     csv.writeln('ID,Timestamp,Admin,Action,Target Type,Target ID,Details');
@@ -447,9 +389,11 @@ class _AuditLogsPageState extends State<AuditLogsPage> {
   Widget _buildTable() {
     return Expanded(
       child: AdminDataTable(
-        columns: ['Timestamp', 'Admin', 'Action', 'Target', 'Details', ''],
+        columns: ['Timestamp', 'Admin', 'Action', 'Target', 'Details'],
         rows: _filteredLogs.map((log) {
           final date = DateTime.tryParse(log['created_at'] ?? '');
+          final details = log['details'];
+          final detailsStr = details is String ? details : details?.toString() ?? '-';
           return [
             Text(
               date != null ? date.toString().substring(0, 19) : '-',
@@ -462,15 +406,9 @@ class _AuditLogsPageState extends State<AuditLogsPage> {
               type: _actionBadgeType(log['action']),
             ),
             Text(log['target_type'] ?? '-'),
-            IconButton(
-              icon: const Icon(Icons.visibility_outlined, size: 18),
-              tooltip: 'View Details',
-              onPressed: () => _showLogDetail(log),
-            ),
-            IconButton(
-              icon: const Icon(Icons.open_in_new, size: 16),
-              tooltip: 'Full Detail',
-              onPressed: () => _showLogDetail(log),
+            Text(
+              detailsStr.length > 60 ? '${detailsStr.substring(0, 60)}...' : detailsStr,
+              style: const TextStyle(fontSize: 12),
             ),
           ];
         }).toList(),

@@ -16,9 +16,6 @@ class InfrastructurePage extends StatefulWidget {
 class _InfrastructurePageState extends State<InfrastructurePage> {
   bool _isLoading = true;
   Map<String, dynamic> _healthData = {};
-  Map<String, dynamic> _dbStats = {};
-  Map<String, dynamic> _storageStats = {};
-  Map<String, dynamic> _apiStats = {};
 
   @override
   void initState() {
@@ -317,7 +314,7 @@ class _InfrastructurePageState extends State<InfrastructurePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5))),
+            Text(label, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
             const SizedBox(height: 4),
             Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
           ],
@@ -332,7 +329,7 @@ class _InfrastructurePageState extends State<InfrastructurePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6))),
+          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
           Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),

@@ -94,11 +94,11 @@ class _AiProvidersPageState extends State<AiProvidersPage> {
                 children: [
                   Icon(Icons.cloud_off_rounded,
                       size: 64,
-                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2)),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                   const SizedBox(height: 16),
                   Text('No AI providers configured',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           )),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -197,7 +197,7 @@ class _AiProvidersPageState extends State<AiProvidersPage> {
                           healthStatus,
                           style: TextStyle(
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -442,7 +442,7 @@ class _AiProvidersPageState extends State<AiProvidersPage> {
         children: [
           Icon(
             Icons.smart_toy_rounded,
-            color: isDefault ? AdminTheme.primary : Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+            color: isDefault ? AdminTheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             size: 18,
           ),
           const SizedBox(width: 12),

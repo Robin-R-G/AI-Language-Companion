@@ -27,11 +27,11 @@ class AdminDataTable extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.inbox_rounded,
-                      size: 64, color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2)),
+                      size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                   const SizedBox(height: 16),
                   Text('No data available',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           )),
                 ],
               ),

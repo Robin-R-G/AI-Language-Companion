@@ -198,7 +198,7 @@ class _FeatureFlagsPageState extends State<FeatureFlagsPage> {
         };
 
         if (isEdit) {
-          await _supabase.from('feature_flags').update(data).eq('id', existing!['id']);
+          await _supabase.from('feature_flags').update(data).eq('id', existing['id']);
         } else {
           data['created_at'] = DateTime.now().toIso8601String();
           data['usage_count'] = 0;

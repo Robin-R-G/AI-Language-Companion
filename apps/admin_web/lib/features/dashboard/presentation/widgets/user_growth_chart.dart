@@ -106,7 +106,7 @@ class UserGrowthChart extends StatelessWidget {
         barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
             getTooltipColor: (_) =>
-                Theme.of(context).colorScheme.surface ?? Colors.grey[900]!,
+                Colors.grey[900]!,
             tooltipRoundedRadius: 8,
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
               final monthLabel = labels[groupIndex];

@@ -196,7 +196,7 @@ class _ExamsPageState extends State<ExamsPage> {
         };
 
         if (isEdit) {
-          await _supabase.from('exams').update(data).eq('id', existing!['id']);
+          await _supabase.from('exams').update(data).eq('id', existing['id']);
         } else {
           data['created_at'] = DateTime.now().toIso8601String();
           await _supabase.from('exams').insert(data);

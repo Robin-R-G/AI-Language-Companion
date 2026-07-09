@@ -390,7 +390,7 @@ class _NotificationsPageState extends State<NotificationsPage>
         };
 
         if (isEdit) {
-          await _supabase.from('notification_templates').update(data).eq('id', existing!['id']);
+          await _supabase.from('notification_templates').update(data).eq('id', existing['id']);
         } else {
           data['created_at'] = DateTime.now().toIso8601String();
           await _supabase.from('notification_templates').insert(data);

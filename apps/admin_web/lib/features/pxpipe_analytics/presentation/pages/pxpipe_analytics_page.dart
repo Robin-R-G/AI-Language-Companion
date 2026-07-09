@@ -31,7 +31,7 @@ class _PxPipeAnalyticsPageState extends State<PxPipeAnalyticsPage> {
           .order('created_at', ascending: false)
           .limit(100);
       setState(() {
-        _metrics = res ?? [];
+        _metrics = res;
         _isLoading = false;
       });
     } catch (e) {

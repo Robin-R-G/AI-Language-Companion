@@ -192,7 +192,7 @@ class RevenueBreakdownChart extends StatelessWidget {
             child: Text(
               '${percentage.toStringAsFixed(1)}%',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   ),
               textAlign: TextAlign.right,
             ),

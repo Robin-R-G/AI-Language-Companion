@@ -8,7 +8,6 @@ import '../../../../core/widgets/page_header.dart';
 import '../widgets/revenue_chart.dart';
 import '../widgets/user_growth_chart.dart';
 import '../widgets/system_health_widget.dart';
-import '../widgets/recent_activity_widget.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -220,80 +219,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       'revenuecat': true,
     };
   }
-
-  Map<String, dynamic> _mockStats() => {
-        'total_users': 12847,
-        'active_tutors': 342,
-        'monthly_revenue': 48250.00,
-        'active_subscriptions': 3156,
-        'ai_cost_today': 42.80,
-        'pending_payouts': 1250.00,
-        'support_tickets': 23,
-        'conversion_rate': 24.6,
-      };
-
-  List<Map<String, dynamic>> _mockRevenueData() {
-    final now = DateTime.now();
-    return List.generate(12, (i) {
-      final month = DateTime(now.year, now.month - 11 + i, 1);
-      return {
-        'month': month.millisecondsSinceEpoch,
-        'revenue': 20000.0 + (i * 3000.0) + (i % 3 == 0 ? 5000 : 0),
-      };
-    });
-  }
-
-  List<Map<String, dynamic>> _mockUserGrowthData() {
-    final now = DateTime.now();
-    return List.generate(6, (i) {
-      final month = DateTime(now.year, now.month - 5 + i, 1);
-      return {
-        'month': DateFormat('MMM yyyy').format(month),
-        'count': 400 + (i * 150) + (i % 2 == 0 ? 200 : 0),
-      };
-    });
-  }
-
-  List<Map<String, dynamic>> _mockRecentActivity() => [
-        {
-          'action': 'user_suspend',
-          'admin_email': 'admin@ailanguagecoach.com',
-          'target_type': 'user',
-          'created_at': DateTime.now().subtract(const Duration(minutes: 15)).toIso8601String(),
-        },
-        {
-          'action': 'subscription_update',
-          'admin_email': 'finance@ailanguagecoach.com',
-          'target_type': 'subscription',
-          'created_at': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
-        },
-        {
-          'action': 'tutor_approve',
-          'admin_email': 'admin@ailanguagecoach.com',
-          'target_type': 'tutor',
-          'created_at': DateTime.now().subtract(const Duration(hours: 3)).toIso8601String(),
-        },
-        {
-          'action': 'payout_process',
-          'admin_email': 'finance@ailanguagecoach.com',
-          'target_type': 'payout',
-          'created_at': DateTime.now().subtract(const Duration(hours: 5)).toIso8601String(),
-        },
-        {
-          'action': 'settings_update',
-          'admin_email': 'admin@ailanguagecoach.com',
-          'target_type': 'system',
-          'created_at': DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
-        },
-      ];
-
-  Map<String, dynamic> _mockSystemHealth() => {
-        'supabase_db': true,
-        'openai': true,
-        'gemini': true,
-        'livekit': true,
-        'revenuecat': true,
-      };
 
   String _formatCurrency(double amount) {
     if (amount >= 1000) {

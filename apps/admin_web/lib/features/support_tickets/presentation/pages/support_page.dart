@@ -5,7 +5,6 @@ import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/page_header.dart';
 import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
-import '../../../../core/widgets/confirm_dialog.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});

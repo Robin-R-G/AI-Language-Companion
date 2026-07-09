@@ -17,15 +17,15 @@ class _BIPageState extends State<BIPage> {
   bool _isLoading = true;
   String? _error;
 
-  double _businessHealthScore = 72.5;
-  double _revenueGrowth = 15.3;
-  double _profitGrowth = 8.7;
-  double _subscriptionGrowth = 22.1;
-  double _retentionRate = 85.0;
-  double _conversionRate = 12.5;
-  double _aiCostEfficiency = 0.78;
-  double _clv = 156.0;
-  double _arpu = 18.5;
+  double _businessHealthScore = 0;
+  double _revenueGrowth = 0;
+  double _profitGrowth = 0;
+  double _subscriptionGrowth = 0;
+  double _retentionRate = 0;
+  double _conversionRate = 0;
+  double _aiCostEfficiency = 0;
+  double _clv = 0;
+  double _arpu = 0;
 
   List<FlSpot> _revenueForecast = [];
   List<FlSpot> _expenseForecast = [];
@@ -46,15 +46,55 @@ class _BIPageState extends State<BIPage> {
     try {
       final revenueRes = await _supabase.from('payments').select('amount, created_at');
       final usersRes = await _supabase.from('user_profiles').select('id, created_at');
-      final subsRes = await _supabase.from('subscriptions').select('id, status');
+      final subsRes = await _supabase.from('subscriptions').select('id, status, created_at');
+      final enrollmentsRes = await _supabase.from('course_enrollments').select('id, completed_at');
 
       final revenue = List<Map<String, dynamic>>.from(revenueRes);
       final users = List<Map<String, dynamic>>.from(usersRes);
+      final subs = List<Map<String, dynamic>>.from(subsRes);
+      final enrollments = List<Map<String, dynamic>>.from(enrollmentsRes);
 
-      final totalRev =
-          revenue.fold<double>(0, (s, r) => s + ((r['amount'] ?? 0) as num).toDouble());
-      final activeSubs = subsRes.where((s) => s['status'] == 'active').length;
+      final now = DateTime.now();
+      final thisMonth = DateTime(now.year, now.month, 1);
+      final lastMonth = DateTime(now.year, now.month - 1, 1);
+
+      final totalRev = revenue.fold<double>(0, (s, r) => s + ((r['amount'] ?? 0) as num).toDouble());
+      final activeSubs = subs.where((s) => s['status'] == 'active').length;
       final totalUsers = users.length;
+
+      // Compute month-over-month growth rates
+      final thisMonthRev = revenue.where((r) {
+        final d = DateTime.tryParse(r['created_at'] ?? '');
+        return d != null && d.isAfter(thisMonth);
+      }).fold<double>(0, (s, r) => s + ((r['amount'] ?? 0) as num).toDouble());
+
+      final lastMonthRev = revenue.where((r) {
+        final d = DateTime.tryParse(r['created_at'] ?? '');
+        return d != null && d.isAfter(lastMonth) && d.isBefore(thisMonth);
+      }).fold<double>(0, (s, r) => s + ((r['amount'] ?? 0) as num).toDouble());
+
+      _revenueGrowth = lastMonthRev > 0 ? ((thisMonthRev - lastMonthRev) / lastMonthRev * 100) : 0;
+      _profitGrowth = _revenueGrowth * 0.7; // Simplified: profit grows at ~70% of revenue growth
+
+      final thisMonthSubs = subs.where((s) {
+        final d = DateTime.tryParse(s['created_at'] ?? '');
+        return d != null && d.isAfter(thisMonth);
+      }).length;
+      final lastMonthSubs = subs.where((s) {
+        final d = DateTime.tryParse(s['created_at'] ?? '');
+        return d != null && d.isAfter(lastMonth) && d.isBefore(thisMonth);
+      }).length;
+      _subscriptionGrowth = lastMonthSubs > 0 ? ((thisMonthSubs - lastMonthSubs) / lastMonthSubs * 100) : 0;
+
+      // Compute retention from enrollment completion
+      final completed = enrollments.where((e) => e['completed_at'] != null).length;
+      _retentionRate = enrollments.isNotEmpty ? (completed / enrollments.length * 100) : 0;
+
+      // Conversion: active subs / total users
+      _conversionRate = totalUsers > 0 ? (activeSubs / totalUsers * 100) : 0;
+
+      // AI cost efficiency: revenue / AI cost (simplified)
+      _aiCostEfficiency = thisMonthRev > 0 ? 0.78 : 0.5; // Placeholder until AI cost data available
 
       if (mounted) {
         setState(() {
@@ -65,7 +105,7 @@ class _BIPageState extends State<BIPage> {
                   (_aiCostEfficiency * 40))
               .clamp(0, 100);
 
-          _revenueForecast = _generateForecast(8, totalRev / 6, 1.12);
+          _revenueForecast = _generateForecast(8, totalRev / 6, 1 + (_revenueGrowth / 100));
           _expenseForecast = _generateForecast(8, totalRev * 0.6 / 6, 1.05);
           _cashFlowForecast = _generateCashFlow(_revenueForecast, _expenseForecast);
         });
@@ -425,15 +465,16 @@ class _BIPageState extends State<BIPage> {
           children: [
             Text('Tutor Performance', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
-            _perfMetric('Avg Sessions/Week', '12.4'),
-            _perfMetric('Student Rating', '4.7/5.0'),
-            _perfMetric('Completion Rate', '89%'),
-            _perfMetric('Revenue Generated', '\$12,400'),
+            _perfMetric('Total Tutors', '$_totalTutors'),
+            _perfMetric('Active Tutors', '$_activeTutors'),
           ],
         ),
       ),
     );
   }
+
+  int _totalTutors = 0;
+  int _activeTutors = 0;
 
   Widget _aiCostCard() {
     return Card(
@@ -444,9 +485,6 @@ class _BIPageState extends State<BIPage> {
           children: [
             Text('AI Cost Efficiency', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
-            _perfMetric('Cost per Query', '\$0.008'),
-            _perfMetric('Monthly AI Cost', '\$342'),
-            _perfMetric('Revenue per AI \$', '\$8.20'),
             _perfMetric('Efficiency Score', '${(_aiCostEfficiency * 100).toStringAsFixed(0)}%'),
           ],
         ),
@@ -461,12 +499,10 @@ class _BIPageState extends State<BIPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Feature Profitability', style: Theme.of(context).textTheme.titleMedium),
+            Text('Conversion & Retention', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
-            _perfMetric('Most Profitable', 'Premium Courses'),
-            _perfMetric('Revenue', '\$8,200'),
-            _perfMetric('Least Profitable', 'Free Tier'),
-            _perfMetric('Revenue', '\$0'),
+            _perfMetric('Conversion Rate', '${_conversionRate.toStringAsFixed(1)}%'),
+            _perfMetric('Retention Rate', '${_retentionRate.toStringAsFixed(1)}%'),
           ],
         ),
       ),
@@ -494,17 +530,17 @@ class _BIPageState extends State<BIPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Break-even Analysis', style: Theme.of(context).textTheme.titleMedium),
+            Text('Financial Summary', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
             Row(
               children: [
-                _financialMetric('Monthly Costs', '\$4,200'),
+                _financialMetric('ARPU', '\$${_arpu.toStringAsFixed(2)}'),
                 const SizedBox(width: 32),
-                _financialMetric('Monthly Revenue', '\$8,400'),
+                _financialMetric('CLV', '\$${_clv.toStringAsFixed(0)}'),
                 const SizedBox(width: 32),
-                _financialMetric('Break-even Point', '2 months'),
+                _financialMetric('Conversion', '${_conversionRate.toStringAsFixed(1)}%'),
                 const SizedBox(width: 32),
-                _financialMetric('Profit Margin', '50%'),
+                _financialMetric('Retention', '${_retentionRate.toStringAsFixed(1)}%'),
               ],
             ),
           ],

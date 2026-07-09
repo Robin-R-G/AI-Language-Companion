@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/theme/admin_theme.dart';
@@ -205,11 +206,11 @@ class _DevConsolePageState extends State<DevConsolePage>
         setState(() {
           _edgeLogs = [
             {
-              'function_name': 'example-function',
-              'status': 200,
-              'duration_ms': 145,
+              'function_name': 'N/A',
+              'status': 0,
+              'duration_ms': 0,
               'created_at': DateTime.now().toIso8601String(),
-              'message': 'Edge function logs table may not exist yet',
+              'message': 'edge_function_logs table not available: $e',
             }
           ];
         });
@@ -583,8 +584,9 @@ class _DevConsolePageState extends State<DevConsolePage>
                                   icon: const Icon(Icons.copy, size: 14),
                                   tooltip: 'Copy',
                                   onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: e.value.toString()));
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Copied')),
+                                      const SnackBar(content: Text('Copied to clipboard')),
                                     );
                                   },
                                 ),

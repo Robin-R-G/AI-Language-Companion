@@ -524,7 +524,7 @@ class _TutorPaymentsPageState extends State<TutorPaymentsPage> {
             fontWeight: FontWeight.w500,
             color: isActive
                 ? AdminTheme.primary
-                : Theme.of(context).colorScheme.onBackground.withOpacity(0.6),
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ),
         );
       }).toList(),

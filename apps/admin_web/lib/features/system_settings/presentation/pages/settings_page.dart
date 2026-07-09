@@ -142,10 +142,9 @@ class _SettingsPageState extends State<SettingsPage> {
           _tutorPayoutSchedule = settingsMap['tutor_payout_schedule'] ?? 'weekly';
 
           _envVariables = {
-            'SUPABASE_URL': 'https://your-project.supabase.co',
+            'SUPABASE_URL': 'https://tuashfxoiwyyglmrchjn.supabase.co',
             'SUPABASE_ANON_KEY': '••••••••',
-            'OPENAI_API_KEY': '••••••••',
-            'STRIPE_SECRET': '••••••••',
+            'FUNCTIONS_URL': 'https://tuashfxoiwyyglmrchjn.supabase.co/functions/v1',
             'ENVIRONMENT': 'production',
           };
         });

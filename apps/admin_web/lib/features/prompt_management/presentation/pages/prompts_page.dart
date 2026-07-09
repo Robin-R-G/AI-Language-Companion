@@ -5,7 +5,6 @@ import '../../../../core/theme/admin_theme.dart';
 import '../../../../core/widgets/page_header.dart';
 import '../../../../core/widgets/search_field.dart';
 import '../../../../core/widgets/status_badge.dart';
-import '../../../../core/widgets/data_table_widget.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 
 class PromptsPage extends StatefulWidget {
@@ -131,11 +130,11 @@ class _PromptsPageState extends State<PromptsPage> {
                 children: [
                   Icon(Icons.chat_rounded,
                       size: 64,
-                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2)),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
                   const SizedBox(height: 16),
                   Text('No prompts created yet',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           )),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -285,21 +284,21 @@ class _PromptsPageState extends State<PromptsPage> {
                         prompt['category'] ?? 'General',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Icon(
                         Icons.show_chart_rounded,
                         size: 12,
-                        color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '$usageCount',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                     ],
@@ -604,7 +603,7 @@ class _PromptsPageState extends State<PromptsPage> {
                       Text(
                         DateFormat('MMM d, yyyy').format(createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                             ),
                       ),
                     ],
@@ -658,13 +657,13 @@ class _PromptsPageState extends State<PromptsPage> {
                     Icon(
                       Icons.science_rounded,
                       size: 32,
-                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'No A/B test running',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           ),
                     ),
                   ],
