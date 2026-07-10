@@ -19,7 +19,10 @@ class ReadingRepositoryImpl implements ReadingRepository {
     try {
       final response = await _dio.get(
         '/reading',
-        queryParameters: {'limit': limit, 'difficulty': ?difficulty},
+        queryParameters: {
+          'limit': limit,
+          if (difficulty != null) 'difficulty': difficulty,
+        },
       );
       final data = response.data;
       if (data is List) {

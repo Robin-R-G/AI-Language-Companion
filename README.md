@@ -32,9 +32,8 @@ AI-Language-Coach/
 │   └── 18-TODO.md             # Development Tasks
 │
 ├── frontend/                  # Flutter Cross-Platform Client Application
-├── backend/                   # Business Logic API Services
-├── supabase/                  # Database, Realtime, Storage and Local Configs
-├── functions/                 # Supabase Edge Functions & LLM orchestration
+├── supabase/                  # Database, Realtime, Storage, Edge Functions & Local Configs
+├── apps/                      # Additional applications (Admin Web)
 └── README.md                  # This file
 ```
 

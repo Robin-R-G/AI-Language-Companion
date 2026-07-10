@@ -34,6 +34,10 @@ services:
     depends_on:
       supabase-db:
         condition: service_healthy
+      supabase-meta:
+        condition: service_started
+      supabase-kong:
+        condition: service_started
 
   supabase-kong:
     image: supabase/kong:2.8.1
@@ -48,8 +52,9 @@ services:
       KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
       KONG_DNS_RESOLVER: 127.0.0.11
       KONG_NGINX_PROXY_PROXY_SET_HEADER: "X-Forwarded-For $proxy_add_x_forwarded_for"
-    volumes:
-      - ./infra/docker/kong.yml:/var/lib/kong/kong.yml:ro
+    depends_on:
+      supabase-meta:
+        condition: service_started
 
   supabase-meta:
     image: supabase/postgres-meta:v0.84.2
@@ -131,21 +136,6 @@ services:
       PGRST_DB_SCHEMAS: public,storage,graphql_public
       PGRST_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token}
       PGRST_DB_USE_LEGACY_GUCS: "false"
-    depends_on:
-      supabase-db:
-        condition: service_healthy
-
-  supabase-realtime:
-    image: supabase/realtime:2.10.1
-    container_name: alcoach-realtime-server
-    environment:
-      DB_HOST: supabase-db
-      DB_PORT: 5432
-      DB_NAME: ${POSTGRES_DB:-ai_language_coach}
-      DB_USER: postgres
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      SLOT_NAME: supabase_realtime
-      TEMPORAL_SLOT: true
     depends_on:
       supabase-db:
         condition: service_healthy

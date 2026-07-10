@@ -1,8 +1,8 @@
 #!/bin/sh
 # infra/scripts/verify_env.sh
 
-ENV_FILE="frontend/lib/config/.env.development"
-REQUIRED_KEYS="SUPABASE_URL SUPABASE_ANON_KEY AI_GATEWAY_URL LIVEKIT_URL REVENUECAT_PUBLIC_KEY"
+ENV_FILE="frontend/.env.development"
+REQUIRED_KEYS="SUPABASE_URL SUPABASE_ANON_KEY AI_GATEWAY_URL LIVEKIT_URL REVENUECAT_API_KEY"
 
 echo "===================================================="
 echo "Verifying environment configuration..."

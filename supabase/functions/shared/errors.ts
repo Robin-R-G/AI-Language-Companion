@@ -124,6 +124,19 @@ export function rateLimited(message = 'Rate limit exceeded.'): Response {
   })
 }
 
+export function aiProviderError(message = 'AI provider error.'): Response {
+  return new Response(JSON.stringify({
+    success: false,
+    error: {
+      code: 'AI_PROVIDER_ERROR',
+      message,
+    },
+  } as APIResponse), {
+    status: 502,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
+}
+
 export function serverError(message = 'Internal server error.'): Response {
   return new Response(JSON.stringify({
     success: false,

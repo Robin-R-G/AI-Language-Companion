@@ -71,8 +71,12 @@ if [[ "${1:-}" != "--skip-integration" ]]; then
     run_step "Integration tests" "cd $FRONTEND_DIR && flutter test integration_test/ --reporter expanded && cd .."
 fi
 
-# 10. Edge Function Tests
-run_step "Edge Function tests" "cd supabase/functions/shared/__tests__ && deno test --allow-all && cd ../../.."
+# 10. Edge Function Tests (requires Deno: https://deno.land)
+if command -v deno &> /dev/null; then
+    run_step "Edge Function tests" "cd supabase/functions/shared/__tests__ && deno test --allow-all && cd ../../.."
+else
+    echo -e "${YELLOW}  [SKIP] Edge Function tests — Deno not installed${NC}"
+fi
 
 # 11. Coverage Report
 run_step "Coverage report" "cd $FRONTEND_DIR && if [ -f coverage/lcov.info ]; then echo 'Coverage report at coverage/lcov.info'; fi && cd .."

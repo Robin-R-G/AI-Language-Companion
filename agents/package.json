@@ -8,13 +8,13 @@
     "types": "wrangler types"
   },
   "dependencies": {
-    "agents": "latest",
-    "@cloudflare/ai-chat": "latest",
-    "ai": "latest",
-    "@ai-sdk/react": "latest"
+    "agents": "^0.0.74",
+    "@cloudflare/ai-chat": "^0.0.3",
+    "ai": "^4.3.0",
+    "@ai-sdk/react": "^1.2.0"
   },
   "devDependencies": {
-    "wrangler": "latest",
+    "wrangler": "^4.0.0",
     "typescript": "^5.4.0",
     "@cloudflare/workers-types": "^4.0.0"
   }

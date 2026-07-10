@@ -59,6 +59,7 @@ dependencies:
 
   # Voice
   livekit_client: ^2.8.1
+  flutter_webrtc: ^1.4.0
 
   # Payments
   purchases_flutter: ^8.1.4

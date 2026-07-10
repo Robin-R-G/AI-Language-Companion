@@ -37,6 +37,7 @@ import '../features/tutor/presentation/pages/tutor_dashboard_page.dart';
 import '../features/tutor/presentation/pages/tutor_registration_page.dart';
 import '../features/admin/presentation/pages/admin_finance_center_page.dart';
 import '../features/affiliate/presentation/pages/affiliate_marketplace_page.dart';
+import '../features/live_class/presentation/pages/live_class_page.dart';
 import '../features/profile/presentation/pages/certificate_page.dart';
 import '../shared/widgets/main_scaffold.dart';
 
@@ -83,6 +84,9 @@ class RouteNames {
   // Tutor
   static const String tutorDashboard = '/tutor-dashboard';
   static const String tutorRegister = '/tutor-register';
+
+  // Live Class
+  static const String liveClass = '/live-class';
 
   // Admin (all staff roles share this prefix)
   static const String adminFinance = '/admin-finance';
@@ -389,6 +393,25 @@ final routerProvider = FutureProvider<GoRouter>((ref) async {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) => AppPageTransitions.slideUp(
             context, state, const TutorRegistrationPage()),
+      ),
+
+      // ── Live Class ───────────────────────────────────────────────────────────
+      GoRoute(
+        path: RouteNames.liveClass,
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return AppPageTransitions.slideUp(
+            context,
+            state,
+            LiveClassPage(
+              sessionId: extra?['sessionId'] ?? '',
+              isHost: extra?['isHost'] ?? false,
+              tutorName: extra?['tutorName'] ?? 'Tutor',
+              subject: extra?['subject'],
+            ),
+          );
+        },
       ),
 
       // ── Admin Routes ─────────────────────────────────────────────────────────

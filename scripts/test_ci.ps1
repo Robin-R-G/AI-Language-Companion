@@ -107,11 +107,15 @@ if (-not $SkipIntegrationTests) {
     }
 }
 
-# 10. Edge Function Tests
-Run-TestStep "Edge Function tests" {
-    Set-Location "supabase/functions/shared/__tests__"
-    deno test --allow-all
-    Set-Location "../../.."
+# 10. Edge Function Tests (requires Deno: https://deno.land)
+if (Get-Command deno -ErrorAction SilentlyContinue) {
+    Run-TestStep "Edge Function tests" {
+        Set-Location "supabase/functions/shared/__tests__"
+        deno test --allow-all
+        Set-Location "../../.."
+    }
+} else {
+    Write-Host "  [SKIP] Edge Function tests — Deno not installed" -ForegroundColor Yellow
 }
 
 # 11. Coverage Report

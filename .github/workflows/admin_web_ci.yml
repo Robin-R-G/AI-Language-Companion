@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: '3.22.x'
+  FLUTTER_VERSION: '3.32.0'
   FLUTTER_CHANNEL: 'stable'
   WORK_DIR: apps/admin_web
 

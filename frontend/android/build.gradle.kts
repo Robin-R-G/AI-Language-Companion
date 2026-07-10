@@ -20,10 +20,10 @@ subprojects {
 
     project.configurations.all {
         resolutionStrategy {
-            force("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
-            force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21")
-            force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
-            force("org.jetbrains.kotlin:kotlin-stdlib-common:2.0.21")
+            force("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
+            force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.20")
+            force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.20")
+            force("org.jetbrains.kotlin:kotlin-stdlib-common:2.2.20")
         }
     }
 

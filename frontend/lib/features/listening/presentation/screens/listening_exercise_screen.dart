@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ai_language_coach/shared/theme/app_theme.dart';
+import '../../../shared/theme/app_theme.dart';
 import 'package:ai_language_coach/core/constants/design_tokens.dart';
 import '../../data/datasources/listening_remote_datasource.dart';
 import '../controllers/listening_controller.dart';
